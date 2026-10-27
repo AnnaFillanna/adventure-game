@@ -29,9 +29,8 @@ export const NPCDialogue: React.FC<NPCDialogueProps> = ({
   useEffect(() => {
     const dialogue = manager.startDialogue(npcId, questCompleted);
     if (dialogue) {
-      setIsAnimating(true);
       setCurrentDialogue(dialogue);
-      // Animation delay
+      setIsAnimating(true);
       const timer = setTimeout(() => setIsAnimating(false), 300);
       return () => clearTimeout(timer);
     }

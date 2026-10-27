@@ -3,7 +3,7 @@
  * Hauptspielansicht mit Spielercharakter, NPCs, Items und Kampfsystem
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../game/state/gameStore';
 import { NPCS, ENEMIES, QUESTS, GAME_CONFIG } from '../game/data/config';
@@ -18,29 +18,19 @@ import styles from './GameWorld.module.scss';
 
 export const GameWorld: React.FC = () => {
   const navigate = useNavigate();
-  const gameState = useGameStore((state) => ({
-    player: state.player,
-    quests: state.quests,
-    activeQuestId: state.activeQuestId,
-    combatState: state.combatState,
-    npcLocations: state.npcLocations,
-    enemyLocations: state.enemyLocations,
-  }));
 
-  const {
-    startQuest,
-    completeQuest,
-    updateQuestObjective,
-    addItem,
-    initiatesCombat,
-  } = useGameStore((state) => ({
-    startQuest: state.startQuest,
-    completeQuest: state.completeQuest,
-    updateQuestObjective: state.updateQuestObjective,
-    movePlayer: state.movePlayer,
-    addItem: state.addItem,
-    initiatesCombat: state.initiatesCombat,
-  }));
+  // Use separate individual selectors for each property to avoid object recreation
+  const player = useGameStore((s) => s.player);
+  const quests = useGameStore((s) => s.quests);
+  const activeQuestId = useGameStore((s) => s.activeQuestId);
+  const combatState = useGameStore((s) => s.combatState);
+
+  // Get actions from store
+  const startQuest = useGameStore((s) => s.startQuest);
+  const completeQuest = useGameStore((s) => s.completeQuest);
+  const updateQuestObjective = useGameStore((s) => s.updateQuestObjective);
+  const addItem = useGameStore((s) => s.addItem);
+  const initiatesCombat = useGameStore((s) => s.initiatesCombat);
 
   const [showInventory, setShowInventory] = useState(false);
   const [showQuestLog, setShowQuestLog] = useState(false);
@@ -48,13 +38,11 @@ export const GameWorld: React.FC = () => {
 
   // Initialize game world on first load
   useEffect(() => {
-    // Initialize NPCs and Enemies
     useGameStore.setState({
       npcLocations: NPCS,
       enemyLocations: ENEMIES,
     });
 
-    // Auto-save periodically
     const autoSaveInterval = setInterval(() => {
       const state = useGameStore.getState();
       saveManager.save(state as any, 1);
@@ -64,20 +52,18 @@ export const GameWorld: React.FC = () => {
   }, []);
 
   // Interact with NPC
-  const interactWithNPC = (npcId: string) => {
+  const interactWithNPC = useCallback((npcId: string) => {
     const npc = NPCS[npcId];
     if (!npc) return;
 
     setDialogueMessage(npc.dialogue);
 
-    // Check if NPC offers a quest
     if (npc.quest) {
       const questId = npc.quest;
       const quest = QUESTS[questId];
-      const existingQuest = gameState.quests.find((q) => q.id === questId);
+      const existingQuest = quests.find((q) => q.id === questId);
 
-      // If quest not started and prerequisites are met
-      if (!existingQuest && canStartQuest(quest, gameState.quests)) {
+      if (!existingQuest && canStartQuest(quest, quests)) {
         setTimeout(() => {
           startQuest(quest);
           setDialogueMessage(`${npc.name}: ${npc.dialogue}\n\n[Quest Started: ${quest.title}]`);
@@ -95,12 +81,12 @@ export const GameWorld: React.FC = () => {
     }
 
     setTimeout(() => setDialogueMessage(null), 3000);
-  };
+  }, [quests, startQuest]);
 
-  // Simulate coin collection
-  const collectCoin = () => {
-    const activeQuest = gameState.quests.find(
-      (q) => q.id === gameState.activeQuestId && q.status === 'active'
+  // Collect coin
+  const collectCoin = useCallback(() => {
+    const activeQuest = quests.find(
+      (q) => q.id === activeQuestId && q.status === 'active'
     );
 
     if (activeQuest?.id === 'quest_collect_coins') {
@@ -116,13 +102,11 @@ export const GameWorld: React.FC = () => {
           icon: '🪙',
         });
 
-        // Check if quest is complete
         if (objective.progress + 1 >= objective.required) {
           setTimeout(() => {
             setDialogueMessage('Quest Completed! Talk to Elder Elara for your reward.');
             completeQuest('quest_collect_coins');
 
-            // Start next quest
             const nextQuest = QUESTS['quest_defeat_goblin'];
             setTimeout(() => {
               startQuest(nextQuest);
@@ -132,7 +116,6 @@ export const GameWorld: React.FC = () => {
         }
       }
     } else if (!activeQuest) {
-      // Just collect the coin if no active quest
       addItem({
         id: 'gold_coin',
         name: 'Gold Coin',
@@ -142,25 +125,24 @@ export const GameWorld: React.FC = () => {
         icon: '🪙',
       });
     }
-  };
+  }, [activeQuestId, quests, updateQuestObjective, addItem, completeQuest, startQuest]);
 
-  // Handle menu navigation
-  const handleMenuExit = () => {
+  // Handle menu exit
+  const handleMenuExit = useCallback(() => {
     const state = useGameStore.getState();
     saveManager.save(state as any, 1);
     navigate('/');
-  };
+  }, [navigate]);
 
-  const activeQuest = gameState.quests.find(
-    (q) => q.id === gameState.activeQuestId && q.status === 'active'
+  const activeQuest = quests.find(
+    (q) => q.id === activeQuestId && q.status === 'active'
   );
   const activeQuestProgress = activeQuest ? getQuestProgress(activeQuest) : 0;
 
   return (
     <div className={styles.gameWorld}>
-      {/* Game Map */}
       <GameMap
-        playerPosition={gameState.player.position}
+        playerPosition={player.position}
         npcs={Object.values(NPCS)}
         enemies={Object.values(ENEMIES)}
         onInteractNPC={interactWithNPC}
@@ -168,26 +150,22 @@ export const GameWorld: React.FC = () => {
         onEncounterEnemy={(enemy) => initiatesCombat(enemy)}
       />
 
-      {/* HUD (Top-left stats) */}
       <GameHUD
-        player={gameState.player}
+        player={player}
         activeQuest={activeQuest}
         questProgress={activeQuestProgress}
       />
 
-      {/* Combat UI (if in combat) */}
-      {gameState.combatState?.isActive && (
-        <CombatUI combatState={gameState.combatState} />
+      {combatState?.isActive && (
+        <CombatUI combatState={combatState} />
       )}
 
-      {/* Dialogue Message */}
       {dialogueMessage && (
         <div className={styles.dialogueBox}>
           <p>{dialogueMessage}</p>
         </div>
       )}
 
-      {/* Bottom Control Panel */}
       <div className={styles.controlPanel}>
         <button
           className={styles.controlButton}
@@ -212,19 +190,17 @@ export const GameWorld: React.FC = () => {
         </button>
       </div>
 
-      {/* Inventory Modal */}
       {showInventory && (
         <Inventory
-          inventory={gameState.player.inventory}
+          inventory={player.inventory}
           onClose={() => setShowInventory(false)}
         />
       )}
 
-      {/* Quest Log Modal */}
       {showQuestLog && (
         <QuestLog
-          quests={gameState.quests}
-          activeQuestId={gameState.activeQuestId}
+          quests={quests}
+          activeQuestId={activeQuestId}
           onClose={() => setShowQuestLog(false)}
         />
       )}
