@@ -13,12 +13,17 @@ import type {
   CharacterStats,
   QuestStatus,
 } from './types';
+import type { HeroId, HeroGameState, TransformationState } from '../characters/types';
+import { getHeroDefinition } from '../characters/heroDefinitions';
 
 // ============================================================================
 // INITIAL STATE FACTORY
 // ============================================================================
 
-export const createInitialGameState = (): GameState => ({
+export const createInitialGameState = (): GameState & {
+  selectedHeroId?: HeroId | null;
+  heroGameState?: HeroGameState | null;
+} => ({
   player: {
     id: 'player_1',
     name: 'Adventurer',
@@ -56,6 +61,8 @@ export const createInitialGameState = (): GameState => ({
   createdAt: Date.now(),
   updatedAt: Date.now(),
   version: 1,
+  selectedHeroId: null,
+  heroGameState: null,
 });
 
 // ============================================================================
@@ -63,6 +70,17 @@ export const createInitialGameState = (): GameState => ({
 // ============================================================================
 
 interface GameStore extends GameState {
+  // Character Selection
+  selectedHeroId?: HeroId | null;
+  selectHero: (heroId: HeroId) => void;
+  getSelectedHero: () => HeroId | null;
+  
+  // Hero Game State
+  heroGameState?: HeroGameState | null;
+  setHeroGameState: (state: HeroGameState) => void;
+  updateTransformationState: (transformationState: TransformationState) => void;
+  recordAbilityUsage: (abilityId: string) => void;
+  
   // Inventory Management
   addItem: (item: Item) => void;
   removeItem: (itemId: string, quantity?: number) => void;
@@ -92,6 +110,88 @@ interface GameStore extends GameState {
 
 export const useGameStore = create<GameStore>((set, get) => ({
   ...createInitialGameState(),
+
+  // ========================================================================
+  // CHARACTER SELECTION & HERO STATE
+  // ========================================================================
+
+  selectHero: (heroId: HeroId) => {
+    const hero = getHeroDefinition(heroId);
+
+    set((state) => {
+      // Apply hero stats to player, casting class to support both regular and hero classes
+      const updatedPlayer = {
+        ...state.player,
+        name: hero.name,
+        class: hero.class as any, // Allow hero classes to be assigned to player
+        stats: { ...hero.stats },
+      };
+
+      // Initialize hero game state
+      const heroGameState: HeroGameState = {
+        heroId,
+        transformationState: {
+          type: hero.transformation?.type || 'none',
+          isActive: false,
+          activatedAt: 0,
+          durationMs: hero.transformation?.durationMs || 0,
+          cooldownMs: hero.transformation?.cooldownMs || 0,
+          lastCooldownEnd: 0,
+        },
+        abilityLastUsed: {},
+        discoveredAbilities: hero.abilities.map(a => a.id),
+      };
+
+      return {
+        selectedHeroId: heroId,
+        player: updatedPlayer,
+        heroGameState,
+        updatedAt: Date.now(),
+      } as any;
+    });
+  },
+
+  getSelectedHero: () => {
+    const state = get();
+    return (state as any).selectedHeroId || null;
+  },
+
+  setHeroGameState: (heroGameState: HeroGameState) => {
+    set({ heroGameState, updatedAt: Date.now() });
+  },
+
+  updateTransformationState: (transformationState: TransformationState) => {
+    set((state) => {
+      const heroGameState = (state as any).heroGameState;
+      if (!heroGameState) return { updatedAt: Date.now() };
+
+      return {
+        heroGameState: {
+          ...heroGameState,
+          transformationState,
+        },
+        updatedAt: Date.now(),
+      };
+    });
+  },
+
+  recordAbilityUsage: (abilityId: string) => {
+    set((state) => {
+      const heroGameState = (state as any).heroGameState;
+      if (!heroGameState) return { updatedAt: Date.now() };
+
+      return {
+        heroGameState: {
+          ...heroGameState,
+          abilityLastUsed: {
+            ...heroGameState.abilityLastUsed,
+            [abilityId]: Date.now(),
+          },
+        },
+        updatedAt: Date.now(),
+      };
+    });
+  },
 
   // ========================================================================
   // INVENTORY MANAGEMENT

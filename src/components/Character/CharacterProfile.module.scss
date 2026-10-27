@@ -1,0 +1,306 @@
+/**
+ * Adventure Game - Character Profile Styles
+ * Fantasy-themed character stat display
+ */
+
+@import '../../styles/colors.scss';
+
+.profileCard {
+  background: linear-gradient(135deg, #1a3a2a 0%, #0f2818 50%, #1a3a2a 100%);
+  border: 2px solid #d4a574;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+// ============================================================================
+// HEADER SECTION
+// ============================================================================
+
+.header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+  border: 2px solid #d4a574;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.avatarIcon {
+  font-size: 40px;
+}
+
+.titleSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.playerName {
+  font-size: 20px;
+  font-weight: 700;
+  color: #d4a574;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.playerClass {
+  font-size: 11px;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 4px 0 0;
+  opacity: 0.8;
+}
+
+// ============================================================================
+// STATS SECTION
+// ============================================================================
+
+.stats {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+}
+
+.statGroup {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  > label {
+    display: block;
+    font-size: 11px;
+    color: #d4a574;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+}
+
+.levelDisplay {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fdd835;
+  text-shadow: 0 2px 8px rgba(253, 216, 53, 0.3);
+}
+
+.statRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.barContainer {
+  flex: 1;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 2s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.bar {
+  height: 100%;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  }
+}
+
+.statValue {
+  font-size: 12px;
+  color: #d4a574;
+  font-weight: 600;
+  min-width: 80px;
+  text-align: right;
+}
+
+// ============================================================================
+// ATTRIBUTES SECTION
+// ============================================================================
+
+.attributes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(212, 165, 116, 0.05);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: 8px;
+}
+
+.attribute {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.attribute .label {
+  font-size: 10px;
+  color: #a0a0a0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.attribute .value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #7cb342;
+  text-shadow: 0 2px 4px rgba(124, 179, 66, 0.3);
+}
+
+// ============================================================================
+// EQUIPMENT SECTION
+// ============================================================================
+
+.equipment {
+  padding: 12px;
+  background: rgba(212, 165, 116, 0.05);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: 8px;
+}
+
+.equipmentTitle {
+  font-size: 12px;
+  color: #d4a574;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.equipmentSlots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(212, 165, 116, 0.1);
+    border-color: #d4a574;
+    box-shadow: 0 0 8px rgba(212, 165, 116, 0.2);
+  }
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.name {
+  font-size: 10px;
+  color: #d4a574;
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+// ============================================================================
+// MOBILE OPTIMIZATION
+// ============================================================================
+
+@media (max-width: 640px) {
+  .profileCard {
+    padding: 16px;
+  }
+
+  .header {
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 56px;
+    height: 56px;
+  }
+
+  .avatarIcon {
+    font-size: 32px;
+  }
+
+  .playerName {
+    font-size: 18px;
+  }
+
+  .levelDisplay {
+    font-size: 28px;
+  }
+
+  .attributes {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .equipmentSlots {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ============================================================================
+// ACCESSIBILITY
+// ============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .slot {
+    transition: none !important;
+    animation: none !important;
+  }
+}

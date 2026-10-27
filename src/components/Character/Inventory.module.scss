@@ -1,0 +1,434 @@
+/**
+ * Adventure Game - Inventory Styles
+ * Fantasy-themed item management interface
+ */
+
+@import '../../styles/colors.scss';
+
+.inventoryContainer {
+  background: linear-gradient(135deg, #1a3a2a 0%, #0f2818 50%, #1a3a2a 100%);
+  border: 2px solid #d4a574;
+  border-radius: 12px;
+  padding: 20px;
+  min-height: 400px;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+// ============================================================================
+// HEADER
+// ============================================================================
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(212, 165, 116, 0.3);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #d4a574;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.statBadge,
+.goldBadge {
+  font-size: 12px;
+  color: #a0a0a0;
+  padding: 6px 12px;
+  background: rgba(212, 165, 116, 0.1);
+  border: 1px solid rgba(212, 165, 116, 0.3);
+  border-radius: 4px;
+
+  strong {
+    color: #d4a574;
+    font-weight: 700;
+  }
+}
+
+.goldBadge {
+  font-size: 14px;
+  background: rgba(253, 216, 53, 0.1);
+  border-color: rgba(253, 216, 53, 0.3);
+
+  strong {
+    color: #fdd835;
+  }
+}
+
+// ============================================================================
+// INVENTORY GRID
+// ============================================================================
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.itemsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(212, 165, 116, 0.4);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(212, 165, 116, 0.6);
+    }
+  }
+}
+
+// ============================================================================
+// ITEM CARD
+// ============================================================================
+
+.itemCard {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(212, 165, 116, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background: rgba(212, 165, 116, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(212, 165, 116, 0.2);
+  }
+
+  // Rarity colors
+  &.rarity_common {
+    border-color: rgba(158, 158, 158, 0.5);
+
+    .itemName {
+      color: #9e9e9e;
+    }
+  }
+
+  &.rarity_uncommon {
+    border-color: rgba(76, 175, 80, 0.5);
+
+    .itemName {
+      color: #4caf50;
+    }
+  }
+
+  &.rarity_rare {
+    border-color: rgba(33, 150, 243, 0.5);
+    background: rgba(33, 150, 243, 0.05);
+
+    .itemName {
+      color: #2196f3;
+    }
+  }
+
+  &.rarity_epic {
+    border-color: rgba(156, 39, 176, 0.5);
+    background: rgba(156, 39, 176, 0.05);
+
+    .itemName {
+      color: #9c27b0;
+    }
+  }
+
+  &.rarity_legendary {
+    border-color: rgba(253, 216, 53, 0.6);
+    background: rgba(253, 216, 53, 0.1);
+    box-shadow: 0 0 12px rgba(253, 216, 53, 0.2);
+
+    .itemName {
+      color: #fdd835;
+      text-shadow: 0 0 8px rgba(253, 216, 53, 0.3);
+    }
+  }
+}
+
+.itemIcon {
+  font-size: 32px;
+}
+
+.itemInfo {
+  width: 100%;
+  text-align: center;
+}
+
+.itemName {
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0;
+  text-transform: capitalize;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.itemQuantity {
+  font-size: 10px;
+  color: #d4a574;
+  font-weight: 700;
+}
+
+// ============================================================================
+// DETAILS PANEL
+// ============================================================================
+
+.detailsPanel {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(212, 165, 116, 0.4);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.detailsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  color: #d4a574;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(212, 165, 116, 0.1);
+    color: #fdd835;
+  }
+}
+
+.detailsTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #d4a574;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.detailsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(212, 165, 116, 0.4);
+    border-radius: 2px;
+  }
+}
+
+.largeIcon {
+  font-size: 56px;
+  text-align: center;
+}
+
+.rarityBadge {
+  border: 2px solid;
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: rgba(212, 165, 116, 0.05);
+}
+
+.description {
+  font-size: 12px;
+  color: #a0a0a0;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.quantity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  padding: 8px;
+  background: rgba(212, 165, 116, 0.05);
+  border-radius: 6px;
+
+  strong {
+    color: #d4a574;
+    font-weight: 700;
+  }
+}
+
+.useButton {
+  background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 179, 66, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ============================================================================
+// EMPTY STATE
+// ============================================================================
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin: 0;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: 16px;
+  color: #d4a574;
+  font-weight: 600;
+  margin: 0;
+}
+
+.emptyHint {
+  font-size: 12px;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+// ============================================================================
+// MOBILE OPTIMIZATION
+// ============================================================================
+
+@media (max-width: 768px) {
+  .gridContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .itemsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .inventoryContainer {
+    padding: 16px;
+    max-height: 500px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .stats {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .gridContainer {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .itemsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .detailsPanel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 12px 12px 0 0;
+    max-height: 300px;
+  }
+}
+
+// ============================================================================
+// ACCESSIBILITY
+// ============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .itemCard,
+  .detailsPanel,
+  .useButton {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -1,0 +1,39 @@
+/**
+ * Adventure Game - Color Palette
+ * Fantasy-themed colors: Dark Forest Green + Gold Accents
+ */
+
+// Primary Colors
+$color-primary-dark: #1a3a2a;
+$color-primary: #0f2818;
+$color-primary-light: #2d5a42;
+
+// Accent Colors
+$color-gold: #d4a574;
+$color-gold-light: #e8c9a0;
+$color-gold-dark: #9d7c52;
+
+// Status Colors
+$color-success: #7cb342;
+$color-danger: #d32f2f;
+$color-warning: #fdd835;
+$color-info: #1e88e5;
+
+// Text Colors
+$color-text-primary: #e0e0e0;
+$color-text-secondary: #a0a0a0;
+$color-text-dark: #666666;
+
+// Background Colors
+$color-bg-dark: #0a1410;
+$color-bg-darker: #050a08;
+$color-bg-overlay: rgba(0, 0, 0, 0.7);
+
+// Border Colors
+$color-border: #d4a574;
+$color-border-subtle: rgba(212, 165, 116, 0.3);
+
+// Shadow
+$shadow-small: 0 2px 8px rgba(0, 0, 0, 0.3);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4);
+$shadow-large: 0 8px 32px rgba(0, 0, 0, 0.5);

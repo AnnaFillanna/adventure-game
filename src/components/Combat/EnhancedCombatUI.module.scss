@@ -1,0 +1,458 @@
+/**
+ * Adventure Game - Enhanced Combat UI Styles
+ * Premium battle interface with animations and visual feedback
+ */
+
+@import '../../styles/colors.scss';
+
+.combatContainer {
+  background: linear-gradient(135deg, #1a3a2a 0%, #0f2818 50%, #1a3a2a 100%);
+  border: 2px solid #d4a574;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+}
+
+// ============================================================================
+// COMBATANT ROW
+// ============================================================================
+
+.combatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.combatant {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.portrait {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(212, 165, 116, 0.15) 0%, transparent 70%);
+  border: 2px solid #d4a574;
+  border-radius: 8px;
+  animation: portraitGlow 3s ease-in-out infinite;
+}
+
+@keyframes portraitGlow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(212, 165, 116, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(212, 165, 116, 0.6);
+  }
+}
+
+.portraitIcon {
+  font-size: 48px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #d4a574;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.level {
+  font-size: 11px;
+  color: #a0a0a0;
+  margin: 0;
+  opacity: 0.8;
+}
+
+// ============================================================================
+// STATS DISPLAY
+// ============================================================================
+
+.stats {
+  flex: 1;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  > label {
+    font-size: 11px;
+    color: #d4a574;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 30px;
+  }
+}
+
+.barContainer {
+  flex: 1;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 165, 116, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmerBar 2s infinite;
+  }
+}
+
+@keyframes shimmerBar {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, #7cb342 0%, #9ccc65 100%);
+  transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  }
+
+  &.critical {
+    background: linear-gradient(90deg, #d32f2f 0%, #f44336 100%);
+    animation: criticalFlash 0.5s ease-in-out;
+  }
+}
+
+@keyframes criticalFlash {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.value {
+  font-size: 12px;
+  color: #d4a574;
+  font-weight: 600;
+  min-width: 80px;
+  text-align: right;
+}
+
+// ============================================================================
+// VS TEXT
+// ============================================================================
+
+.vsText {
+  font-size: 32px;
+  font-weight: 900;
+  color: #d4a574;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(212, 165, 116, 0.4);
+  letter-spacing: 4px;
+  opacity: 0.8;
+}
+
+// ============================================================================
+// DAMAGE POPUP
+// ============================================================================
+
+.damagePopup {
+  position: absolute;
+  font-size: 24px;
+  font-weight: 900;
+  color: #d32f2f;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  animation: popupFloat 1.5s ease-out forwards;
+
+  &.critical {
+    color: #fdd835;
+    filter: drop-shadow(0 0 8px rgba(253, 216, 53, 0.6));
+  }
+}
+
+@keyframes popupFloat {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(1.2);
+  }
+}
+
+.criticalText {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #fdd835;
+}
+
+// ============================================================================
+// ACTION FEEDBACK
+// ============================================================================
+
+.actionFeedback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: 900;
+  color: #7cb342;
+  text-shadow: 0 4px 16px rgba(124, 179, 66, 0.4);
+  animation: feedbackPop 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  letter-spacing: 2px;
+  pointer-events: none;
+}
+
+@keyframes feedbackPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+// ============================================================================
+// ACTIONS
+// ============================================================================
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 16px;
+  background: rgba(212, 165, 116, 0.05);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: 8px;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(212, 165, 116, 0.4);
+  border-radius: 8px;
+  color: #d4a574;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:hover {
+    transform: translateY(-4px);
+    background: rgba(212, 165, 116, 0.1);
+    border-color: #d4a574;
+    box-shadow: 0 8px 16px rgba(212, 165, 116, 0.2);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+
+  &.attack {
+    border-color: rgba(244, 67, 54, 0.5);
+    color: #f44336;
+
+    &:hover {
+      background: rgba(244, 67, 54, 0.1);
+      border-color: #f44336;
+      box-shadow: 0 8px 16px rgba(244, 67, 54, 0.2);
+    }
+  }
+
+  &.defense {
+    border-color: rgba(33, 150, 243, 0.5);
+    color: #2196f3;
+
+    &:hover {
+      background: rgba(33, 150, 243, 0.1);
+      border-color: #2196f3;
+      box-shadow: 0 8px 16px rgba(33, 150, 243, 0.2);
+    }
+  }
+
+  &.magic {
+    border-color: rgba(156, 39, 176, 0.5);
+    color: #9c27b0;
+
+    &:hover {
+      background: rgba(156, 39, 176, 0.1);
+      border-color: #9c27b0;
+      box-shadow: 0 8px 16px rgba(156, 39, 176, 0.2);
+    }
+  }
+
+  &.potion {
+    border-color: rgba(76, 175, 80, 0.5);
+    color: #4caf50;
+
+    &:hover {
+      background: rgba(76, 175, 80, 0.1);
+      border-color: #4caf50;
+      box-shadow: 0 8px 16px rgba(76, 175, 80, 0.2);
+    }
+  }
+}
+
+.icon {
+  font-size: 28px;
+}
+
+.label {
+  display: block;
+}
+
+// ============================================================================
+// COMBAT LOG
+// ============================================================================
+
+.combatLog {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 165, 116, 0.2);
+  border-radius: 6px;
+  max-height: 100px;
+  overflow-y: auto;
+  font-size: 11px;
+  color: #a0a0a0;
+}
+
+.logEntry {
+  margin: 0;
+  line-height: 1.6;
+
+  &:not(:last-child) {
+    margin-bottom: 4px;
+  }
+}
+
+// ============================================================================
+// MOBILE OPTIMIZATION
+// ============================================================================
+
+@media (max-width: 768px) {
+  .combatContainer {
+    padding: 16px;
+    min-height: 500px;
+  }
+
+  .portrait {
+    width: 64px;
+    height: 64px;
+  }
+
+  .portraitIcon {
+    font-size: 36px;
+  }
+
+  .name {
+    font-size: 14px;
+  }
+
+  .actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .actionButton {
+    padding: 12px 8px;
+    font-size: 11px;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .combatContainer {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .combatRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .combatant {
+    width: 100%;
+  }
+
+  .stats {
+    width: 100%;
+  }
+
+  .vsText {
+    font-size: 24px;
+  }
+
+  .actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// ============================================================================
+// ACCESSIBILITY
+// ============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .portrait,
+  .actionButton,
+  .damagePopup,
+  .actionFeedback {
+    animation: none !important;
+    transition: none !important;
+  }
+}
