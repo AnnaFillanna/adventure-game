@@ -1,0 +1,280 @@
+/**
+ * Adventure Game - Game Map Styles
+ */
+
+.gameMap {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    #1a472a 0%,
+    #0d2819 50%,
+    #1a472a 100%
+  );
+  border-bottom: 3px solid #d4af37;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(
+      rgba(212, 175, 55, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(212, 175, 55, 0.05) 1px,
+      transparent 1px
+    );
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ========================================================================
+   PLAYER
+   ======================================================================== */
+
+.player {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  animation: playerPulse 2s ease-in-out infinite;
+}
+
+.playerCharacter {
+  font-size: 2.5rem;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  animation: playerBounce 1s ease-in-out infinite;
+}
+
+.playerName {
+  font-size: 0.75rem;
+  color: #d4af37;
+  font-weight: 600;
+  margin-top: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes playerBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes playerPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.9));
+  }
+}
+
+/* ========================================================================
+   NPCs
+   ======================================================================== */
+
+.npc {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 40;
+  transition: transform 0.3s ease;
+}
+
+.npc:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.npcCharacter {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 6px rgba(45, 200, 100, 0.5));
+  transition: filter 0.3s ease;
+}
+
+.npc:hover .npcCharacter {
+  filter: drop-shadow(0 0 12px rgba(45, 200, 100, 1));
+  animation: npcBounce 0.6s ease-in-out;
+}
+
+.npcName {
+  font-size: 0.7rem;
+  color: #2dc864;
+  font-weight: 600;
+  margin-top: 4px;
+  background: rgba(13, 40, 25, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes npcBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ========================================================================
+   ENEMIES
+   ======================================================================== */
+
+.enemy {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  z-index: 35;
+  cursor: not-allowed;
+}
+
+.enemyCharacter {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 6px rgba(214, 48, 49, 0.5));
+  animation: enemyBounce 1.5s ease-in-out infinite;
+}
+
+.enemyName {
+  font-size: 0.7rem;
+  color: #d63031;
+  font-weight: 600;
+  margin-top: 4px;
+  background: rgba(13, 40, 25, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes enemyBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ========================================================================
+   COINS
+   ======================================================================== */
+
+.coin {
+  position: absolute;
+  font-size: 1.5rem;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  cursor: grab;
+  animation: coinSpin 2s linear infinite;
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
+}
+
+.coin:active {
+  cursor: grabbing;
+}
+
+@keyframes coinSpin {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotateY(0deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotateY(180deg);
+  }
+}
+
+/* ========================================================================
+   CONTROLS
+   ======================================================================== */
+
+.controls {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(13, 40, 25, 0.85);
+  border: 1px solid #d4af37;
+  border-radius: 6px;
+  padding: 12px 16px;
+  z-index: 10;
+  font-size: 0.85rem;
+  color: #f0e68c;
+}
+
+.controls p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 768px) {
+  .playerCharacter {
+    font-size: 2rem;
+  }
+
+  .npcCharacter {
+    font-size: 1.5rem;
+  }
+
+  .enemyCharacter {
+    font-size: 1.5rem;
+  }
+
+  .coin {
+    font-size: 1.2rem;
+  }
+
+  .controls {
+    font-size: 0.75rem;
+    padding: 8px 12px;
+    bottom: 12px;
+    left: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .playerCharacter {
+    font-size: 1.5rem;
+  }
+
+  .npcCharacter,
+  .enemyCharacter {
+    font-size: 1.2rem;
+  }
+
+  .playerName,
+  .npcName,
+  .enemyName {
+    font-size: 0.6rem;
+    margin-top: 2px;
+  }
+
+  .coin {
+    font-size: 1rem;
+  }
+
+  .controls {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+}

@@ -1,0 +1,102 @@
+/**
+ * Adventure Game - Global App Styles
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #0d2819;
+  color: #f5f5f5;
+  overflow: hidden;
+}
+
+#root,
+.app {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================================================
+   SCROLLBAR STYLING
+   ======================================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(13, 40, 25, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f0e68c;
+}
+
+/* ========================================================================
+   BUTTON RESET
+   ======================================================================== */
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:active {
+  outline: none;
+}
+
+/* ========================================================================
+   TEXT SELECTION
+   ======================================================================== */
+
+::selection {
+  background: #d4af37;
+  color: #0d2819;
+}
+
+::-moz-selection {
+  background: #d4af37;
+  color: #0d2819;
+}
+
+/* ========================================================================
+   FOCUS STYLES FOR ACCESSIBILITY
+   ======================================================================== */
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+/* ========================================================================
+   ANIMATIONS
+   ======================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

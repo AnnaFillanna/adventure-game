@@ -1,0 +1,327 @@
+/**
+ * Adventure Game - HUD Styles
+ */
+
+.hud {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background: rgba(13, 40, 25, 0.95);
+  border: 2px solid #d4af37;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 320px;
+  z-index: 90;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  font-size: 0.9rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d4af37 rgba(13, 40, 25, 0.5);
+}
+
+.hud::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hud::-webkit-scrollbar-track {
+  background: rgba(13, 40, 25, 0.5);
+  border-radius: 3px;
+}
+
+.hud::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 3px;
+}
+
+.hud::-webkit-scrollbar-thumb:hover {
+  background: #f0e68c;
+}
+
+/* ========================================================================
+   PLAYER INFO
+   ======================================================================== */
+
+.playerInfo {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.playerName {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #f0e68c;
+  font-weight: 600;
+}
+
+.level {
+  background: linear-gradient(135deg, #d4af37, #f0e68c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.stat {
+  display: grid;
+  grid-template-columns: 40px 1fr 60px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.stat label {
+  color: #d4af37;
+  font-weight: 600;
+  text-align: right;
+}
+
+.barContainer {
+  height: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  background-size: 20px 20px;
+  animation: shimmer 2s infinite;
+}
+
+.healthBar {
+  background: linear-gradient(90deg, #d63031, #f72c2c);
+}
+
+.manaBar {
+  background: linear-gradient(90deg, #3498db, #5dade2);
+}
+
+.xpBar {
+  background: linear-gradient(90deg, #2ecc71, #58d68d);
+}
+
+.value {
+  color: #f0e68c;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+/* ========================================================================
+   STATS GRID
+   ======================================================================== */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.statBox {
+  background: rgba(45, 90, 61, 0.5);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 6px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.3s ease;
+}
+
+.statBox:hover {
+  background: rgba(45, 90, 61, 0.8);
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.icon {
+  font-size: 1.2rem;
+}
+
+.statValue {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.statLabel {
+  font-size: 0.65rem;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================================================
+   QUEST SECTION
+   ======================================================================== */
+
+.questSection {
+  background: rgba(45, 90, 61, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.questHeader {
+  margin-bottom: 12px;
+}
+
+.questTitle {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #f0e68c;
+  font-weight: 600;
+}
+
+.questProgress {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.progressBar {
+  flex: 1;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ecc71, #58d68d);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 0.75rem;
+  color: #d4af37;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: right;
+}
+
+.objectives {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.objective {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  color: #f0e68c;
+}
+
+.objectiveIcon {
+  min-width: 16px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.objectiveText {
+  line-height: 1.4;
+}
+
+/* ========================================================================
+   ANIMATIONS
+   ======================================================================== */
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ========================================================================
+   RESPONSIVE DESIGN
+   ======================================================================== */
+
+@media (max-width: 768px) {
+  .hud {
+    max-width: 280px;
+    top: 12px;
+    left: 12px;
+    padding: 12px;
+  }
+
+  .stat {
+    grid-template-columns: 35px 1fr 50px;
+    font-size: 0.75rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .statBox {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hud {
+    max-width: 220px;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+
+  .playerName {
+    font-size: 0.95rem;
+  }
+
+  .stat {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .stat label {
+    text-align: left;
+  }
+
+  .value {
+    text-align: left;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .questSection {
+    padding: 10px;
+  }
+
+  .questTitle {
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,184 @@
+/**
+ * Adventure Game - Safety Notice Styling
+ * GPS safety warnings and guidelines for players
+ */
+
+.safetyNotice {
+  background: linear-gradient(135deg, #1a472a 0%, #0d2819 100%);
+  border: 2px solid #d4af37;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  color: #f0f0f0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #d4af37;
+    font-weight: bold;
+    flex: 1;
+  }
+}
+
+.icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+}
+
+.dismissButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: none;
+  border: none;
+  color: #d4af37;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: #f0f0f0;
+  }
+
+  &:active {
+    background-color: rgba(212, 175, 55, 0.2);
+  }
+}
+
+.content {
+  margin: 1rem 0;
+
+  ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    list-style-type: none;
+
+    li {
+      margin: 0.75rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      line-height: 1.4;
+      font-size: 0.95rem;
+
+      &:before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        color: #d4af37;
+        font-weight: bold;
+      }
+
+      strong {
+        color: #d4af37;
+      }
+    }
+  }
+}
+
+.footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.emphasis {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #d4af37;
+  font-weight: bold;
+  text-align: center;
+}
+
+// Mobile optimization
+@media (max-width: 768px) {
+  .safetyNotice {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .header {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    h3 {
+      font-size: 1rem;
+    }
+  }
+
+  .icon {
+    font-size: 1.25rem;
+    min-width: 28px;
+  }
+
+  .dismissButton {
+    width: 28px;
+    height: 28px;
+    font-size: 1.2rem;
+  }
+
+  .content ul li {
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+    padding-left: 1.25rem;
+
+    &:before {
+      left: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .safetyNotice {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .header {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+
+    h3 {
+      font-size: 0.95rem;
+    }
+  }
+
+  .icon {
+    font-size: 1.1rem;
+    min-width: 24px;
+  }
+
+  .content ul {
+    padding-left: 1rem;
+
+    li {
+      font-size: 0.85rem;
+      margin: 0.4rem 0;
+      padding-left: 1rem;
+    }
+  }
+
+  .emphasis {
+    font-size: 0.85rem;
+  }
+}
