@@ -1,12 +1,14 @@
 /**
  * Adventure Game - Start Screen Component
  * Atmosphärischer Startbildschirm mit Fantasy-Design
+ * Verwendung von deutscher Lokalisierung (getText)
  */
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../game/state/gameStore';
 import { saveManager } from '../game/utils/storage';
+import { getText } from '../locales';
 import styles from './StartScreen.module.scss';
 
 export const StartScreen: React.FC = () => {
@@ -43,8 +45,8 @@ export const StartScreen: React.FC = () => {
       {/* Main content */}
       <div className={styles.content}>
         <div className={styles.titleSection}>
-          <h1 className={styles.title}>Adventure Game</h1>
-          <p className={styles.subtitle}>Your World. Your Adventure.</p>
+          <h1 className={styles.title}>{getText('startScreen.title')}</h1>
+          <p className={styles.subtitle}>{getText('startScreen.subtitle')}</p>
         </div>
 
         {/* Decorative elements */}
@@ -58,20 +60,20 @@ export const StartScreen: React.FC = () => {
         <div className={styles.buttonContainer}>
           <button className={styles.primaryButton} onClick={handleNewGame}>
             <span className={styles.buttonIcon}>▶</span>
-            Start New Adventure
+            {getText('startScreen.buttonStart')}
           </button>
 
           {hasSave && (
             <button className={styles.secondaryButton} onClick={handleContinueGame}>
               <span className={styles.buttonIcon}>◀</span>
-              Continue Adventure
+              {getText('startScreen.buttonContinue')}
             </button>
           )}
 
           {hasSave && (
             <button className={styles.tertiaryButton} onClick={handleLoadGame}>
               <span className={styles.buttonIcon}>⚙</span>
-              Load Game
+              {getText('startScreen.buttonLoadGame')}
             </button>
           )}
         </div>
