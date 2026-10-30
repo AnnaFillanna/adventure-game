@@ -110,18 +110,27 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 // ============================================================================
 
 interface CharacterSelectionProps {
+  selectedHero?: HeroId | null;
+  onSelectHero?: (heroId: HeroId) => void;
   onCharacterSelected?: (heroId: HeroId) => void;
+  onStartGame?: () => void;
 }
 
 export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
+  selectedHero: externalSelectedHero,
+  onSelectHero: externalOnSelectHero,
   onCharacterSelected,
+  onStartGame,
 }) => {
-  const [selectedHeroId, setSelectedHeroId] = useState<HeroId | null>(null);
+  const [selectedHeroId, setSelectedHeroId] = useState<HeroId | null>(
+    externalSelectedHero || null
+  );
   const [isStarting, setIsStarting] = useState(false);
   const selectHero = useGameStore(state => state.selectHero);
 
   const handleSelectHero = (heroId: HeroId) => {
     setSelectedHeroId(heroId);
+    externalOnSelectHero?.(heroId);
   };
 
   const handleStartAdventure = () => {
@@ -130,10 +139,17 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     setIsStarting(true);
     selectHero(selectedHeroId);
 
-    // Delay to allow animation
-    setTimeout(() => {
-      onCharacterSelected?.(selectedHeroId);
-    }, 500);
+    // Call external handler if provided
+    if (onStartGame) {
+      setTimeout(() => {
+        onStartGame();
+      }, 500);
+    } else if (onCharacterSelected) {
+      // Fallback to old API
+      setTimeout(() => {
+        onCharacterSelected(selectedHeroId);
+      }, 500);
+    }
   };
 
   const isReady = selectedHeroId !== null;

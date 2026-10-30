@@ -238,7 +238,7 @@ export class WorldGenerator {
 
     this.existingPositions.push(position);
 
-    const baseId = `obj_${objectIndex}_${Date.now()}`;
+    const baseId = `obj_${objectIndex}_${this.config.seed}`;
 
     switch (type) {
       case 'npc':

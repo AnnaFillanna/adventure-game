@@ -84,6 +84,11 @@ export const GameMap: React.FC<GameMapProps> = ({
             left: `${getScreenX(coin.position.x)}%`,
             top: `${getScreenY(coin.position.y)}%`,
           }}
+          onClick={() => {
+            onCollectCoin();
+            setCoins(coins.filter((c) => c.id !== coin.id));
+          }}
+          title="Click to collect"
         >
           🪙
         </div>

@@ -24,6 +24,7 @@ export const GameWorld: React.FC = () => {
   const quests = useGameStore((s) => s.quests);
   const activeQuestId = useGameStore((s) => s.activeQuestId);
   const combatState = useGameStore((s) => s.combatState);
+  const selectedHeroId = useGameStore((s) => s.selectedHeroId);
 
   // Get actions from store
   const startQuest = useGameStore((s) => s.startQuest);
@@ -32,12 +33,28 @@ export const GameWorld: React.FC = () => {
   const addItem = useGameStore((s) => s.addItem);
   const initiatesCombat = useGameStore((s) => s.initiatesCombat);
 
+  // Defensive: handle undefined player
+  if (!player) {
+    return (
+      <div style={{ width: '100%', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p>Loading game...</p>
+      </div>
+    );
+  }
+
   const [showInventory, setShowInventory] = useState(false);
   const [showQuestLog, setShowQuestLog] = useState(false);
   const [dialogueMessage, setDialogueMessage] = useState<string | null>(null);
 
   // Initialize game world on first load
   useEffect(() => {
+    // If no hero selected, redirect to character selection
+    if (!selectedHeroId) {
+      navigate('/character-select');
+      return;
+    }
+
+    // Initialize world locations
     useGameStore.setState({
       npcLocations: NPCS,
       enemyLocations: ENEMIES,
@@ -49,7 +66,7 @@ export const GameWorld: React.FC = () => {
     }, GAME_CONFIG.AUTO_SAVE_INTERVAL);
 
     return () => clearInterval(autoSaveInterval);
-  }, []);
+  }, [navigate, selectedHeroId]);
 
   // Interact with NPC
   const interactWithNPC = useCallback((npcId: string) => {

@@ -14,13 +14,13 @@ export const StartScreen: React.FC = () => {
   const loadGame = useGameStore((state) => state.loadGame);
 
   const handleNewGame = () => {
-    navigate('/game');
+    navigate('/character-select');
   };
 
   const handleContinueGame = () => {
     const save = saveManager.load();
     if (save) {
-      loadGame(JSON.stringify(save.gameState));
+      loadGame(JSON.stringify(save));
       navigate('/game');
     }
   };

@@ -112,7 +112,7 @@
 
 .subtitle {
   font-size: 1.1rem;
-  color: $color-text-light;
+  color: $color-text-secondary;
   margin: 0;
   opacity: 0.9;
   font-style: italic;
@@ -275,7 +275,7 @@
 
 .heroClass {
   font-size: 0.9rem;
-  color: $color-text-light;
+  color: $color-text-secondary;
   margin: 0;
   opacity: 0.8;
   text-transform: uppercase;
@@ -289,7 +289,7 @@
 
 .description {
   font-size: 0.95rem;
-  color: $color-text-light;
+  color: $color-text-secondary;
   margin: 0.5rem 0 0 0;
   line-height: 1.4;
   opacity: 0.85;
@@ -328,7 +328,7 @@
 
 .label {
   font-size: 0.7rem;
-  color: $color-text-light;
+  color: $color-text-secondary;
   opacity: 0.7;
   text-transform: uppercase;
   font-weight: 600;
@@ -376,7 +376,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: $color-text-light;
+  color: $color-text-secondary;
 
   .abilityIcon {
     font-size: 1rem;
@@ -500,7 +500,7 @@
   }
 
   p {
-    color: $color-text-light;
+    color: $color-text-secondary;
     font-size: 0.9rem;
     line-height: 1.6;
     margin: 0;
