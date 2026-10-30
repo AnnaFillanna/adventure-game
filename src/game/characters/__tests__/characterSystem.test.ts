@@ -9,13 +9,14 @@ import { AbilitiesManager, calculateAbilityDamage, calculateAbilityHealing } fro
 import { HEROES, getHeroDefinition } from '../heroDefinitions';
 
 describe('Hero Definitions', () => {
-  it('should have all four heroes defined', () => {
+  it('should have all five heroes defined', () => {
     const heroes = Object.keys(HEROES);
-    expect(heroes).toHaveLength(4);
+    expect(heroes).toHaveLength(5);
     expect(heroes).toContain('aeran');
     expect(heroes).toContain('velar');
     expect(heroes).toContain('varg');
     expect(heroes).toContain('ravena');
+    expect(heroes).toContain('saira');
   });
 
   it('should have correct hero names and classes', () => {

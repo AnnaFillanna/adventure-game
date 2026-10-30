@@ -56,6 +56,10 @@ export const de = {
     stats: 'Statistiken',
     description: 'Beschreibung',
     personality: 'Persönlichkeit',
+    moreAbilities: '+{count} weitere',
+    startAdventure: 'Abenteuer starten',
+    startingAdventure: 'Starte Abenteuer...',
+    background: 'Hintergrund',
   },
 
   statLabels: {

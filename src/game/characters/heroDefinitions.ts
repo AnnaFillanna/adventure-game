@@ -352,6 +352,74 @@ export const RAVENA: HeroDefinition = {
   },
 };
 
+/**
+ * SAIRA — The Shadow Warrior
+ * Athletische Heldin mit zwei kurzen Klingen
+ */
+export const SAIRA: HeroDefinition = {
+  id: 'saira',
+  name: 'Saira',
+  class: 'shadow_warrior',
+  description: 'An agile shadow warrior wielding twin blades with precision',
+  backstory: 'Saira moves through shadows as if they were her home, using her twin blades to uncover secrets and disarm traps. Her tactical mind and swift movements make her invaluable in dangerous situations.',
+  personality: 'Cunning, swift, mysterious',
+  icon: '🗡️',
+  color: '#4B0082', // Dark blue/purple for shadow
+
+  stats: {
+    health: 80,
+    maxHealth: 80,
+    mana: 60,
+    maxMana: 60,
+    attack: 15,
+    defense: 10,
+    magic: 8,
+    magicDefense: 9,
+    speed: 16,
+  },
+
+  abilities: [
+    {
+      id: 'shadow_clone',
+      name: 'Shadow Clone',
+      description: 'Create a shadow clone to confuse enemies and evade attacks',
+      type: 'active',
+      cooldownMs: 7000,
+      manaCost: 18,
+      icon: '👥',
+    },
+    {
+      id: 'trap_detection',
+      name: 'Trap Detection',
+      description: 'Reveal hidden traps and dangers in the environment',
+      type: 'active',
+      cooldownMs: 6000,
+      manaCost: 12,
+      icon: '🔍',
+    },
+    {
+      id: 'dual_strike',
+      name: 'Dual Strike',
+      description: 'Execute precise dual blade strikes against enemies',
+      type: 'active',
+      cooldownMs: 5000,
+      manaCost: 20,
+      icon: '⚔️',
+    },
+  ],
+
+  specialAbility: {
+    id: 'shadow_mastery',
+    name: 'Shadow Mastery',
+    description: 'Master the shadows to gain increased attack and evasion',
+    type: 'active',
+    cooldownMs: 14000,
+    manaCost: 40,
+    damageBonus: 35,
+    icon: '🌑',
+  },
+};
+
 // ============================================================================
 // HERO REGISTRY
 // ============================================================================
@@ -361,9 +429,10 @@ export const HEROES: Record<HeroId, HeroDefinition> = {
   velar: VELAR,
   varg: VARG,
   ravena: RAVENA,
+  saira: SAIRA,
 };
 
-export const ALL_HERO_IDS: HeroId[] = ['aeran', 'velar', 'varg', 'ravena'];
+export const ALL_HERO_IDS: HeroId[] = ['aeran', 'velar', 'varg', 'ravena', 'saira'];
 
 export function getHeroDefinition(heroId: HeroId): HeroDefinition {
   return HEROES[heroId];

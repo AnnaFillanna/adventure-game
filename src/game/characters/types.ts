@@ -7,8 +7,8 @@
 // CHARACTER TYPES
 // ============================================================================
 
-export type HeroId = 'aeran' | 'velar' | 'varg' | 'ravena';
-export type HeroClass = 'bard' | 'volkhv' | 'wolf_shapeshifter' | 'bird_shapeshifter';
+export type HeroId = 'aeran' | 'velar' | 'varg' | 'ravena' | 'saira';
+export type HeroClass = 'bard' | 'volkhv' | 'wolf_shapeshifter' | 'bird_shapeshifter' | 'shadow_warrior';
 export type TransformationType = 'none' | 'wolf' | 'bird';
 
 export interface HeroAbility {

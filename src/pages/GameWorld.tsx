@@ -33,15 +33,7 @@ export const GameWorld: React.FC = () => {
   const addItem = useGameStore((s) => s.addItem);
   const initiatesCombat = useGameStore((s) => s.initiatesCombat);
 
-  // Defensive: handle undefined player
-  if (!player) {
-    return (
-      <div style={{ width: '100%', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p>Loading game...</p>
-      </div>
-    );
-  }
-
+  // Initialize state hooks BEFORE any conditional returns
   const [showInventory, setShowInventory] = useState(false);
   const [showQuestLog, setShowQuestLog] = useState(false);
   const [dialogueMessage, setDialogueMessage] = useState<string | null>(null);
@@ -150,6 +142,15 @@ export const GameWorld: React.FC = () => {
     saveManager.save(state as any, 1);
     navigate('/');
   }, [navigate]);
+
+  // Defensive: handle undefined player
+  if (!player) {
+    return (
+      <div style={{ width: '100%', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p>Loading game...</p>
+      </div>
+    );
+  }
 
   const activeQuest = quests.find(
     (q) => q.id === activeQuestId && q.status === 'active'

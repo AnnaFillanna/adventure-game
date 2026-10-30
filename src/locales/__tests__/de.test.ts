@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getText, getAllTextKeys, hasTextKey, getTextWithFallback, de } from '../index';
+import { getText, getAllTextKeys, hasTextKey, getTextWithFallback, getTextDynamic, de } from '../index';
 
 describe('Localization System - getText()', () => {
   // ============================================================================
@@ -123,7 +123,7 @@ describe('Localization System - getText()', () => {
       // Sample check: verify StartScreen is in German
       for (const key of allKeys) {
         if (key.startsWith('startScreen')) {
-          const text = getText(key);
+          const text = getTextDynamic(key);
           expect(text).not.toEqual(''); // All texts should be non-empty
           expect(text).not.toMatch(/^Start Adventure/); // Not in English
         }
@@ -133,7 +133,7 @@ describe('Localization System - getText()', () => {
     it('should have non-empty strings for all keys', () => {
       const allKeys = getAllTextKeys();
       for (const key of allKeys) {
-        const text = getText(key);
+        const text = getTextDynamic(key);
         expect(text).toBeTruthy();
         expect(text.length).toBeGreaterThan(0);
         expect(text).not.toMatch(/^\[/); // Not a fallback
@@ -224,7 +224,7 @@ describe('Localization System - getText()', () => {
       for (const heroName of heroNames) {
         const key = `heroes.${heroName}.description`;
         expect(hasTextKey(key)).toBe(true);
-        const text = getText(key);
+        const text = getTextDynamic(key);
         expect(text.length).toBeGreaterThan(20); // Descriptions should be detailed
       }
     });

@@ -31,35 +31,21 @@ type ExtractKeys<T, Prefix extends string = ''> = T extends string
     : never;
 
 /**
- * Get German text by dot-notation key path with automatic type inference
- * Type-safe for string literals: getText('startScreen.title') is checked at compile-time
- * Also supports dynamic keys from getAllTextKeys() at runtime
+ * Get German text by dot-notation key path with strict compile-time type safety
+ * Only valid TextKey literals are accepted - invalid keys cause TypeScript error (TS2345)
  * 
  * @example
- * // Compile-time safe (invalid keys cause TypeScript error)
- * getText('common.continue') → "Weiter"
- * getText('startScreen.title') → "Adventure Game"
+ * getText('common.continue') → "Weiter"        ✅ Valid key
+ * getText('invalidKey')      → TypeScript Error ❌ TS2345 at compile-time
  * 
- * // Runtime dynamic keys (used for iteration)
- * const keys = getAllTextKeys();
- * for (const key of keys) {
- *   getText(key); // Valid at runtime, type is TextKey | string
- * }
+ * For dynamic/runtime keys (e.g., from getAllTextKeys()), use getTextDynamic()
  * 
- * @param keyPath - Dot-notation path to the text (e.g., 'heroes.saira.name')
- * @param params - Optional parameters to substitute in the text (e.g., { amount: 20 })
+ * @param keyPath - Dot-notation path (MUST be a valid TextKey)
+ * @param params - Optional parameters for substitution ({key}: value)
  * @returns The localized text string
  */
 export function getText(
   keyPath: TextKey,
-  params?: Record<string, any>
-): string;
-export function getText(
-  keyPath: string,
-  params?: Record<string, any>
-): string;
-export function getText(
-  keyPath: TextKey | string,
   params?: Record<string, any>
 ): string {
   // Navigate the nested object by dot-notation
@@ -100,6 +86,29 @@ export function getText(
   }
 
   return value;
+}
+
+/**
+ * Get text with a dynamic/runtime string key (not compile-time verified)
+ * Use this for keys that come from getAllTextKeys() or other runtime sources
+ * 
+ * @example
+ * const keys = getAllTextKeys();
+ * for (const key of keys) {
+ *   const text = getTextDynamic(key);  // Safe for runtime strings
+ * }
+ * 
+ * @param keyPath - Runtime string key (type: string, not TextKey)
+ * @param params - Optional parameters for substitution
+ * @returns The localized text string, or "[keyPath]" if not found
+ */
+export function getTextDynamic(
+  keyPath: string,
+  params?: Record<string, any>
+): string {
+  // Simply delegate to getText's internal implementation
+  // by casting, since we've verified this is a valid runtime key
+  return getText(keyPath as TextKey, params);
 }
 
 /**
@@ -146,10 +155,13 @@ export function hasTextKey(keyPath: string): boolean {
 }
 
 /**
- * Get a text key with optional fallback value
- * @param keyPath - The key to retrieve
+ * Get text with an optional fallback (runtime key resolution)
+ * Use this when you need fallback behavior for potentially missing keys
+ * 
+ * @param keyPath - Runtime string key
  * @param fallback - Optional fallback text if key is missing
- * @returns The text or fallback, or "[key]" if neither exists
+ * @param params - Optional parameters for substitution
+ * @returns The text, fallback, or "[key]" if neither exists
  */
 export function getTextWithFallback(
   keyPath: string,
@@ -162,7 +174,7 @@ export function getTextWithFallback(
     }
     return `[${keyPath}]`;
   }
-  return getText(keyPath, params);
+  return getTextDynamic(keyPath, params);
 }
 
 // Export the raw German object for advanced use

@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../game/state/gameStore';
 import { HEROES, ALL_HERO_IDS } from '../../game/characters/heroDefinitions';
 import type { HeroId } from '../../game/characters/types';
+import { getText } from '../../locales';
 import styles from './CharacterSelection.module.scss';
 
 // ============================================================================
@@ -48,26 +49,26 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
         {/* Stats Grid */}
         <div className={styles.statsGrid}>
           <div className={styles.stat}>
-            <span className={styles.label}>HP</span>
+            <span className={styles.label}>{getText('statLabels.maxHealth')}</span>
             <span className={styles.value}>{hero.stats.maxHealth}</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.label}>Mana</span>
+            <span className={styles.label}>{getText('statLabels.mana')}</span>
             <span className={styles.value}>{hero.stats.maxMana}</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.label}>ATK</span>
+            <span className={styles.label}>{getText('statLabels.attack')}</span>
             <span className={styles.value}>{hero.stats.attack}</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.label}>MGK</span>
+            <span className={styles.label}>{getText('statLabels.magic')}</span>
             <span className={styles.value}>{hero.stats.magic}</span>
           </div>
         </div>
 
         {/* Abilities Preview */}
         <div className={styles.abilitiesPreview}>
-          <h4>Abilities:</h4>
+          <h4>{getText('characterSelection.abilities')}</h4>
           <ul>
             {hero.abilities.slice(0, 2).map(ability => (
               <li key={ability.id} className={styles.abilityItem}>
@@ -76,7 +77,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
               </li>
             ))}
             {hero.abilities.length > 2 && (
-              <li className={styles.more}>+{hero.abilities.length - 2} more</li>
+              <li className={styles.more}>{getText('characterSelection.moreAbilities', { count: hero.abilities.length - 2 })}</li>
             )}
           </ul>
         </div>
@@ -163,9 +164,9 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
       <div className={styles.container}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Choose Your Hero</h1>
+          <h1 className={styles.title}>{getText('characterSelection.title')}</h1>
           <p className={styles.subtitle}>
-            Select your character and begin your adventure in the enchanted forest
+            {getText('characterSelection.subtitle')}
           </p>
         </div>
 
@@ -185,7 +186,7 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
         {selectedHeroId && (
           <div className={styles.selectedDetails}>
             <div className={styles.backstory}>
-              <h3>Background</h3>
+              <h3>{getText('characterSelection.background')}</h3>
               <p>{HEROES[selectedHeroId].backstory}</p>
             </div>
           </div>
@@ -200,7 +201,7 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
             onClick={handleStartAdventure}
             disabled={!isReady || isStarting}
           >
-            {isStarting ? 'Starting Adventure...' : 'Start Adventure'}
+            {isStarting ? getText('characterSelection.startingAdventure') : getText('characterSelection.startAdventure')}
           </button>
         </div>
 
