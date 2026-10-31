@@ -253,38 +253,6 @@ export const de = {
   },
 
   // ============================================================================
-  // 6. CAMPAIGNS - First Light (Desert Story)
-  // ============================================================================
-  campaigns: {
-    firstLight: {
-      title: 'Das Schwert des Ersten Lichts',
-      description: 'Eine fünfteilige Kampagne in einer verzauberten Wüste',
-      chapters: {
-        chapter1: {
-          title: 'Kapitel 1: Die verfluchten Lande',
-          description: 'Der Anfang einer großen Abenteuerreise in verfluchten Landen',
-        },
-        chapter2: {
-          title: 'Kapitel 2: Die Tiefenwelt',
-          description: 'Hinab in die Mysterien der Erde',
-        },
-        chapter3: {
-          title: 'Kapitel 3: Das Aschegebirge',
-          description: 'Ein Berg voller Feuer und alter Magie',
-        },
-        chapter4: {
-          title: 'Kapitel 4: Die Schattenfestung',
-          description: 'Das Herz der Dunkelheit erwartet',
-        },
-        chapter5: {
-          title: 'Kapitel 5: Das letzte Licht',
-          description: 'Die finale Schlacht um die Welt',
-        },
-      },
-    },
-  },
-
-  // ============================================================================
   // 7. QUEST & STORY
   // ============================================================================
   quests: {
@@ -473,5 +441,234 @@ export const de = {
       text: 'GPS verbraucht erheblich Akku und Daten. Überwache dein Gerät',
     },
     emphasis: 'Durch das Spielen bestätigst du diese Sicherheitsrichtlinien.',
+  },
+
+  // ============================================================================
+  // 18. CAMPAIGNS & CHAPTERS
+  // ============================================================================
+  campaigns: {
+    firstLight: {
+      title: 'Das Schwert des Ersten Lichts',
+      description: 'Fünf Helden. Ein Schwert. Eine Chance, die Dunkelheit zu besiegen.',
+    },
+  },
+
+  chapters: {
+    '01': {
+      title: 'Die verfluchten Lande',
+      description: 'Der Anfang der Reise. Ein Ort der Echos und verlorenen Erinnerungen.',
+      intro: 'Im Herzen der Wüste erwachen alte Flüche. Die Helden müssen den Weg durch die verfluchten Lande finden.',
+      outro: 'Mit dem Krone des Moorhüters in der Hand erkennen die Helden das erste Kartenfragment.',
+    },
+    '02': {
+      title: 'Die versunkenen Pfade',
+      description: 'Ein Reich unter Wasser. Verlorene Städte und alte Geheimnisse.',
+      intro: 'Ein Spiegel öffnet sich zu einer versunkenen Welt. Die Helden folgen den Spuren einer Zivilisation.',
+      outro: 'Das zweite Kartenfragment zeigt den Weg zu einem Berg, der in Asche gehüllt ist.',
+    },
+    '03': {
+      title: 'Das Aschegebirge',
+      description: 'Ein Berg voller Kraft und Feuer. Drachen bewachen alte Schmieden.',
+      intro: 'Der Wind trägt den Geruch von Feuer und Stein. Die Helden nähern sich dem dritten Kartenfragment.',
+      outro: 'Mit dem Sonnenschlüssel bewaffnet, erkennen die Helden das Tor zur Schattenfestung.',
+    },
+    '04': {
+      title: 'Die Schattenfestung',
+      description: 'Ein Ort der Dunkelheit. Die letzte Bastion, bevor das Schwert offenbart wird.',
+      intro: 'Die Festung erhebt sich am Horizont. Innen verbergen sich Prüfungen und Geheimnisse.',
+      outro: 'Das vierte Kartenfragment offenbart den Weg zum Schwert des Ersten Lichts.',
+    },
+    '05': {
+      title: 'Das Schwert des Ersten Lichts',
+      description: 'Der Höhepunkt der Reise. Das Licht kehrt zurück in die Welt.',
+      intro: 'Alle Zeichen führen hierher. Das Schwert wartet am Ort der Vereinigung.',
+      outro: 'Das Schwert des Ersten Lichts wurde erhoben. Die Nacht bricht an.',
+    },
+  },
+
+  // ============================================================================
+  // 19. EPISODES
+  // ============================================================================
+  episodes: {
+    '01': {
+      title: 'Das Flüstern im Sand',
+      description: 'Die erste Episode beginnt. Ein Flüstern trägt die erste Botschaft.',
+      event_1: { title: 'Ankunft', description: 'Die Helden betreten die Wüste.' },
+      storyProgress: 'Der Sand flüstert von alten Zeichen.',
+    },
+    '02': {
+      title: 'Die stumme Glocke',
+      description: 'Eine Glocke ohne Klang. Ein Rätsel, das gelöst werden muss.',
+      event_1: { title: 'Die Glocke', description: 'Die Helden finden die stumme Glocke.' },
+      storyProgress: 'Das erste Zeichen wird offenbart.',
+    },
+    '03': {
+      title: 'Die gestohlene Laterne',
+      description: 'Licht, das gestohlen wurde. Eine Nacht ohne Ende.',
+      event_1: { title: 'Finsternis', description: 'Die Helden suchen das Licht.' },
+      storyProgress: 'Das zweite Zeichen liegt vor ihnen.',
+    },
+    '04': {
+      title: 'Zeichen unter dem Nebel',
+      description: 'Nebel verborgen. Zeichen versteckt. Eine Prüfung wartet.',
+      event_1: { title: 'Im Nebel', description: 'Die Helden navigieren durch den Nebel.' },
+      storyProgress: 'Das dritte Zeichen wird sichtbar.',
+    },
+    '05': {
+      title: 'Das Gedächtnis der Weiden',
+      description: 'Bäume, die sich erinnern. Ein Speicher von Geistern.',
+      event_1: { title: 'Erinnerung', description: 'Die Weiden erzählen ihre Geschichten.' },
+      storyProgress: 'Das vierte Zeichen ist nahe.',
+    },
+    '06': {
+      title: 'Die Krone des Moorhüters',
+      description: 'Der Boss des ersten Kapitels. Der Hüter der verfluchten Lande.',
+      event_1: { title: 'Boss-Kampf', description: 'Die Helden stellen sich dem Moorhüter.' },
+      storyProgress: 'Das erste Kartenfragment wurde gesichert.',
+    },
+    '07': {
+      title: 'Die Stadt im Spiegel',
+      description: 'Ein Spiegel offenbart eine verborgene Welt. Eine Stadt unter Wasser.',
+      event_1: { title: 'Der Spiegel', description: 'Die Helden betreten die gespiegelte Stadt.' },
+      storyProgress: 'Das erste Geheimnis der versunkenen Welt.',
+    },
+    '08': {
+      title: 'Der Fährmann der Erinnerungen',
+      description: 'Ein Fährmann ohne Boot. Erinnerungen als Währung.',
+      event_1: { title: 'Überfahrt', description: 'Der Fährmann helft den Helden über.' },
+      storyProgress: 'Die Marke des Fährmanns wird erhalten.',
+    },
+    '09': {
+      title: 'Die leeren Seiten',
+      description: 'Ein Archiv ohne Wissen. Bücher ohne Worte.',
+      event_1: { title: 'Archiv', description: 'Die Helden suchen das Wissen.' },
+      storyProgress: 'Das erste Blatt der Schwertchronik wird gefunden.',
+    },
+    '10': {
+      title: 'Ein Handel ohne Gold',
+      description: 'Banditen mit Gewissen. Ein Handel, der Gold nicht braucht.',
+      event_1: { title: 'Verhandlung', description: 'Die Helden verhandeln mit Banditen.' },
+      storyProgress: 'Der Archivschlüssel wird gewährt.',
+    },
+    '11': {
+      title: 'Die Rune der Gezeiten',
+      description: 'Ein Mechanismus des Wassers. Gezeiten, die Geheimnisse bewachen.',
+      event_1: { title: 'Rätsel', description: 'Die Helden entziffern die Gezeiten.' },
+      storyProgress: 'Die Rune wird aktiviert.',
+    },
+    '12': {
+      title: 'Das Herz der Tiefe',
+      description: 'Der Boss des zweiten Kapitels. Die Hüterin der versunkenen Pfade.',
+      event_1: { title: 'Boss-Kampf', description: 'Die Helden stellen sich der Hüterin.' },
+      storyProgress: 'Das zweite Kartenfragment wurde gesichert.',
+    },
+    '13': {
+      title: 'Funken am Horizont',
+      description: 'Feuer am Himmel. Ein Berg, der brennt.',
+      event_1: { title: 'Ankunft', description: 'Die Helden erreichen das Aschegebirge.' },
+      storyProgress: 'Die erste Spur der Schmiedin.',
+    },
+    '14': {
+      title: 'Das singende Erz',
+      description: 'Erz mit einer Stimme. Ein Splitter aus Licht.',
+      event_1: { title: 'Erz', description: 'Die Helden finden das singende Erz.' },
+      storyProgress: 'Der Lichtsplitter wird gewonnen.',
+    },
+    '15': {
+      title: 'Der zornige Wind',
+      description: 'Ein junger Drache. Angst, die sich in Sturm verwandelt.',
+      event_1: { title: 'Drache', description: 'Die Helden beruhigen den Drachen.' },
+      storyProgress: 'Die Drachenfeder wird erhalten.',
+    },
+    '16': {
+      title: 'Die verborgenen Signalfeuer',
+      description: 'Feuer, die die Wahrheit tragen. Ein Pfad, der mit Licht gezeichnet ist.',
+      event_1: { title: 'Signale', description: 'Die Helden folgen den Signalen.' },
+      storyProgress: 'Die Signalkarte wird gewonnen.',
+    },
+    '17': {
+      title: 'Der Schlüssel aus Sonnenmetall',
+      description: 'Ein Schlüssel aus Licht. Das Material der Sonne selbst.',
+      event_1: { title: 'Schmiede', description: 'Die Schmiedin schmiedet den Schlüssel.' },
+      storyProgress: 'Der Sonnenschlüssel wird erhalten.',
+    },
+    '18': {
+      title: 'Unter den Flügeln der Asche',
+      description: 'Der Boss des dritten Kapitels. Der Aschedrache selbst.',
+      event_1: { title: 'Boss-Kampf', description: 'Die Helden bekämpfen den Aschedrachen.' },
+      storyProgress: 'Das dritte Kartenfragment wurde gesichert.',
+    },
+    '19': {
+      title: 'Das Tor ohne Schatten',
+      description: 'Ein Tor, das nur bei Licht offenbar wird.',
+      event_1: { title: 'Tor', description: 'Die Helden öffnen das Festungstor.' },
+      storyProgress: 'Eintritt in die Schattenfestung.',
+    },
+    '20': {
+      title: 'Die gefangene Kartografin',
+      description: 'Ein Kartograph, der die Wahrheit kennt.',
+      event_1: { title: 'Befreiung', description: 'Die Helden befreien die Kartografin.' },
+      storyProgress: 'Neue Karten werden enthüllt.',
+    },
+    '21': {
+      title: 'Der versiegelte Brief',
+      description: 'Eine Nachricht aus der Vergangenheit.',
+      event_1: { title: 'Brief', description: 'Die Helden lesen den Brief.' },
+      storyProgress: 'Ein Geheimnis der Festung.',
+    },
+    '22': {
+      title: 'Drei Spiegel, ein Versprechen',
+      description: 'Spiegel, die die Vergangenheit zeigen.',
+      event_1: { title: 'Spiegel', description: 'Die Helden schauen in die Spiegel.' },
+      storyProgress: 'Das Versprechen wird erneuert.',
+    },
+    '23': {
+      title: 'Das geteilte Licht',
+      description: 'Licht, das geteilt wird. Macht, die verteilt ist.',
+      event_1: { title: 'Teilung', description: 'Die Helden teilen das Licht.' },
+      storyProgress: 'Die Kraft wird vereint.',
+    },
+    '24': {
+      title: 'Der Schattenvogt',
+      description: 'Der Boss des vierten Kapitels. Der letzte Wächter der Dunkelheit.',
+      event_1: { title: 'Boss-Kampf', description: 'Die Helden stellen sich dem Vogt.' },
+      storyProgress: 'Das vierte Kartenfragment wurde gesichert.',
+    },
+    '25': {
+      title: 'Wo die Zeichen zusammenfinden',
+      description: 'Der Ort, an dem alles zusammenkommt.',
+      event_1: { title: 'Zusammenkunft', description: 'Die Zeichen finden sich zusammen.' },
+      storyProgress: 'Der Weg zum Schwert wird klar.',
+    },
+    '26': {
+      title: 'Die Prüfung der offenen Hand',
+      description: 'Eine Prüfung des Herzens. Nicht des Schwertes.',
+      event_1: { title: 'Prüfung', description: 'Die Helden werden geprüft.' },
+      storyProgress: 'Das Herz wird offenbart.',
+    },
+    '27': {
+      title: 'Der gebrochene Schutzkreis',
+      description: 'Ein Schutz, der bricht. Ein Kreis, der sich schließt.',
+      event_1: { title: 'Bruch', description: 'Der Schutzkreis wird restauriert.' },
+      storyProgress: 'Der Weg wird frei.',
+    },
+    '28': {
+      title: 'Das Erwachen des Ersten Lichts',
+      description: 'Das Schwert antwortet. Licht kehrt zurück.',
+      event_1: { title: 'Erwachen', description: 'Das Schwert erwacht.' },
+      storyProgress: 'Das Licht wird geboren.',
+    },
+    '29': {
+      title: 'Wenn die Nacht zerbricht',
+      description: 'Der Abschied von der Dunkelheit.',
+      event_1: { title: 'Zerbrechen', description: 'Die Nacht bricht an.' },
+      storyProgress: 'Ein neuer Tag beginnt.',
+    },
+    '30': {
+      title: 'Das Licht, das wir teilen',
+      description: 'Der Boss des fünften Kapitels. Die letzte Prüfung.',
+      event_1: { title: 'Finale', description: 'Die Helden kämpfen für das Licht.' },
+      storyProgress: 'Das Schwert des Ersten Lichts ist erhoben.',
+    },
   },
 };

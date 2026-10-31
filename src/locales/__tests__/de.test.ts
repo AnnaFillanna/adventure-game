@@ -53,7 +53,7 @@ describe('Localization System - getText()', () => {
 
     it('should resolve campaign information', () => {
       expect(getText('campaigns.firstLight.title')).toBe('Das Schwert des Ersten Lichts');
-      expect(getText('campaigns.firstLight.chapters.chapter1.title')).toContain('Kapitel 1');
+      expect(getText('chapters.01.title')).toBe('Die verfluchten Lande');
     });
   });
 
