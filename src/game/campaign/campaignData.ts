@@ -208,7 +208,7 @@ const EPISODES: Episode[] = [
   createEpisode('episode_26_open_hand_trial', 26, 'chapter_05_first_light_sword', 'episode_25_signs_gather'),
   createEpisode('episode_27_broken_protection_circle', 27, 'chapter_05_first_light_sword', 'episode_26_open_hand_trial'),
   createEpisode('episode_28_first_light_awakens', 28, 'chapter_05_first_light_sword', 'episode_27_broken_protection_circle'),
-  createEpisode('episode_29_when_night_breaks', 29, 'chapter_05_first_light_sword', 'episode_28_first_light_awakens', true),
+  createEpisode('episode_29_when_night_breaks', 29, 'chapter_05_first_light_sword', 'episode_28_first_light_awakens'),
   createEpisode('episode_30_light_we_share', 30, 'chapter_05_first_light_sword', 'episode_29_when_night_breaks', true),
 ];
 

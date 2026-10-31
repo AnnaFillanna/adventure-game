@@ -232,7 +232,7 @@ describe('Campaign System', () => {
     it('sollte nächste Episode nach Abschluss freischalten', () => {
       const ep1 = campaign.episodes.find((ep) => ep.number === 1)!;
       const ep2 = campaign.episodes.find((ep) => ep.number === 2)!;
-      
+
       // Verify Episode 2 depends on Episode 1
       expect(ep2.prerequisites.previousEpisodeId).toBe(ep1.id);
     });
@@ -246,10 +246,10 @@ describe('Campaign System', () => {
 
     it('sollte feststellen ob Kapitel abgeschlossen ist', () => {
       const chapter2 = campaign.chapters[1];
-      
+
       // Verify Chapter 2 starts with Episode 7
       expect(chapter2.episodeIds[0]).toBe('episode_07_city_mirror');
-      
+
       // Episode 7 should depend on Episode 6 (boss of Chapter 1)
       const ep7 = campaign.episodes.find((ep) => ep.id === 'episode_07_city_mirror');
       expect(ep7?.prerequisites.previousEpisodeId).toBe('episode_06_moorkeeper_crown');
@@ -272,7 +272,175 @@ describe('Campaign System', () => {
       // Migration sollte kein Fehler werfen
       expect(oldProgress.progressVersion).toBe(0);
     });
+  });
 
+  describe('Critical Progress Logic - Regression Tests', () => {
+    it('Episode-Status kann von LOCKED zu UNLOCKED wechseln', () => {
+      let epProgress = initializeEpisodeProgress('episode_01', 'locked');
+      expect(epProgress.status).toBe('locked');
+
+      epProgress = unlockEpisode(epProgress);
+      expect(epProgress.status).toBe('unlocked');
+    });
+
+    it('Event darf nicht mehrfach in completedEvents registriert werden', () => {
+      let epProgress = initializeEpisodeProgress('episode_01', 'in_progress');
+
+      const eventId = 'episode_01_event_1';
+
+      // Complete event first time
+      epProgress = completeEvent(epProgress, eventId);
+      expect(epProgress.completedEvents).toContain(eventId);
+      const countAfterFirst = epProgress.completedEvents.filter((e) => e === eventId).length;
+
+      // Try to complete same event again
+      epProgress = completeEvent(epProgress, eventId);
+      const countAfterSecond = epProgress.completedEvents.filter((e) => e === eventId).length;
+
+      // Event should only appear once
+      expect(countAfterFirst).toBe(1);
+      expect(countAfterSecond).toBe(1);
+    });
+
+    it('Abgeschlossene Episode bleibt abgeschlossen', () => {
+      let epProgress = initializeEpisodeProgress('episode_01', 'completed');
+
+      expect(epProgress.status).toBe('completed');
+
+      // Try to start completed episode
+      epProgress = startEpisode(epProgress);
+
+      // Should remain COMPLETED
+      expect(epProgress.status).toBe('completed');
+    });
+
+    it('Pausieren und Fortsetzen müssen funktionieren', () => {
+      let epProgress = initializeEpisodeProgress('episode_01', 'in_progress');
+
+      expect(epProgress.status).toBe('in_progress');
+
+      // Pause episode
+      epProgress = pauseEpisode(epProgress);
+      expect(epProgress.status).toBe('paused');
+
+      // Complete partial event while paused
+      const eventId = 'episode_01_event_1';
+      epProgress = completeEvent(epProgress, eventId);
+
+      // Resume episode
+      epProgress = resumeEpisode(epProgress);
+      expect(epProgress.status).toBe('in_progress');
+
+      // Event completion should be preserved
+      expect(epProgress.completedEvents).toContain(eventId);
+    });
+
+    it('Kapitelübergänge sind korrekt gesichert', () => {
+      const ep6 = campaign.episodes.find((ep) => ep.number === 6)!;
+      const ep7 = campaign.episodes.find((ep) => ep.number === 7)!;
+      const ep12 = campaign.episodes.find((ep) => ep.number === 12)!;
+      const ep13 = campaign.episodes.find((ep) => ep.number === 13)!;
+      const ep18 = campaign.episodes.find((ep) => ep.number === 18)!;
+      const ep19 = campaign.episodes.find((ep) => ep.number === 19)!;
+      const ep24 = campaign.episodes.find((ep) => ep.number === 24)!;
+      const ep25 = campaign.episodes.find((ep) => ep.number === 25)!;
+
+      // All chapter transitions must link properly
+      expect(ep7.prerequisites.previousEpisodeId).toBe(ep6.id);
+      expect(ep13.prerequisites.previousEpisodeId).toBe(ep12.id);
+      expect(ep19.prerequisites.previousEpisodeId).toBe(ep18.id);
+      expect(ep25.prerequisites.previousEpisodeId).toBe(ep24.id);
+
+      // Chapter boundaries verified
+      expect(ep6.chapterId).toBe('chapter_01_cursed_lands');
+      expect(ep7.chapterId).toBe('chapter_02_sunken_paths');
+    });
+
+    it('Episoden 1-30 sind korrekt verknüpft', () => {
+      for (let i = 2; i <= 30; i++) {
+        const current = campaign.episodes.find((ep) => ep.number === i)!;
+        const previous = campaign.episodes.find((ep) => ep.number === i - 1)!;
+
+        expect(current.prerequisites.previousEpisodeId).toBe(previous.id);
+      }
+    });
+
+    it('Ungültige Zustandswechsel sind gesperrt', () => {
+      // LOCKED -> startEpisode should not change
+      let epProgress = initializeEpisodeProgress('episode_01', 'locked');
+      epProgress = startEpisode(epProgress);
+      expect(epProgress.status).toBe('locked');
+
+      // UNLOCKED -> startEpisode should change to IN_PROGRESS
+      epProgress = initializeEpisodeProgress('episode_01', 'unlocked');
+      epProgress = startEpisode(epProgress);
+      expect(epProgress.status).toBe('in_progress');
+
+      // PAUSED -> resumeEpisode should go to IN_PROGRESS
+      epProgress = initializeEpisodeProgress('episode_01', 'paused');
+      epProgress = resumeEpisode(epProgress);
+      expect(epProgress.status).toBe('in_progress');
+    });
+
+    it('Fortschritt bleibt nach JSON-Serialisierung erhalten', () => {
+      let epProgress = initializeEpisodeProgress('episode_01', 'in_progress');
+
+      epProgress = completeEvent(epProgress, 'episode_01_event_1');
+      epProgress = completeEvent(epProgress, 'episode_01_event_2');
+
+      const before = {
+        completed: [...epProgress.completedEvents],
+        status: epProgress.status,
+      };
+
+      // Simulate save/load
+      const saved = JSON.stringify(epProgress);
+      const loaded = JSON.parse(saved);
+
+      expect(loaded.completedEvents).toEqual(before.completed);
+      expect(loaded.status).toBe(before.status);
+    });
+
+    it('Boss-Episoden sind korrekt markiert', () => {
+      const bossNumbers = [6, 12, 18, 24, 30];
+
+      // Boss episodes must have boss_fight event
+      bossNumbers.forEach((num) => {
+        const ep = campaign.episodes.find((e) => e.number === num)!;
+        const hasBoss = ep.events.some((e) => e.type === 'boss_fight');
+        expect(hasBoss).toBe(true);
+      });
+
+      // Non-boss episodes must NOT have boss_fight
+      for (let i = 1; i <= 30; i++) {
+        if (!bossNumbers.includes(i)) {
+          const ep = campaign.episodes.find((e) => e.number === i)!;
+          const hasBoss = ep.events.some((e) => e.type === 'boss_fight');
+          expect(hasBoss).toBe(false);
+        }
+      }
+    });
+
+    it('Alle Episode-Events haben eindeutige IDs', () => {
+      const seen = new Set<string>();
+      let dupes = 0;
+
+      campaign.episodes.forEach((ep) => {
+        ep.events.forEach((e) => {
+          if (seen.has(e.id)) dupes++;
+          seen.add(e.id);
+        });
+      });
+
+      expect(dupes).toBe(0);
+      expect(seen.size).toBe(120); // 30 episodes * 4 events
+    });
+
+    it('Jede Episode hat genau 4 Events', () => {
+      campaign.episodes.forEach((ep) => {
+        expect(ep.events).toHaveLength(4);
+      });
+    });
     it('sollte aktuelle Save-Daten nicht ändern', () => {
       const progress = initializeCampaignProgress('campaign_first_light', 'hero_aeran');
       expect(progress.progressVersion).toBe(1);
