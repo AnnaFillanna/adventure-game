@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { getText } from '../../locales';
 import type { Quest } from '../../game/state/types';
 import { getQuestProgress } from '../../game/engine/questEngine';
 import styles from './QuestLog.module.scss';
@@ -21,7 +22,7 @@ export const QuestLog: React.FC<QuestLogProps> = ({ quests, activeQuestId, onClo
     <div className={styles.questLogOverlay} onClick={onClose}>
       <div className={styles.questLogContainer} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>📜 Quest Log</h2>
+          <h2>📜 {getText('quests.log')}</h2>
           <button className={styles.closeButton} onClick={onClose}>
             ✕
           </button>
@@ -29,7 +30,9 @@ export const QuestLog: React.FC<QuestLogProps> = ({ quests, activeQuestId, onClo
 
         {/* Active Quests */}
         <div className={styles.section}>
-          <h3 className={styles.sectionTitle}>Active Quests ({activeQuests.length})</h3>
+          <h3 className={styles.sectionTitle}>
+            {getText('quests.activeCount', { count: activeQuests.length })}
+          </h3>
           {activeQuests.length > 0 ? (
             <div className={styles.questsList}>
               {activeQuests.map((quest) => {
@@ -70,14 +73,16 @@ export const QuestLog: React.FC<QuestLogProps> = ({ quests, activeQuestId, onClo
               })}
             </div>
           ) : (
-            <p className={styles.empty}>No active quests</p>
+            <p className={styles.empty}>{getText('quests.empty')}</p>
           )}
         </div>
 
         {/* Completed Quests */}
         {completedQuests.length > 0 && (
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Completed ({completedQuests.length})</h3>
+            <h3 className={styles.sectionTitle}>
+              {getText('quests.completedCount', { count: completedQuests.length })}
+            </h3>
             <div className={styles.completedList}>
               {completedQuests.map((quest) => (
                 <div key={quest.id} className={styles.completedItem}>
@@ -90,7 +95,7 @@ export const QuestLog: React.FC<QuestLogProps> = ({ quests, activeQuestId, onClo
         )}
 
         <button className={styles.closeMainButton} onClick={onClose}>
-          Close
+          {getText('quests.close')}
         </button>
       </div>
     </div>

@@ -65,6 +65,7 @@ export const de = {
   statLabels: {
     health: 'Gesundheit',
     maxHealth: 'Max. Gesundheit',
+    hp: 'HP',
     mana: 'Mana',
     maxMana: 'Max. Mana',
     attack: 'Angriff',
@@ -72,6 +73,9 @@ export const de = {
     magic: 'Magie',
     magicDefense: 'Magieverteidigung',
     speed: 'Geschwindigkeit',
+    level: 'Level',
+    xp: 'XP',
+    experience: 'Erfahrung',
   },
 
   // ============================================================================
@@ -285,10 +289,16 @@ export const de = {
   // ============================================================================
   quests: {
     title: 'Questbuch',
-    active: 'Aktive Quest',
+    log: 'Quest-Übersicht',
+    active: 'Aktive Quests',
+    activeCount: 'Aktive Quests ({count})',
     completed: 'Abgeschlossene Quests',
+    completedCount: 'Abgeschlossen ({count})',
     rewards: 'Belohnung',
     progress: 'Fortschritt',
+    empty: 'Keine aktiven Quests',
+    noCompleted: 'Noch keine Quests abgeschlossen',
+    close: 'Schließen',
   },
 
   // ============================================================================
@@ -296,12 +306,16 @@ export const de = {
   // ============================================================================
   combat: {
     title: 'Kampf',
+    vs: 'GEGEN',
+    log: 'Kampfprotokoll',
     actions: {
       attack: 'Angriff',
       defend: 'Verteidigung',
+      magic: 'Magie',
       ability: 'Fähigkeit',
       item: 'Gegenstand',
       pause: 'Pausieren',
+      potion: 'Trank',
     },
     feedback: {
       hit: '{attacker} trifft {target}!',
@@ -310,7 +324,9 @@ export const de = {
       damaged: 'Du hast {amount} Schaden erlitten!',
       healed: 'Du wurdest um {amount} HP geheilt!',
       defeated: 'Du wurdest besiegt!',
+      defeatMessage: 'Du wurdest im Kampf besiegt.',
       victory: 'Du hast gewonnen!',
+      victoryMessage: '🎉 Sieg! 🎉',
     },
   },
 
@@ -322,8 +338,10 @@ export const de = {
     items: 'Gegenstände',
     equipment: 'Ausrüstung',
     artifacts: 'Artefakte',
-    empty: 'Leer',
+    empty: 'Inventar ist leer',
     quantity: '{amount}x {item}',
+    slots: 'Plätze: {used} / {max}',
+    close: 'Schließen',
   },
 
   items: {
@@ -421,5 +439,39 @@ export const de = {
     contrast: 'Hoher Kontrast',
     textSize: 'Textgröße',
     reduceMotion: 'Bewegungen reduzieren',
+  },
+
+  // ============================================================================
+  // 17. GPS SAFETY NOTICE
+  // ============================================================================
+  safetyNotice: {
+    title: 'GPS-Abenteuer-Sicherheit',
+    dismiss: 'Schließen',
+    dismissAriaLabel: 'Sicherheitsmitteilung schließen',
+    awareness: {
+      title: 'Aufmerksamkeit:',
+      text: 'Achte immer auf deine Umgebung, während du spielst',
+    },
+    supervision: {
+      title: 'Elternaufsicht:',
+      text: 'Kinder sollten nur unter angemessener Beaufsichtigung durch Erwachsene spielen',
+    },
+    avoidDangers: {
+      title: 'Gefahren vermeiden:',
+      text: 'Betritt nicht die Straße, Privatgrundstücke oder gefährliche Bereiche',
+    },
+    trespassing: {
+      title: 'Gesetze beachten:',
+      text: 'Beachte lokale Gesetze und die Eigentumsrechte anderer',
+    },
+    gpsAccuracy: {
+      title: 'GPS-Genauigkeit:',
+      text: 'Dein Standort ist möglicherweise nicht 100 % genau. Verlasse dich nicht darauf zur Navigation',
+    },
+    batteryData: {
+      title: 'Akku und Daten:',
+      text: 'GPS verbraucht erheblich Akku und Daten. Überwache dein Gerät',
+    },
+    emphasis: 'Durch das Spielen bestätigst du diese Sicherheitsrichtlinien.',
   },
 };

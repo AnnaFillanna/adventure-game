@@ -3,6 +3,7 @@
  */
 
 import React from 'react';
+import { getText } from '../../locales';
 import type { Inventory as InventoryType } from '../../game/state/types';
 import styles from './Inventory.module.scss';
 
@@ -19,14 +20,14 @@ export const Inventory: React.FC<InventoryProps> = ({ inventory, onClose }) => {
     <div className={styles.inventoryOverlay} onClick={onClose}>
       <div className={styles.inventoryContainer} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
-          <h2>Inventory</h2>
+          <h2>{getText('inventory.title')}</h2>
           <button className={styles.closeButton} onClick={onClose}>
             ✕
           </button>
         </div>
 
         <div className={styles.slotInfo}>
-          <span>Slots: {usedSlots} / {inventory.maxSlots}</span>
+          <span>{getText('inventory.slots', { used: usedSlots, max: inventory.maxSlots })}</span>
         </div>
 
         <div className={styles.itemsGrid}>
@@ -39,12 +40,12 @@ export const Inventory: React.FC<InventoryProps> = ({ inventory, onClose }) => {
               </div>
             ))
           ) : (
-            <p className={styles.empty}>Inventory is empty</p>
+            <p className={styles.empty}>{getText('inventory.empty')}</p>
           )}
         </div>
 
         <button className={styles.closeMainButton} onClick={onClose}>
-          Close
+          {getText('inventory.close')}
         </button>
       </div>
     </div>

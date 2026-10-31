@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { getText } from '../../locales';
 import styles from './SafetyNotice.module.scss';
 
 interface SafetyNoticeProps {
@@ -27,12 +28,12 @@ export const SafetyNotice: React.FC<SafetyNoticeProps> = ({ dismissible = true, 
     <div className={styles.safetyNotice}>
       <div className={styles.header}>
         <span className={styles.icon}>⚠️</span>
-        <h3>GPS Adventure Safety</h3>
+        <h3>{getText('safetyNotice.title')}</h3>
         {dismissible && (
           <button
             className={styles.dismissButton}
             onClick={handleDismiss}
-            aria-label="Dismiss safety notice"
+            aria-label={getText('safetyNotice.dismissAriaLabel')}
           >
             ✕
           </button>
@@ -42,32 +43,28 @@ export const SafetyNotice: React.FC<SafetyNoticeProps> = ({ dismissible = true, 
       <div className={styles.content}>
         <ul>
           <li>
-            <strong>Stay Aware:</strong> Always pay attention to your surroundings while playing
+            <strong>{getText('safetyNotice.awareness.title')}</strong> {getText('safetyNotice.awareness.text')}
           </li>
           <li>
-            <strong>Parental Supervision:</strong> Children should only play under appropriate
-            adult supervision
+            <strong>{getText('safetyNotice.supervision.title')}</strong> {getText('safetyNotice.supervision.text')}
           </li>
           <li>
-            <strong>Avoid Dangers:</strong> Do not venture into traffic, private property, or
-            dangerous areas
+            <strong>{getText('safetyNotice.avoidDangers.title')}</strong> {getText('safetyNotice.avoidDangers.text')}
           </li>
           <li>
-            <strong>Trespassing Laws:</strong> Respect local laws and private property rights
+            <strong>{getText('safetyNotice.trespassing.title')}</strong> {getText('safetyNotice.trespassing.text')}
           </li>
           <li>
-            <strong>GPS Accuracy:</strong> Your location may not be 100% accurate. Do not rely on
-            it for navigation
+            <strong>{getText('safetyNotice.gpsAccuracy.title')}</strong> {getText('safetyNotice.gpsAccuracy.text')}
           </li>
           <li>
-            <strong>Battery & Data:</strong> GPS uses significant battery and data. Monitor your
-            device
+            <strong>{getText('safetyNotice.batteryData.title')}</strong> {getText('safetyNotice.batteryData.text')}
           </li>
         </ul>
       </div>
 
       <div className={styles.footer}>
-        <p className={styles.emphasis}>By playing, you acknowledge these safety guidelines.</p>
+        <p className={styles.emphasis}>{getText('safetyNotice.emphasis')}</p>
       </div>
     </div>
   );

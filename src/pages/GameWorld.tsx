@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getText } from '../locales';
 import { useGameStore } from '../game/state/gameStore';
 import { NPCS, ENEMIES, QUESTS, GAME_CONFIG } from '../game/data/config';
 import { canStartQuest, getQuestProgress, getNextIncompleteObjective } from '../game/engine/questEngine';
@@ -188,21 +189,21 @@ export const GameWorld: React.FC = () => {
         <button
           className={styles.controlButton}
           onClick={() => setShowInventory(!showInventory)}
-          title="Inventory"
+          title={getText('inventory.title')}
         >
           🎒
         </button>
         <button
           className={styles.controlButton}
           onClick={() => setShowQuestLog(!showQuestLog)}
-          title="Quest Log"
+          title={getText('quests.log')}
         >
           📜
         </button>
         <button
           className={styles.controlButton}
           onClick={handleMenuExit}
-          title="Menu"
+          title={getText('common.close')}
         >
           ⚙️
         </button>

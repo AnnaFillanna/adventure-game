@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { getText } from '../../locales';
 import { useGameStore } from '../../game/state/gameStore';
 import type { CombatState } from '../../game/state/types';
 import styles from './CombatUI.module.scss';
@@ -29,7 +30,7 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
     <div className={styles.combatOverlay}>
       <div className={styles.combatContainer}>
         {/* Combat Title */}
-        <h2 className={styles.title}>⚔️ Combat ⚔️</h2>
+        <h2 className={styles.title}>⚔️ {getText('combat.title')} ⚔️</h2>
 
         {/* Combatants */}
         <div className={styles.combatants}>
@@ -39,7 +40,7 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
             <h3>{playerCharacter.name}</h3>
             <div className={styles.stats}>
               <div className={styles.stat}>
-                <span>HP:</span>
+                <span>{getText('statLabels.hp')}:</span>
                 <div className={styles.barContainer}>
                   <div
                     className={styles.bar + ' ' + styles.healthBar}
@@ -51,14 +52,14 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
                 </span>
               </div>
               <div className={styles.stat}>
-                <span>Level:</span>
+                <span>{getText('statLabels.level')}:</span>
                 <span className={styles.value}>{playerCharacter.level}</span>
               </div>
             </div>
           </div>
 
           {/* VS */}
-          <div className={styles.vs}>VS</div>
+          <div className={styles.vs}>{getText('combat.vs')}</div>
 
           {/* Enemy */}
           <div className={styles.character + ' ' + styles.enemy}>
@@ -66,7 +67,7 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
             <h3>{enemy.name}</h3>
             <div className={styles.stats}>
               <div className={styles.stat}>
-                <span>HP:</span>
+                <span>{getText('statLabels.hp')}:</span>
                 <div className={styles.barContainer}>
                   <div
                     className={styles.bar + ' ' + styles.healthBar}
@@ -78,7 +79,7 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
                 </span>
               </div>
               <div className={styles.stat}>
-                <span>Level:</span>
+                <span>{getText('statLabels.level')}:</span>
                 <span className={styles.value}>{enemy.level}</span>
               </div>
             </div>
@@ -87,7 +88,7 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
 
         {/* Combat Log */}
         <div className={styles.combatLog}>
-          <h4>Combat Log</h4>
+          <h4>{getText('combat.log')}</h4>
           <div className={styles.logEntries}>
             {combatLog.slice(-5).map((log, i) => (
               <p key={i} className={styles.logEntry}>
@@ -105,46 +106,46 @@ export const CombatUI: React.FC<CombatUIProps> = ({ combatState }) => {
                 className={styles.actionButton + ' ' + styles.attack}
                 onClick={() => executeCombatAction('attack')}
               >
-                ⚔️ Attack
+                ⚔️ {getText('combat.actions.attack')}
               </button>
               <button
                 className={styles.actionButton + ' ' + styles.defend}
                 onClick={() => executeCombatAction('defend')}
               >
-                🛡️ Defend
+                🛡️ {getText('combat.actions.defend')}
               </button>
               <button
                 className={styles.actionButton + ' ' + styles.magic}
                 onClick={() => executeCombatAction('magic')}
               >
-                ✨ Magic
+                ✨ {getText('combat.actions.magic')}
               </button>
               <button
                 className={styles.actionButton + ' ' + styles.potion}
                 onClick={() => executeCombatAction('potion')}
               >
-                🧪 Potion
+                🧪 {getText('combat.actions.potion')}
               </button>
             </>
           )}
 
           {reward && (
             <div className={styles.reward}>
-              <h4>🎉 Victory! 🎉</h4>
-              <p>+{reward.xp} XP</p>
-              <p>+{reward.gold} Gold</p>
+              <h4>{getText('combat.feedback.victoryMessage')}</h4>
+              <p>{getText('rewards.xp', { amount: reward.xp })}</p>
+              <p>{getText('rewards.gold', { amount: reward.gold })}</p>
               <button className={styles.continueButton} onClick={endCombat}>
-                Continue
+                {getText('common.continue')}
               </button>
             </div>
           )}
 
           {playerCharacter.stats.health <= 0 && (
             <div className={styles.defeat}>
-              <h4>💀 Defeated! 💀</h4>
-              <p>You were defeated in combat.</p>
+              <h4>💀 {getText('combat.feedback.defeated')} 💀</h4>
+              <p>{getText('combat.feedback.defeatMessage')}</p>
               <button className={styles.continueButton} onClick={endCombat}>
-                Continue
+                {getText('common.continue')}
               </button>
             </div>
           )}

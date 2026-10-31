@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { getText } from '../../locales';
 import type { Character, Quest } from '../../game/state/types';
 import styles from './HUD.module.scss';
 
@@ -24,12 +25,12 @@ export const GameHUD: React.FC<HUDProps> = ({ player, activeQuest, questProgress
       <div className={styles.playerInfo}>
         <div className={styles.header}>
           <h2 className={styles.playerName}>{player.name}</h2>
-          <span className={styles.level}>Lvl {player.level}</span>
+          <span className={styles.level}>{getText('statLabels.level')} {player.level}</span>
         </div>
 
         {/* Health Bar */}
         <div className={styles.stat}>
-          <label>HP</label>
+          <label>{getText('statLabels.hp')}</label>
           <div className={styles.barContainer}>
             <div
               className={styles.bar + ' ' + styles.healthBar}
@@ -43,7 +44,7 @@ export const GameHUD: React.FC<HUDProps> = ({ player, activeQuest, questProgress
 
         {/* Mana Bar */}
         <div className={styles.stat}>
-          <label>Mana</label>
+          <label>{getText('statLabels.mana')}</label>
           <div className={styles.barContainer}>
             <div
               className={styles.bar + ' ' + styles.manaBar}
@@ -57,7 +58,7 @@ export const GameHUD: React.FC<HUDProps> = ({ player, activeQuest, questProgress
 
         {/* XP Bar */}
         <div className={styles.stat}>
-          <label>XP</label>
+          <label>{getText('statLabels.xp')}</label>
           <div className={styles.barContainer}>
             <div
               className={styles.bar + ' ' + styles.xpBar}
@@ -75,25 +76,25 @@ export const GameHUD: React.FC<HUDProps> = ({ player, activeQuest, questProgress
         <div className={styles.statBox}>
           <div className={styles.icon}>⚔️</div>
           <div className={styles.statValue}>{player.stats.attack}</div>
-          <div className={styles.statLabel}>Attack</div>
+          <div className={styles.statLabel}>{getText('statLabels.attack')}</div>
         </div>
 
         <div className={styles.statBox}>
           <div className={styles.icon}>🛡️</div>
           <div className={styles.statValue}>{player.stats.defense}</div>
-          <div className={styles.statLabel}>Defense</div>
+          <div className={styles.statLabel}>{getText('statLabels.defense')}</div>
         </div>
 
         <div className={styles.statBox}>
           <div className={styles.icon}>✨</div>
           <div className={styles.statValue}>{player.stats.magic}</div>
-          <div className={styles.statLabel}>Magic</div>
+          <div className={styles.statLabel}>{getText('statLabels.magic')}</div>
         </div>
 
         <div className={styles.statBox}>
           <div className={styles.icon}>⚡</div>
           <div className={styles.statValue}>{player.stats.speed}</div>
-          <div className={styles.statLabel}>Speed</div>
+          <div className={styles.statLabel}>{getText('statLabels.speed')}</div>
         </div>
       </div>
 
