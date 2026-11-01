@@ -1,5 +1,6 @@
 import { SECOND_EPISODE_ID, playSecondEpisode, type SecondEpisodeInput } from './secondEpisode';
 import { FIRST_EPISODE_ID, playFirstEpisode, type FirstEpisodeInput } from './firstEpisode';
+import { playThirdEpisode, type ThirdEpisodeInput } from './thirdEpisode';
 import type { CampaignProgress } from '../../types/campaign';
 import { CAMPAIGN_FIRST_LIGHT as campaign } from './campaignData';
 import { completeEvent, completeEpisode, startEpisode, pauseEpisode, resumeEpisode, unlockNextEpisode, markChapterCompleted, isChapterCompleted } from './episodeManager';
@@ -7,6 +8,7 @@ import { completeEvent, completeEpisode, startEpisode, pauseEpisode, resumeEpiso
 export type CampaignAction =
   | { type: 'playSecond'; episodeId: string; eventId: string; input: SecondEpisodeInput }
   | { type: 'play'; episodeId: string; eventId: string; input: FirstEpisodeInput }
+  | { type: 'playThird'; episodeId: string; eventId: string; input: ThirdEpisodeInput }
   | { type: 'start'; episodeId: string; mode: 'short' | 'normal' | 'long' }
   | { type: 'pause'; episodeId: string }
   | { type: 'resume'; episodeId: string }
@@ -33,6 +35,10 @@ export function transitionCampaign(progress: CampaignProgress, action: CampaignA
     ep = completeEpisode(ep);
   } else if (action.type === 'play') {
     ep = playFirstEpisode(ep, action.eventId, action.input);
+    if (ep === previous) return progress;
+    ep = completeEpisode(ep);
+  } else if (action.type === 'playThird') {
+    ep = playThirdEpisode(ep, action.eventId, action.input);
     if (ep === previous) return progress;
     ep = completeEpisode(ep);
   } else {

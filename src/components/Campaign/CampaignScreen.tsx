@@ -70,7 +70,7 @@ export function CampaignScreen({ heroId }: { heroId: HeroId }) {
         <option value="short">Kurz · 1 km</option><option value="normal">Normal · 2,5 km</option><option value="long">Lang · 4,5 km</option></select>
         <p>Nur eine Auswahl für später. In der Demo ist keine Strecke erforderlich; alle Modi enthalten dieselben vier Ereignisse.</p>
         <button className="primary" onClick={() => dispatch({ type: 'start', episodeId: selectedId, mode })}>Episode starten</button></>}
-      {ep.status === 'in_progress' && nextEvent && <section className="event-card"><p className="eyebrow">Ereignis {nextEvent.order} · {episode.number <= 2 ? 'Spielbar' : 'Simulation'}</p><h3>{getTextDynamic(nextEvent.titleKey)}</h3>
+      {ep.status === 'in_progress' && nextEvent && <section className="event-card"><p className="eyebrow">Ereignis {nextEvent.order} · {episode.number <= 3 ? 'Spielbar' : 'Simulation'}</p><h3>{getTextDynamic(nextEvent.titleKey)}</h3>
         {episode.number === 1 ? <FirstEpisodeEvent progress={ep} eventNumber={nextEvent.order}
           onInput={input => dispatch({ type: 'play', episodeId: selectedId, eventId: nextEvent.id, input })} />
           : episode.number === 2 ? <SecondEpisodeEvent progress={ep} eventNumber={nextEvent.order}

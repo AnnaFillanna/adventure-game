@@ -1,5 +1,6 @@
 import { validSecondEpisodeState } from './secondEpisodeState';
 import { validFirstEpisodeState } from './firstEpisodeState';
+import { validThirdEpisodeState } from './thirdEpisodeState';
 import type { CampaignProgress } from '../../types/campaign';
 import { CAMPAIGNS } from './campaignData';
 
@@ -35,6 +36,7 @@ export function validateCampaignProgress(value: unknown): value is CampaignProgr
         typeof ep.rewardsGranted.gold !== 'boolean' || !strings(ep.rewardsGranted.itemIds)) return false;
     if (ep.playerChoices.secondEpisode !== undefined && !validSecondEpisodeState(ep.playerChoices.secondEpisode)) return false;
     if (ep.playerChoices.firstEpisode !== undefined && !validFirstEpisodeState(ep.playerChoices.firstEpisode)) return false;
+    if (ep.playerChoices.thirdEpisode !== undefined && !validThirdEpisodeState(ep.playerChoices.thirdEpisode)) return false;
     for (const field of ['pausedAt', 'completedAt']) {
       if (ep[field] !== undefined && !nonnegative(ep[field])) return false;
     }
