@@ -9,6 +9,7 @@ import { useGameStore } from '../game/state/gameStore';
 import { CharacterSelection } from '../components/Character/CharacterSelection';
 import type { HeroId } from '../game/characters/types';
 import styles from './CharacterSelectionPage.module.scss';
+import { preferencesManager } from '../game/utils/storage';
 
 export const CharacterSelectionPage: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export const CharacterSelectionPage: React.FC = () => {
     
     // Select hero in game store
     selectHero(selectedHero);
+    preferencesManager.setPreference('campaignHero', selectedHero);
     
     // Navigate to game
     navigate('/game');

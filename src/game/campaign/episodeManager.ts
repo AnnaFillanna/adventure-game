@@ -12,6 +12,7 @@
 
 import type { Episode, EpisodeProgress, CampaignProgress, Campaign } from '../../types/campaign';
 import { CAMPAIGNS, getNextEpisode } from './campaignData';
+import { migrateProgress, CURRENT_PROGRESS_VERSION } from './progressSchema';
 
 /**
  * Episode-Status-Konstanten
@@ -97,7 +98,17 @@ export function resumeEpisode(progress: EpisodeProgress): EpisodeProgress {
 /**
  * Event-Abschluss registrieren
  */
+function findEpisode(episodeId: string): Episode | undefined {
+  return Object.values(CAMPAIGNS).flatMap(campaign => campaign.episodes)
+    .find(episode => episode.id === episodeId);
+}
+
 export function completeEvent(progress: EpisodeProgress, eventId: string): EpisodeProgress {
+  const episode = findEpisode(progress.episodeId);
+  if (!episode || progress.status !== EPISODE_STATUS.IN_PROGRESS) return progress;
+  const nextEvent = [...episode.events].sort((a, b) => a.order - b.order)
+    .find(event => !progress.completedEvents.includes(event.id));
+  if (nextEvent?.id !== eventId) return progress;
   if (!progress.completedEvents.includes(eventId)) {
     return {
       ...progress,
@@ -112,14 +123,14 @@ export function completeEvent(progress: EpisodeProgress, eventId: string): Episo
  * Episode abschließen
  */
 export function completeEpisode(progress: EpisodeProgress): EpisodeProgress {
-  if (progress.status !== EPISODE_STATUS.COMPLETED) {
-    return {
-      ...progress,
-      status: EPISODE_STATUS.COMPLETED,
-      completedAt: Date.now(),
-    };
-  }
-  return progress;
+  const episode = findEpisode(progress.episodeId);
+  if (!episode || progress.status !== EPISODE_STATUS.IN_PROGRESS ||
+      !episode.events.every(event => progress.completedEvents.includes(event.id))) return progress;
+  return {
+    ...progress,
+    status: EPISODE_STATUS.COMPLETED,
+    completedAt: Date.now(),
+  };
 }
 
 /**
@@ -201,8 +212,14 @@ export function unlockNextEpisode(
   completedEpisodeId: string,
   campaign: Campaign
 ): CampaignProgress {
+  const completedEpisode = campaign.episodes.find(episode => episode.id === completedEpisodeId);
+  if (campaignProgress.campaignId !== campaign.id || !completedEpisode ||
+      campaignProgress.episodeProgress[completedEpisodeId]?.status !== EPISODE_STATUS.COMPLETED ||
+      !canUnlockEpisode(completedEpisode, campaignProgress, campaign)) return campaignProgress;
   const nextEpisode = getNextEpisode(campaign.id, completedEpisodeId);
   if (!nextEpisode) {
+    if (!campaign.episodes.every(episode =>
+      campaignProgress.episodeProgress[episode.id]?.status === EPISODE_STATUS.COMPLETED)) return campaignProgress;
     // Kampagne ist komplett
     return { ...campaignProgress, status: 'completed' };
   }
@@ -251,30 +268,11 @@ export function markChapterCompleted(
   return campaignProgress;
 }
 
-/**
- * Migrations-Funktion für alte Save-Daten (sichere Behandlung veralteter Formate)
- * 
- * Diese Funktion wird später erweitert, wenn das Speicherformat ändert.
- * Jetzt ist sie ein Platzhalter für sichere Datenmigration.
- */
-export function migrateCampaignProgress(oldProgress: any, currentVersion: number): CampaignProgress {
-  // Wenn Version gleich, keine Migration nötig
-  if (oldProgress.progressVersion === currentVersion) {
-    return oldProgress as CampaignProgress;
-  }
-
-  // Version 0 → Version 1: Neue Feldstruktur hinzufügen
-  if (!oldProgress.progressVersion || oldProgress.progressVersion < 1) {
-    return {
-      ...oldProgress,
-      progressVersion: 1,
-      totalXpEarned: oldProgress.totalXpEarned ?? 0,
-      totalGoldEarned: oldProgress.totalGoldEarned ?? 0,
-      completedChapterIds: oldProgress.completedChapterIds ?? [],
-    };
-  }
-
-  return oldProgress as CampaignProgress;
+/** Shared migration for storage and direct callers. Invalid saves are rejected. */
+export function migrateCampaignProgress(oldProgress: unknown, currentVersion: number): CampaignProgress {
+  const progress = currentVersion === CURRENT_PROGRESS_VERSION ? migrateProgress(oldProgress) : null;
+  if (!progress) throw new Error('Invalid or unsupported campaign save');
+  return progress;
 }
 
 /**

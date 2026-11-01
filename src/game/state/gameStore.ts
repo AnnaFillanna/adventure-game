@@ -259,6 +259,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   startQuest: (quest: Quest) => {
     set((state) => {
+      if (state.quests.some(existing => existing.id === quest.id)) return state;
       const updatedQuest = { ...quest, status: 'active' as QuestStatus };
       return {
         quests: [...state.quests, updatedQuest],
@@ -270,46 +271,34 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   completeQuest: (questId: string) => {
     set((state) => {
-      const updatedQuests = state.quests.map((q) =>
-        q.id === questId ? { ...q, status: 'completed' as QuestStatus, completedAt: Date.now() } : q
-      );
-
-      const completedQuest = updatedQuests.find((q) => q.id === questId);
-      let newState: Partial<GameStore> = {
-        quests: updatedQuests,
+      const quest = state.quests.find(q => q.id === questId);
+      if (!quest || quest.status !== 'active' ||
+          !quest.objectives.every(objective => objective.completed)) return state;
+      const items = { ...state.player.inventory.items };
+      for (const reward of quest.rewards.items) {
+        const existing = items[reward.itemId];
+        items[reward.itemId] = existing
+          ? { ...existing, quantity: existing.quantity + reward.quantity }
+          : { id: reward.itemId, name: '', type: 'quest_item', quantity: reward.quantity, description: '', icon: '' };
+      }
+      return {
+        quests: state.quests.map(q => q.id === questId
+          ? { ...q, status: 'completed' as QuestStatus, completedAt: Date.now() } : q),
+        totalXP: state.totalXP + quest.rewards.xp,
+        player: {
+          ...state.player,
+          experience: state.player.experience + quest.rewards.xp,
+          inventory: { ...state.player.inventory, items },
+        },
         updatedAt: Date.now(),
       };
-
-      // Award XP and items
-      if (completedQuest) {
-        const { xp, items } = completedQuest.rewards;
-        newState.totalXP = state.totalXP + xp;
-        newState.player = {
-          ...state.player,
-          experience: state.player.experience + xp,
-        };
-
-        // Add reward items to inventory
-        items.forEach(({ itemId, quantity }) => {
-          get().addItem({
-            id: itemId,
-            name: '',
-            type: 'quest_item',
-            quantity,
-            description: '',
-            icon: '',
-          });
-        });
-      }
-
-      return newState;
     });
   },
 
   updateQuestObjective: (questId: string, objectiveId: string, progress: number) => {
     set((state) => {
       const updatedQuests = state.quests.map((quest) => {
-        if (quest.id === questId) {
+        if (quest.id === questId && quest.status === 'active') {
           const updatedObjectives = quest.objectives.map((obj) =>
             obj.id === objectiveId
               ? {
@@ -320,13 +309,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
               : obj
           );
 
-          // Check if all objectives are completed
-          const allCompleted = updatedObjectives.every((obj) => obj.completed);
-
           return {
             ...quest,
             objectives: updatedObjectives,
-            status: allCompleted ? ('completed' as QuestStatus) : quest.status,
+            status: quest.status,
           };
         }
         return quest;

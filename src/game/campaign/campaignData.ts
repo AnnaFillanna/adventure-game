@@ -116,7 +116,7 @@ const CHAPTER_5: Chapter = {
     'episode_25_signs_gather', 'episode_26_open_hand_trial', 'episode_27_broken_protection_circle',
     'episode_28_first_light_awakens', 'episode_29_when_night_breaks', 'episode_30_light_we_share',
   ],
-  bossEpisodeId: 'episode_30_light_we_share',
+  bossEpisodeId: 'episode_29_when_night_breaks',
   introKey: 'chapters.05.intro',
   outroKey: 'chapters.05.outro',
   completionRewards: { xp: 700, gold: 300, badgeId: 'badge_first_light_champion' },
@@ -140,7 +140,7 @@ const createEpisode = (
     const eventNum = i as 1 | 2 | 3 | 4;
     events.push({
       id: `${id}_event_${i}`,
-      type: getEventType(eventNum, isBoss),
+      type: number === 30 ? 'story_beat' : getEventType(eventNum, isBoss),
       order: i,
       titleKey: `episodes.${numStr}.event_${i}.title`,
       descriptionKey: `episodes.${numStr}.event_${i}.description`,
@@ -156,7 +156,7 @@ const createEpisode = (
     descriptionKey: `episodes.${numStr}.description`,
     recommendedLevel: 5 + Math.floor((number - 1) / 6) * 3,
     distanceModes: {
-      short: { distanceKm: 1.0, eventIds: [`${id}_event_1`, `${id}_event_2`, `${id}_event_3`] },
+      short: { distanceKm: 1.0, eventIds: [`${id}_event_1`, `${id}_event_2`, `${id}_event_3`, `${id}_event_4`] },
       normal: { distanceKm: 2.5, eventIds: [`${id}_event_1`, `${id}_event_2`, `${id}_event_3`, `${id}_event_4`] },
       long: { distanceKm: 4.5, eventIds: [`${id}_event_1`, `${id}_event_2`, `${id}_event_3`, `${id}_event_4`] },
     },
@@ -208,8 +208,8 @@ const EPISODES: Episode[] = [
   createEpisode('episode_26_open_hand_trial', 26, 'chapter_05_first_light_sword', 'episode_25_signs_gather'),
   createEpisode('episode_27_broken_protection_circle', 27, 'chapter_05_first_light_sword', 'episode_26_open_hand_trial'),
   createEpisode('episode_28_first_light_awakens', 28, 'chapter_05_first_light_sword', 'episode_27_broken_protection_circle'),
-  createEpisode('episode_29_when_night_breaks', 29, 'chapter_05_first_light_sword', 'episode_28_first_light_awakens'),
-  createEpisode('episode_30_light_we_share', 30, 'chapter_05_first_light_sword', 'episode_29_when_night_breaks', true),
+  createEpisode('episode_29_when_night_breaks', 29, 'chapter_05_first_light_sword', 'episode_28_first_light_awakens', true),
+  createEpisode('episode_30_light_we_share', 30, 'chapter_05_first_light_sword', 'episode_29_when_night_breaks'),
 ];
 
 // ============================================================================

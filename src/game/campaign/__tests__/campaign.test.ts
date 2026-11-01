@@ -188,6 +188,7 @@ describe('Campaign System', () => {
       let progress = initializeEpisodeProgress('episode_01_whisper_sand');
       progress = unlockEpisode(progress);
       progress = startEpisode(progress);
+      for (const event of campaign.episodes[0].events) progress = completeEvent(progress, event.id);
       progress = completeEpisode(progress);
       expect(progress.status).toBe(EPISODE_STATUS.COMPLETED);
       expect(progress.completedAt).toBeGreaterThan(0);
@@ -195,12 +196,14 @@ describe('Campaign System', () => {
 
     it('sollte Event-Abschluss registrieren', () => {
       let progress = initializeEpisodeProgress('episode_01_whisper_sand', EPISODE_STATUS.IN_PROGRESS);
-      progress = completeEvent(progress, 'event_1');
-      expect(progress.completedEvents).toContain('event_1');
+      progress = completeEvent(progress, 'episode_01_whisper_sand_event_1');
+      expect(progress.completedEvents).toContain('episode_01_whisper_sand_event_1');
     });
 
-    it('sollte Belohnungen registrieren', () => {
+    it('sollte erst nach allen Ereignissen abschließen', () => {
       let progress = initializeEpisodeProgress('episode_01_whisper_sand');
+      progress = startEpisode(progress);
+      for (const event of campaign.episodes[0].events) progress = completeEvent(progress, event.id);
       progress = completeEpisode(progress);
       expect(progress.status).toBe(EPISODE_STATUS.COMPLETED);
     });
@@ -276,7 +279,7 @@ describe('Campaign System', () => {
 
   describe('Critical Progress Logic - Regression Tests', () => {
     it('Episode-Status kann von LOCKED zu UNLOCKED wechseln', () => {
-      let epProgress = initializeEpisodeProgress('episode_01', 'locked');
+      let epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'locked');
       expect(epProgress.status).toBe('locked');
 
       epProgress = unlockEpisode(epProgress);
@@ -284,9 +287,9 @@ describe('Campaign System', () => {
     });
 
     it('Event darf nicht mehrfach in completedEvents registriert werden', () => {
-      let epProgress = initializeEpisodeProgress('episode_01', 'in_progress');
+      let epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'in_progress');
 
-      const eventId = 'episode_01_event_1';
+      const eventId = 'episode_01_whisper_sand_event_1';
 
       // Complete event first time
       epProgress = completeEvent(epProgress, eventId);
@@ -303,7 +306,7 @@ describe('Campaign System', () => {
     });
 
     it('Abgeschlossene Episode bleibt abgeschlossen', () => {
-      let epProgress = initializeEpisodeProgress('episode_01', 'completed');
+      let epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'completed');
 
       expect(epProgress.status).toBe('completed');
 
@@ -315,17 +318,19 @@ describe('Campaign System', () => {
     });
 
     it('Pausieren und Fortsetzen müssen funktionieren', () => {
-      let epProgress = initializeEpisodeProgress('episode_01', 'in_progress');
+      let epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'in_progress');
 
       expect(epProgress.status).toBe('in_progress');
 
+      const eventId = 'episode_01_whisper_sand_event_1';
+      epProgress = completeEvent(epProgress, eventId);
       // Pause episode
       epProgress = pauseEpisode(epProgress);
       expect(epProgress.status).toBe('paused');
 
-      // Complete partial event while paused
-      const eventId = 'episode_01_event_1';
-      epProgress = completeEvent(epProgress, eventId);
+      // Completing another event while paused must not advance progress
+      epProgress = completeEvent(epProgress, 'episode_01_whisper_sand_event_2');
+      expect(epProgress.completedEvents).not.toContain('episode_01_whisper_sand_event_2');
 
       // Resume episode
       epProgress = resumeEpisode(epProgress);
@@ -367,26 +372,26 @@ describe('Campaign System', () => {
 
     it('Ungültige Zustandswechsel sind gesperrt', () => {
       // LOCKED -> startEpisode should not change
-      let epProgress = initializeEpisodeProgress('episode_01', 'locked');
+      let epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'locked');
       epProgress = startEpisode(epProgress);
       expect(epProgress.status).toBe('locked');
 
       // UNLOCKED -> startEpisode should change to IN_PROGRESS
-      epProgress = initializeEpisodeProgress('episode_01', 'unlocked');
+      epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'unlocked');
       epProgress = startEpisode(epProgress);
       expect(epProgress.status).toBe('in_progress');
 
       // PAUSED -> resumeEpisode should go to IN_PROGRESS
-      epProgress = initializeEpisodeProgress('episode_01', 'paused');
+      epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'paused');
       epProgress = resumeEpisode(epProgress);
       expect(epProgress.status).toBe('in_progress');
     });
 
     it('Fortschritt bleibt nach JSON-Serialisierung erhalten', () => {
-      let epProgress = initializeEpisodeProgress('episode_01', 'in_progress');
+      let epProgress = initializeEpisodeProgress('episode_01_whisper_sand', 'in_progress');
 
-      epProgress = completeEvent(epProgress, 'episode_01_event_1');
-      epProgress = completeEvent(epProgress, 'episode_01_event_2');
+      epProgress = completeEvent(epProgress, 'episode_01_whisper_sand_event_1');
+      epProgress = completeEvent(epProgress, 'episode_01_whisper_sand_event_2');
 
       const before = {
         completed: [...epProgress.completedEvents],
@@ -402,7 +407,7 @@ describe('Campaign System', () => {
     });
 
     it('Boss-Episoden sind korrekt markiert', () => {
-      const bossNumbers = [6, 12, 18, 24, 30];
+      const bossNumbers = [6, 12, 18, 24, 29];
 
       // Boss episodes must have boss_fight event
       bossNumbers.forEach((num) => {

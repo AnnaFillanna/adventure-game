@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import StartScreen from './pages/StartScreen';
 import CharacterSelectionPage from './pages/CharacterSelectionPage';
 import GameWorld from './pages/GameWorld';
+import LegacyGameWorld from './pages/LegacyGameWorld';
 import './App.scss';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<StartScreen />} />
           <Route path="/character-select" element={<CharacterSelectionPage />} />
           <Route path="/game" element={<GameWorld />} />
+          <Route path="/free-world" element={<LegacyGameWorld />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

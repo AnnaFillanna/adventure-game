@@ -19,7 +19,7 @@ describe('Localization System - getText()', () => {
     it('should resolve nested keys', () => {
       expect(getText('startScreen.title')).toBe('Adventure Game');
       expect(getText('startScreen.subtitle')).toBe('Deine Welt. Dein Abenteuer.');
-      expect(getText('startScreen.buttonStart')).toBe('Neues Abenteuer');
+      expect(getText('startScreen.buttonStart')).toBe('Held wählen & Abenteuer öffnen');
     });
 
     it('should resolve hero names', () => {
@@ -283,7 +283,7 @@ describe('Localization System - getText()', () => {
     it('should have all required StartScreen texts', () => {
       expect(getText('startScreen.title')).toBe('Adventure Game');
       expect(getText('startScreen.subtitle')).toBe('Deine Welt. Dein Abenteuer.');
-      expect(getText('startScreen.buttonStart')).toBe('Neues Abenteuer');
+      expect(getText('startScreen.buttonStart')).toBe('Held wählen & Abenteuer öffnen');
       expect(getText('startScreen.buttonContinue')).toBe('Abenteuer fortsetzen');
       expect(getText('startScreen.buttonLoadGame')).toBe('Spielstand laden');
       expect(getText('startScreen.welcomeMessage')).toBe('Willkommen, Abenteurer!');
