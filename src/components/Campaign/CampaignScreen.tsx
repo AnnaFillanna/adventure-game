@@ -1,5 +1,6 @@
 import { SecondEpisodeEvent } from './SecondEpisodeEvent';
 import { FirstEpisodeEvent } from './FirstEpisodeEvent';
+import { ThirdEpisodeEvent } from './ThirdEpisodeEvent';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTextDynamic } from '../../locales';
@@ -51,7 +52,7 @@ export function CampaignScreen({ heroId }: { heroId: HeroId }) {
   return <main className="campaign-screen">
     <header><div><p className="eyebrow">{getHeroDefinition(heroId).name} · Das erste Abenteuer</p>
       <h1>{getTextDynamic(campaign.titleKey)}</h1></div><button onClick={leave}>Pause & Heldenauswahl</button></header>
-    <aside className="demo-notice"><strong>Abenteuer · ohne GPS</strong><p>Episoden 1 und 2 sind spielbar. Episoden 3–30 bleiben eine Story-Demo mit simulierten Ereignissen. Du musst dich nicht bewegen. Jeder Zug wird gespeichert.</p></aside>
+    <aside className="demo-notice"><strong>Abenteuer · ohne GPS</strong><p>Episoden 1, 2 und 3 sind vollständig spielbar. Episoden 4–30 bleiben eine Story-Demo mit simulierten Ereignissen. Du musst dich nicht bewegen. Jeder Zug wird gespeichert.</p></aside>
     <div className="campaign-stats" aria-live="polite"><span>{completed} / 30 Episoden</span><span>{progress.totalXpEarned} XP</span><span>{progress.totalGoldEarned} Gold · Kampagne</span></div>
     {error && <p role="alert" className="save-error">{error}</p>}
     {progress.status === 'completed' && <section className="campaign-finale"><h2>Gemeinsam für das Licht</h2><p>Die Kampagne ist abgeschlossen. Dein Erinnerungsbuch bleibt hier erhalten.</p></section>}
@@ -75,6 +76,8 @@ export function CampaignScreen({ heroId }: { heroId: HeroId }) {
           onInput={input => dispatch({ type: 'play', episodeId: selectedId, eventId: nextEvent.id, input })} />
           : episode.number === 2 ? <SecondEpisodeEvent progress={ep} eventNumber={nextEvent.order}
             onInput={input => dispatch({ type: 'playSecond', episodeId: selectedId, eventId: nextEvent.id, input })} />
+          : episode.number === 3 ? <ThirdEpisodeEvent progress={ep} eventNumber={nextEvent.order}
+            onInput={input => dispatch({ type: 'playThird', episodeId: selectedId, eventId: nextEvent.id, input })} />
           : <><p>{getTextDynamic(nextEvent.descriptionKey)}</p><button className="primary" onClick={() => dispatch({ type: 'event', episodeId: selectedId, eventId: nextEvent.id })}>Ereignis simulieren</button></>}
         <button onClick={() => dispatch({ type: 'pause', episodeId: selectedId })}>Pausieren</button></section>}
       {ep.status === 'in_progress' && !nextEvent && <button className="primary" onClick={() => dispatch({ type: 'finish', episodeId: selectedId })}>Episode abschließen</button>}
