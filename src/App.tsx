@@ -9,6 +9,7 @@ import CharacterSelectionPage from './pages/CharacterSelectionPage';
 import GameWorld from './pages/GameWorld';
 import LegacyGameWorld from './pages/LegacyGameWorld';
 import { OutdoorAdventure } from './pages/OutdoorAdventure';
+import DebugCampaignPage from './pages/DebugCampaignPage';
 import './App.scss';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/game" element={<GameWorld />} />
           <Route path="/game/outdoor" element={<OutdoorAdventure onReturn={() => window.history.back()} allowDemoMode={true} />} />
           <Route path="/free-world" element={<LegacyGameWorld />} />
+          <Route path="/debug/campaign" element={<DebugCampaignPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

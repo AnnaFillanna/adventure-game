@@ -1,0 +1,414 @@
+/**
+ * Simplified Campaign Screen Styles
+ * Minimalist, atmospheric, focused on current story only
+ */
+
+.simplified-campaign-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: radial-gradient(ellipse at top right, #344237, #10251e 60%);
+  color: #f7f1df;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  &.error {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    .error-container {
+      text-align: center;
+      max-width: 400px;
+
+      h1 {
+        font-size: clamp(20px, 5vw, 28px);
+        margin-bottom: 12px;
+      }
+
+      p {
+        margin-bottom: 20px;
+        opacity: 0.9;
+      }
+
+      button {
+        padding: 12px 24px;
+        background: #e4c17b;
+        color: #172b21;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 16px;
+
+        &:hover {
+          background: #f6cc75;
+        }
+      }
+    }
+  }
+
+  /* Header - minimal and clean */
+  header.minimalist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(12px, 3vw, 20px);
+    border-bottom: 1px solid rgba(215, 190, 125, 0.2);
+    background: rgba(16, 37, 30, 0.5);
+    backdrop-filter: blur(10px);
+
+    .hero-info {
+      flex: 1;
+
+      .hero-name {
+        font-size: 14px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #d7be7d;
+        margin: 0;
+        font-weight: 600;
+      }
+    }
+
+    .pause-button {
+      background: transparent;
+      border: 1px solid #8a916f;
+      color: #f7f1df;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 200ms ease;
+
+      &:hover {
+        background: rgba(138, 145, 111, 0.2);
+        border-color: #d7be7d;
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+  }
+
+  /* Error message */
+  .error-message {
+    background: rgba(104, 46, 41, 0.8);
+    border-left: 3px solid #e4c17b;
+    color: #fcc;
+    padding: 14px 18px;
+    margin: 12px 16px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    animation: slideDown 300ms ease;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Main story section */
+  article.story-section {
+    flex: 1;
+    overflow-y: auto;
+    padding: clamp(20px, 5vw, 40px);
+    display: flex;
+    flex-direction: column;
+
+    /* Scrollbar styling */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(215, 190, 125, 0.3);
+      border-radius: 3px;
+
+      &:hover {
+        background: rgba(215, 190, 125, 0.5);
+      }
+    }
+  }
+
+  /* Episode header */
+  .episode-header {
+    text-align: center;
+    margin-bottom: clamp(24px, 8vw, 48px);
+
+    .episode-title {
+      font-family: Georgia, serif;
+      font-size: clamp(28px, 6vw, 48px);
+      font-weight: 400;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin: 0;
+      color: #f7f1df;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  /* Episode sections */
+  .episode-start,
+  .event-section,
+  .episode-completion,
+  .episode-paused,
+  .episode-completed,
+  .campaign-finale {
+    animation: fadeIn 400ms ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Story intro */
+  .story-intro {
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 32px;
+    text-align: center;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Event section */
+  .event-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Event title */
+  .event-title {
+    font-family: Georgia, serif;
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 400;
+    margin: 0 0 24px;
+    color: #f7f1df;
+    text-align: center;
+  }
+
+  /* Simulated event (fallback) */
+  .simulated-event {
+    text-align: center;
+    margin: 24px 0;
+
+    p {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+  }
+
+  /* Big action buttons - center of UX */
+  .big-action-button {
+    background: linear-gradient(135deg, #e4c17b 0%, #f6cc75 100%);
+    color: #172b21;
+    border: none;
+    border-radius: 12px;
+    padding: clamp(16px, 4vw, 24px) clamp(32px, 8vw, 48px);
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(228, 193, 123, 0.3);
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    margin: 12px auto 0;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #f6cc75 0%, #ffd966 100%);
+      box-shadow: 0 6px 16px rgba(228, 193, 123, 0.5);
+      transform: translateY(-2px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: 3px solid #f6cc75;
+      outline-offset: 3px;
+    }
+  }
+
+  /* Secondary buttons */
+  .secondary-button {
+    background: transparent;
+    border: 1px solid #8a916f;
+    color: #f7f1df;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 200ms ease;
+
+    &:hover {
+      background: rgba(138, 145, 111, 0.15);
+      border-color: #d7be7d;
+      color: #d7be7d;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+
+    &:focus-visible {
+      outline: 3px solid #f6cc75;
+      outline-offset: 2px;
+    }
+  }
+
+  /* Action footer */
+  .action-footer {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(215, 190, 125, 0.1);
+  }
+
+  /* Episode completion messages */
+  .episode-completion,
+  .episode-paused,
+  .episode-completed,
+  .campaign-finale {
+    text-align: center;
+    padding: clamp(20px, 4vw, 32px);
+    border-radius: 12px;
+    background: rgba(25, 49, 40, 0.6);
+    border: 1px solid rgba(215, 190, 125, 0.2);
+
+    h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(22px, 5vw, 32px);
+      margin-bottom: 16px;
+      color: #d7be7d;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.8;
+      margin-bottom: 24px;
+      opacity: 0.9;
+    }
+  }
+
+  /* Debug footer - very subtle */
+  footer.debug-footer {
+    padding: 12px 16px;
+    text-align: center;
+    border-top: 1px solid rgba(215, 190, 125, 0.15);
+    background: rgba(16, 37, 30, 0.3);
+
+    .debug-button {
+      background: transparent;
+      border: 1px solid rgba(215, 190, 125, 0.3);
+      color: rgba(215, 190, 125, 0.6);
+      padding: 8px 12px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 200ms ease;
+
+      &:hover {
+        background: rgba(215, 190, 125, 0.1);
+        color: #d7be7d;
+        border-color: #d7be7d;
+      }
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    header.minimalist-header {
+      padding: 12px;
+    }
+
+    article.story-section {
+      padding: 16px;
+    }
+
+    .episode-header {
+      margin-bottom: 24px;
+    }
+
+    .big-action-button {
+      width: 100%;
+      max-width: none;
+    }
+
+    .action-footer {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    footer.debug-footer {
+      font-size: 10px;
+    }
+  }
+}
+
+/* Mobile landscape - stack more compactly */
+@media (max-height: 600px) {
+  .simplified-campaign-screen {
+    article.story-section {
+      padding: 12px 16px;
+    }
+
+    .episode-header {
+      margin-bottom: 12px;
+    }
+
+    .episode-title {
+      font-size: clamp(20px, 4vw, 28px) !important;
+    }
+
+    .big-action-button {
+      padding: 12px 24px;
+      font-size: 16px;
+      min-height: 44px;
+    }
+  }
+}

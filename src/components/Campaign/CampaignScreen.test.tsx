@@ -23,8 +23,7 @@ async function click(label: string) {
   await act(async () => button!.click());
 }
 it('plays, pauses, reloads and completes an episode through the actual game screen', async () => {
-  expect(container.textContent).toContain('Abenteuer · ohne GPS');
-  await click('Episode starten');
+  await click('Abenteuer beginnen');
   await click('Botschaft gelesen – weiter');
   await click('Pausieren');
   expect(container.textContent).toContain('Abenteuer pausiert');
@@ -43,18 +42,26 @@ it('plays, pauses, reloads and completes an episode through the actual game scre
   expect(saved.episodeProgress[campaign.episodes[0].id].status).toBe('completed');
   expect(saved.totalXpEarned).toBe(100); expect(saved.totalGoldEarned).toBe(20);
   expect(saved.episodeProgress[campaign.episodes[1].id].status).toBe('unlocked');
-  await click('Nächste Episode');
+  // Episode 2 should auto-load on page reload
+  await act(async () => root.unmount());
+  useGameStore.getState().resetGame();
+  root = createRoot(container);
+  await act(async () => root.render(<MemoryRouter><GameWorld /></MemoryRouter>));
   expect(container.querySelector('article h2')?.textContent).toBe('Die stumme Glocke');
-  await click('Episode starten'); await click('Der Hüterin helfen');
+  await click('Abenteuer beginnen'); await click('Der Hüterin helfen');
   await click('Wurzel'); await click('Welle'); await click('Stern');
   await click('Ruhig zuhören'); await click('An seinen Namen Lior erinnern'); await click('Das Glockenlied summen');
   await click('Glockenerinnerung öffnen'); await click('Glockensiegel im Tagebuch bewahren');
   expect(loadCampaignProgress(campaign.id, 'aeran')!.totalGoldEarned).toBe(40);
-  await click('Nächste Episode');
+  // Episode 3 should auto-load on page reload
+  await act(async () => root.unmount());
+  useGameStore.getState().resetGame();
+  root = createRoot(container);
+  await act(async () => root.render(<MemoryRouter><GameWorld /></MemoryRouter>));
   expect(container.querySelector('article h2')?.textContent).toBe('Die gestohlene Laterne');
 });
 it('does not advance the UI or rewards on write failure, and retries once safely', async () => {
-  await click('Episode starten');
+  await click('Abenteuer beginnen');
   const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('full'); });
   vi.spyOn(console, 'error').mockImplementation(() => {});
   await click('Botschaft gelesen – weiter');
@@ -74,21 +81,29 @@ it('shows a load error without replacing a damaged campaign save', async () => {
 });
 
 it('plays episode 3 completely with all four events', async () => {
-  await click('Episode starten');
+  await click('Abenteuer beginnen');
   // Episode 1
   await click('Botschaft gelesen – weiter'); await click('Zur aufgehenden Sonne');
   await click('Lichtstoß (2 Schaden)'); await click('Schützen'); await click('Lichtstoß (2 Schaden)');
   await click('Sonne'); await click('Pfad'); await click('Turm');
   // Episode 2
-  await click('Nächste Episode');
-  await click('Episode starten'); await click('Der Hüterin helfen');
+  await act(async () => root.unmount());
+  useGameStore.getState().resetGame();
+  root = createRoot(container);
+  await act(async () => root.render(<MemoryRouter><GameWorld /></MemoryRouter>));
+  expect(container.querySelector('article h2')?.textContent).toBe('Die stumme Glocke');
+  await click('Abenteuer beginnen'); await click('Der Hüterin helfen');
   await click('Wurzel'); await click('Welle'); await click('Stern');
   await click('Ruhig zuhören'); await click('An seinen Namen Lior erinnern'); await click('Das Glockenlied summen');
   await click('Glockenerinnerung öffnen'); await click('Glockensiegel im Tagebuch bewahren');
+  expect(loadCampaignProgress(campaign.id, 'aeran')!.totalGoldEarned).toBe(40);
   // Episode 3
-  await click('Nächste Episode');
+  await act(async () => root.unmount());
+  useGameStore.getState().resetGame();
+  root = createRoot(container);
+  await act(async () => root.render(<MemoryRouter><GameWorld /></MemoryRouter>));
   expect(container.querySelector('article h2')?.textContent).toBe('Die gestohlene Laterne');
-  await click('Episode starten');
+  await click('Abenteuer beginnen');
   // Event 1: Merchant dialog
   expect(container.textContent).toContain('Händler befragen');
   await click('Weiter hören'); await click('Weiter hören');
