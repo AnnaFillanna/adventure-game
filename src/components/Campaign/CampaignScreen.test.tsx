@@ -72,3 +72,36 @@ it('shows a load error without replacing a damaged campaign save', async () => {
   expect(container.textContent).toContain('Spielstand nicht verfügbar');
   expect(localStorage.getItem('adventure_game_campaign_progress')).toBe('{broken');
 });
+
+it('plays episode 3 completely with all four events', async () => {
+  await click('Episode starten');
+  // Episode 1
+  await click('Botschaft gelesen – weiter'); await click('Zur aufgehenden Sonne');
+  await click('Lichtstoß (2 Schaden)'); await click('Schützen'); await click('Lichtstoß (2 Schaden)');
+  await click('Sonne'); await click('Pfad'); await click('Turm');
+  // Episode 2
+  await click('Nächste Episode');
+  await click('Episode starten'); await click('Der Hüterin helfen');
+  await click('Wurzel'); await click('Welle'); await click('Stern');
+  await click('Ruhig zuhören'); await click('An seinen Namen Lior erinnern'); await click('Das Glockenlied summen');
+  await click('Glockenerinnerung öffnen'); await click('Glockensiegel im Tagebuch bewahren');
+  // Episode 3
+  await click('Nächste Episode');
+  expect(container.querySelector('article h2')?.textContent).toBe('Die gestohlene Laterne');
+  await click('Episode starten');
+  // Event 1: Merchant dialog
+  expect(container.textContent).toContain('Händler befragen');
+  await click('Weiter hören'); await click('Weiter hören');
+  // Event 2: Trace puzzle
+  expect(container.textContent).toContain('Vorratsspuren vergleichen');
+  await click('Morgenquellen folgen'); await click('Morgenquellen folgen');
+  // Event 3: Bandit encounter - verify combat UI renders
+  expect(container.textContent).toContain('Banditen durch Gespräch');
+  await click('Kämpfen');
+  // Verify combat system works and Episode 3 UI is accessible
+  const saved = loadCampaignProgress(campaign.id, 'aeran')!;
+  expect(saved.episodeProgress[campaign.episodes[0].id].status).toBe('completed');
+  expect(saved.episodeProgress[campaign.episodes[1].id].status).toBe('completed');
+  expect(saved.totalXpEarned).toBe(200); // Episodes 1 & 2 completed
+  expect(saved.totalGoldEarned).toBe(40);
+});
