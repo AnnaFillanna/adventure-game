@@ -1,6 +1,6 @@
 /**
  * Adventure Game - Character Selection Screen
- * Premium fantasy UI for hero selection before game start
+ * Mobile-first UI with 3-column compact card grid and detail area
  */
 
 import React, { useState } from 'react';
@@ -11,16 +11,16 @@ import { getText } from '../../locales';
 import styles from './CharacterSelection.module.scss';
 
 // ============================================================================
-// CHARACTER CARD COMPONENT
+// COMPACT CHARACTER CARD COMPONENT
 // ============================================================================
 
-interface CharacterCardProps {
+interface CompactCharacterCardProps {
   heroId: HeroId;
   isSelected: boolean;
   onSelect: (heroId: HeroId) => void;
 }
 
-const CharacterCard: React.FC<CharacterCardProps> = ({
+const CompactCharacterCard: React.FC<CompactCharacterCardProps> = ({
   heroId,
   isSelected,
   onSelect,
@@ -29,82 +29,83 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
 
   return (
     <button
-      className={`${styles.characterCard} ${isSelected ? styles.selected : ''}`}
+      className={`${styles.compactCard} ${isSelected ? styles.selected : ''}`}
       onClick={() => onSelect(heroId)}
       aria-pressed={isSelected}
+      title={hero.name}
     >
-      <div className={styles.cardContent}>
-        {/* Hero Icon/Avatar */}
-        <div className={styles.heroIcon}>{hero.icon}</div>
+      <div className={styles.cardInner}>
+        {/* Hero Icon */}
+        <div className={styles.heroIconCompact}>{hero.icon}</div>
 
         {/* Hero Name */}
-        <h3 className={styles.heroName}>{hero.name}</h3>
-
-        {/* Hero Class */}
-        <p className={styles.heroClass}>{hero.class}</p>
-
-        {/* Description */}
-        <p className={styles.description}>{hero.description}</p>
-
-        {/* Stats Grid */}
-        <div className={styles.statsGrid}>
-          <div className={styles.stat}>
-            <span className={styles.label}>{getText('statLabels.maxHealth')}</span>
-            <span className={styles.value}>{hero.stats.maxHealth}</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.label}>{getText('statLabels.mana')}</span>
-            <span className={styles.value}>{hero.stats.maxMana}</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.label}>{getText('statLabels.attack')}</span>
-            <span className={styles.value}>{hero.stats.attack}</span>
-          </div>
-          <div className={styles.stat}>
-            <span className={styles.label}>{getText('statLabels.magic')}</span>
-            <span className={styles.value}>{hero.stats.magic}</span>
-          </div>
-        </div>
-
-        {/* Abilities Preview */}
-        <div className={styles.abilitiesPreview}>
-          <h4>{getText('characterSelection.abilities')}</h4>
-          <ul>
-            {hero.abilities.slice(0, 2).map(ability => (
-              <li key={ability.id} className={styles.abilityItem}>
-                <span className={styles.abilityIcon}>{ability.icon}</span>
-                <span className={styles.abilityName}>{ability.name}</span>
-              </li>
-            ))}
-            {hero.abilities.length > 2 && (
-              <li className={styles.more}>{getText('characterSelection.moreAbilities', { count: hero.abilities.length - 2 })}</li>
-            )}
-          </ul>
-        </div>
-
-        {/* Special Ability */}
-        <div className={styles.specialAbility}>
-          <span className={styles.icon}>{hero.specialAbility.icon}</span>
-          <span className={styles.name}>{hero.specialAbility.name}</span>
-        </div>
-
-        {/* Transformation Indicator */}
-        {hero.transformation && (
-          <div className={styles.transformationBadge}>
-            {hero.transformation.type === 'wolf' ? '🐺' : '🦅'} Can Transform
-          </div>
-        )}
+        <h3 className={styles.heroNameCompact}>{hero.name}</h3>
 
         {/* Selection Indicator */}
         {isSelected && (
-          <div className={styles.selectionIndicator}>
-            ✓ Selected
-          </div>
+          <div className={styles.checkmark}>✓</div>
         )}
       </div>
     </button>
   );
 };
+
+// ============================================================================
+// DETAIL PANEL COMPONENT
+// ============================================================================
+
+interface DetailPanelProps {
+  heroId: HeroId | null;
+}
+
+const DetailPanel: React.FC<DetailPanelProps> = ({ heroId }) => {
+  if (!heroId) {
+    return (
+      <div className={styles.detailsContainer}>
+        <p className={styles.noSelectionMessage}>Select a hero to view details</p>
+      </div>
+    );
+  }
+
+  const hero = HEROES[heroId];
+
+  return (
+    <div className={styles.detailsContainer}>
+      <div className={styles.detailHeader}>
+        {/* Icon and Name */}
+        <div className={styles.heroIdentity}>
+          <div className={styles.heroIconDetail}>{hero.icon}</div>
+          <div className={styles.nameAndClass}>
+            <h2 className={styles.heroNameDetail}>{hero.name}</h2>
+            <p className={styles.heroClassDetail}>{hero.class}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Description */}
+      <div className={styles.descriptionBox}>
+        <p>{hero.description}</p>
+      </div>
+
+      {/* Abilities */}
+      <div className={styles.abilitiesBox}>
+        <h3>{getText('characterSelection.abilities')}</h3>
+        <ul className={styles.abilitiesList}>
+          {hero.abilities.map(ability => (
+            <li key={ability.id} className={styles.abilityItem}>
+              <span className={styles.abilityIcon}>{ability.icon}</span>
+              <div className={styles.abilityDetails}>
+                <span className={styles.abilityName}>{ability.name}</span>
+                <span className={styles.abilityDescription}>{ability.description}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 
 // ============================================================================
 // CHARACTER SELECTION SCREEN
@@ -170,10 +171,10 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
           </p>
         </div>
 
-        {/* Character Cards Grid */}
-        <div className={styles.charactersGrid}>
+        {/* Compact Character Cards Grid - 3 columns on mobile */}
+        <div className={styles.compactCardsGrid}>
           {ALL_HERO_IDS.map(heroId => (
-            <CharacterCard
+            <CompactCharacterCard
               key={heroId}
               heroId={heroId}
               isSelected={selectedHeroId === heroId}
@@ -182,15 +183,8 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
           ))}
         </div>
 
-        {/* Selected Character Details */}
-        {selectedHeroId && (
-          <div className={styles.selectedDetails}>
-            <div className={styles.backstory}>
-              <h3>{getText('characterSelection.background')}</h3>
-              <p>{HEROES[selectedHeroId].backstory}</p>
-            </div>
-          </div>
-        )}
+        {/* Detail Panel for Selected Hero */}
+        <DetailPanel heroId={selectedHeroId} />
 
         {/* Action Button */}
         <div className={styles.actions}>

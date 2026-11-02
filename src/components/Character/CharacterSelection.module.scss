@@ -1,6 +1,6 @@
 /**
- * Adventure Game - Character Selection Styles
- * Premium fantasy UI with dark green and gold theme
+ * Adventure Game - Character Selection Styles (Mobile-First)
+ * 3-column compact card grid with detail panel below
  */
 
 @import '../../styles/colors.scss';
@@ -54,17 +54,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  justify-content: flex-start;
   width: 100%;
+  max-width: 100%;
+  overflow-y: auto;
 
-  @media (max-width: 768px) {
-    padding: 1.5rem;
+  // Safe area support for iPhone
+  @supports (padding: max(0px)) {
+    padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) 
+             max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
   }
 
-  @media (max-width: 480px) {
+  @supports not (padding: max(0px)) {
+    padding: 1rem;
+  }
+
+  @media (max-width: 768px) {
     padding: 1rem;
   }
 }
@@ -75,7 +80,8 @@
 
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
   animation: fadeInDown 0.8s ease-out;
 
   @keyframes fadeInDown {
@@ -91,52 +97,56 @@
 }
 
 .title {
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 900;
   color: $color-gold;
   margin: 0 0 0.5rem 0;
   text-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.5),
     0 0 10px rgba(212, 165, 116, 0.3);
-  letter-spacing: 2px;
-
-  @media (max-width: 768px) {
-    font-size: 2rem;
-    letter-spacing: 1px;
-  }
+  letter-spacing: 1px;
+  word-break: break-word;
 
   @media (max-width: 480px) {
     font-size: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 3rem;
+    letter-spacing: 2px;
   }
 }
 
 .subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: $color-text-secondary;
   margin: 0;
   opacity: 0.9;
   font-style: italic;
 
-  @media (max-width: 768px) {
-    font-size: 0.95rem;
-  }
-
   @media (max-width: 480px) {
     font-size: 0.85rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1.1rem;
   }
 }
 
 // ============================================================================
-// CHARACTERS GRID
+// COMPACT CARDS GRID (3 COLUMNS MOBILE, 4-5 ON DESKTOP)
 // ============================================================================
 
-.charactersGrid {
+.compactCardsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
   width: 100%;
-  margin-bottom: 2rem;
+  max-width: 100%;
+  margin-bottom: 1.5rem;
   animation: fadeIn 1s ease-out 0.2s both;
+  padding: 0 0.5rem;
 
   @keyframes fadeIn {
     from {
@@ -147,33 +157,41 @@
     }
   }
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    padding: 0;
   }
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  @media (max-width: 480px) {
+  @media (min-width: 601px) and (max-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
-    margin-bottom: 1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 769px) {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 // ============================================================================
-// CHARACTER CARD
+// COMPACT CHARACTER CARD
 // ============================================================================
 
-.characterCard {
+.compactCard {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0.75rem;
   border: 2px solid $color-gold;
   border-radius: 12px;
   background: linear-gradient(
@@ -185,7 +203,7 @@
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  height: 100%;
+  min-height: 100px;
 
   &:hover {
     border-color: lighten($color-gold, 10%);
@@ -193,6 +211,10 @@
       0 8px 25px rgba(212, 165, 116, 0.2),
       0 0 20px rgba(212, 165, 116, 0.1);
     transform: translateY(-4px);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 
   &.selected {
@@ -203,361 +225,368 @@
       rgba(212, 165, 116, 0.08) 100%
     );
     box-shadow:
-      0 8px 30px rgba(212, 165, 116, 0.3),
-      0 0 30px rgba(212, 165, 116, 0.2);
-    transform: scale(1.02);
+      0 0 30px rgba(212, 165, 116, 0.3),
+      inset 0 0 20px rgba(212, 165, 116, 0.1);
 
-    .selectionIndicator {
-      opacity: 1;
-      transform: translateY(0);
+    .checkmark {
+      display: flex;
     }
   }
 
-  &:active {
-    transform: scale(0.98);
+  &:focus-visible {
+    outline: 3px solid $color-gold;
+    outline-offset: 2px;
   }
 }
 
-.cardContent {
-  width: 100%;
-  height: 100%;
-  padding: 1.5rem;
+.cardInner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 0.5rem;
   text-align: center;
-
-  @media (max-width: 480px) {
-    padding: 1rem;
-    gap: 0.75rem;
-  }
+  position: relative;
 }
 
-// ============================================================================
-// HERO ICON
-// ============================================================================
-
-.heroIcon {
-  font-size: 4rem;
-  filter: drop-shadow(0 0 8px rgba(212, 165, 116, 0.3));
-  animation: float 3s ease-in-out infinite;
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
+.heroIconCompact {
+  font-size: 2.5rem;
+  line-height: 1;
 
   @media (max-width: 480px) {
+    font-size: 2rem;
+  }
+
+  @media (min-width: 768px) {
     font-size: 3rem;
   }
 }
 
-// ============================================================================
-// HERO INFO
-// ============================================================================
-
-.heroName {
-  font-size: 1.5rem;
+.heroNameCompact {
+  font-size: 0.85rem;
   font-weight: 700;
   color: $color-gold;
   margin: 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  word-break: break-word;
+  line-height: 1.2;
+
+  @media (max-width: 480px) {
+    font-size: 0.75rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+.checkmark {
+  display: none;
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: $color-gold;
+  color: $color-primary-dark;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: bold;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+// ============================================================================
+// DETAILS CONTAINER (BELOW CARDS)
+// ============================================================================
+
+.detailsContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+  animation: fadeIn 0.5s ease-out;
+
+  @media (max-width: 480px) {
+    padding: 0 0.75rem;
+    margin: 1rem auto;
+  }
+
+  @media (min-width: 768px) {
+    max-width: 700px;
+    padding: 0 1.5rem;
+  }
+}
+
+.noSelectionMessage {
+  text-align: center;
+  color: $color-text-secondary;
+  font-size: 1rem;
+  font-style: italic;
+  opacity: 0.8;
+  margin: 2rem 0;
+}
+
+// ============================================================================
+// DETAIL HEADER
+// ============================================================================
+
+.detailHeader {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(26, 58, 42, 0.6) 0%,
+    rgba(212, 165, 116, 0.05) 100%
+  );
+  border-radius: 8px;
+  border-left: 4px solid $color-gold;
+
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.heroIdentity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+  }
+}
+
+.heroIconDetail {
+  font-size: 3rem;
+  line-height: 1;
+  flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    font-size: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 3.5rem;
+  }
+}
+
+.nameAndClass {
+  flex: 1;
+}
+
+.heroNameDetail {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $color-gold;
+  margin: 0;
+  line-height: 1.1;
+
+  @media (max-width: 480px) {
+    font-size: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 2rem;
+  }
+}
+
+.heroClassDetail {
+  font-size: 0.9rem;
+  color: $color-text-secondary;
+  margin: 0.25rem 0 0 0;
+  text-transform: capitalize;
+  opacity: 0.8;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
+
+  @media (min-width: 768px) {
+    font-size: 1rem;
+  }
+}
+
+// ============================================================================
+// DESCRIPTION BOX
+// ============================================================================
+
+.descriptionBox {
+  background: rgba(212, 165, 116, 0.03);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  p {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 0.95rem;
+    line-height: 1.5;
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}
+
+// ============================================================================
+// ABILITIES BOX
+// ============================================================================
+
+.abilitiesBox {
+  background: rgba(212, 165, 116, 0.03);
+  border: 1px solid rgba(212, 165, 116, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: $color-gold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    @media (max-width: 480px) {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.abilitiesList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.abilityItem {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  border-left: 3px solid $color-gold;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(212, 165, 116, 0.08);
+    transform: translateX(2px);
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+}
+
+.abilityIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
 
   @media (max-width: 480px) {
     font-size: 1.25rem;
   }
 }
 
-.heroClass {
-  font-size: 0.9rem;
-  color: $color-text-secondary;
-  margin: 0;
-  opacity: 0.8;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
-
-  @media (max-width: 480px) {
-    font-size: 0.8rem;
-  }
-}
-
-.description {
-  font-size: 0.95rem;
-  color: $color-text-secondary;
-  margin: 0.5rem 0 0 0;
-  line-height: 1.4;
-  opacity: 0.85;
-
-  @media (max-width: 480px) {
-    font-size: 0.85rem;
-    line-height: 1.3;
-  }
-}
-
-// ============================================================================
-// STATS GRID
-// ============================================================================
-
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.75rem;
-  width: 100%;
-  padding: 1rem 0;
-  border-top: 1px solid rgba(212, 165, 116, 0.2);
-  border-bottom: 1px solid rgba(212, 165, 116, 0.2);
-
-  @media (max-width: 480px) {
-    gap: 0.5rem;
-    padding: 0.75rem 0;
-  }
-}
-
-.stat {
+.abilityDetails {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 0.25rem;
+  flex: 1;
 }
 
-.label {
-  font-size: 0.7rem;
-  color: $color-text-secondary;
-  opacity: 0.7;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.value {
-  font-size: 1.1rem;
+.abilityName {
+  font-size: 0.95rem;
   font-weight: 700;
   color: $color-gold;
 
   @media (max-width: 480px) {
-    font-size: 0.95rem;
-  }
-}
-
-// ============================================================================
-// ABILITIES PREVIEW
-// ============================================================================
-
-.abilitiesPreview {
-  width: 100%;
-  text-align: left;
-
-  h4 {
     font-size: 0.85rem;
-    color: $color-gold;
-    margin: 0.5rem 0 0.5rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
   }
 }
 
-.abilityItem {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.abilityDescription {
   font-size: 0.8rem;
   color: $color-text-secondary;
-
-  .abilityIcon {
-    font-size: 1rem;
-  }
-
-  .abilityName {
-    flex: 1;
-  }
-}
-
-.more {
-  font-size: 0.75rem !important;
-  opacity: 0.6;
-  font-style: italic;
-}
-
-// ============================================================================
-// SPECIAL ABILITY
-// ============================================================================
-
-.specialAbility {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: linear-gradient(
-    135deg,
-    rgba(212, 165, 116, 0.1),
-    rgba(212, 165, 116, 0.05)
-  );
-  border: 1px dashed rgba(212, 165, 116, 0.3);
-  border-radius: 8px;
-  width: 100%;
-
-  .icon {
-    font-size: 1.2rem;
-    filter: drop-shadow(0 0 4px rgba(212, 165, 116, 0.2));
-  }
-
-  .name {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: $color-gold;
-  }
-}
-
-// ============================================================================
-// TRANSFORMATION BADGE
-// ============================================================================
-
-.transformationBadge {
-  display: inline-block;
-  padding: 0.4rem 0.8rem;
-  background: linear-gradient(135deg, #FF6B6B, #C44444);
-  color: white;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 10px rgba(255, 107, 107, 0.2);
-}
-
-// ============================================================================
-// SELECTION INDICATOR
-// ============================================================================
-
-.selectionIndicator {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: $color-gold;
-  color: $color-primary-dark;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  font-weight: 900;
-  box-shadow: 0 4px 12px rgba(212, 165, 116, 0.3);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: all 0.3s ease;
-}
-
-// ============================================================================
-// SELECTED DETAILS
-// ============================================================================
-
-.selectedDetails {
-  width: 100%;
-  max-width: 600px;
-  padding: 1.5rem;
-  background: linear-gradient(
-    135deg,
-    rgba(212, 165, 116, 0.08) 0%,
-    rgba(212, 165, 116, 0.04) 100%
-  );
-  border: 1px solid rgba(212, 165, 116, 0.3);
-  border-radius: 12px;
-  margin: 1rem 0 2rem 0;
-  animation: fadeIn 0.5s ease-out;
+  opacity: 0.9;
+  line-height: 1.3;
 
   @media (max-width: 480px) {
-    padding: 1rem;
-    margin: 0.75rem 0 1.5rem 0;
-  }
-}
-
-.backstory {
-  h3 {
-    color: $color-gold;
-    font-size: 0.95rem;
-    margin: 0 0 0.75rem 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-  }
-
-  p {
-    color: $color-text-secondary;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin: 0;
-    opacity: 0.9;
-
-    @media (max-width: 480px) {
-      font-size: 0.8rem;
-      line-height: 1.4;
-    }
+    font-size: 0.75rem;
   }
 }
 
 // ============================================================================
-// ACTIONS
+// ACTIONS BUTTON
 // ============================================================================
 
 .actions {
   display: flex;
-  gap: 1rem;
   justify-content: center;
   width: 100%;
-  animation: fadeInUp 0.8s ease-out 0.4s both;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  @media (max-width: 480px) {
+    padding: 0 0.75rem;
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 }
 
 .startButton {
-  padding: 0.9rem 2.5rem;
+  padding: 1rem 2rem;
   font-size: 1.1rem;
   font-weight: 700;
   color: $color-primary-dark;
-  background: linear-gradient(135deg, $color-gold, lighten($color-gold, 5%));
+  background: linear-gradient(135deg, $color-gold 0%, #E6C200 100%);
   border: 2px solid $color-gold;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 4px 15px rgba(212, 165, 116, 0.3);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(212, 165, 116, 0.3);
+  min-width: 200px;
 
   &:hover:not(:disabled) {
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(212, 165, 116, 0.4);
+    transform: translateY(-2px);
+    box-shadow:
+      0 8px 30px rgba(212, 165, 116, 0.4),
+      0 0 20px rgba(212, 165, 116, 0.2);
   }
 
   &:active:not(:disabled) {
-    transform: scale(0.98);
+    transform: translateY(0);
   }
 
   &:disabled {
@@ -570,40 +599,28 @@
 
     @keyframes pulse {
       0%, 100% {
-        box-shadow: 0 4px 15px rgba(212, 165, 116, 0.3);
+        box-shadow: 0 6px 20px rgba(212, 165, 116, 0.3);
       }
       50% {
-        box-shadow: 0 4px 25px rgba(212, 165, 116, 0.5);
+        box-shadow: 0 6px 30px rgba(212, 165, 116, 0.5);
       }
     }
   }
 
   &.loading {
-    pointer-events: none;
-    opacity: 0.8;
-
-    &::after {
-      content: '';
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      margin-left: 0.5em;
-      border: 2px solid rgba(26, 58, 42, 0.3);
-      border-radius: 50%;
-      border-top-color: $color-primary-dark;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+    opacity: 0.7;
   }
 
   @media (max-width: 480px) {
     padding: 0.75rem 1.5rem;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    min-width: 160px;
+  }
+
+  @media (min-width: 768px) {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+    min-width: 250px;
   }
 }
 
@@ -612,43 +629,15 @@
 // ============================================================================
 
 .helpText {
+  text-align: center;
+  color: $color-text-secondary;
   font-size: 0.9rem;
-  color: $color-gold;
-  margin-top: 1.5rem;
+  margin: 1rem 0;
   opacity: 0.7;
-  animation: fadeIn 0.8s ease-out 0.6s both;
+  animation: fadeIn 0.8s ease-out;
 
   @media (max-width: 480px) {
     font-size: 0.8rem;
-    margin-top: 1rem;
-  }
-}
-
-// ============================================================================
-// ACCESSIBILITY
-// ============================================================================
-
-@media (prefers-reduced-motion: reduce) {
-  .characterCard,
-  .startButton,
-  .heroIcon,
-  .selectedDetails,
-  .title {
-    animation: none !important;
-    transition: none !important;
-  }
-
-  .characterCard.selected {
-    transform: none;
-  }
-
-  .heroIcon {
-    animation: none;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .characterSelectionScreen {
-    background-color: $color-primary-dark;
+    margin: 0.75rem 0;
   }
 }
