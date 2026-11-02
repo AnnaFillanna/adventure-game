@@ -81,12 +81,12 @@ export function playThirdEpisode(progress: EpisodeProgress, eventId: string, inp
           // Enemy attacks back
           state.playerHealth = Math.max(0, state.playerHealth - 1);
           state.feedback = state.playerHealth === 0 ? 'playerDefeated' : 'banditAttack';
+          state.banditCombatPhase++;
         } else {
           state.banditCombatPhase = 4;
           state.feedback = 'banditDefeated';
           solved = true;
         }
-        state.banditCombatPhase++;
       } else if (input === 'combat_defend') {
         state.feedback = 'playerDefend';
         if (state.banditHealth > 0) {
@@ -96,8 +96,8 @@ export function playThirdEpisode(progress: EpisodeProgress, eventId: string, inp
           } else {
             state.feedback = 'playerDefeated';
           }
+          state.banditCombatPhase++;
         }
-        state.banditCombatPhase++;
       } else if (input === 'combat_help') {
         state.feedback = 'combatHelp';
         if (state.banditHealth > 0) {
@@ -107,8 +107,8 @@ export function playThirdEpisode(progress: EpisodeProgress, eventId: string, inp
           } else {
             state.feedback = 'playerDefeated';
           }
+          state.banditCombatPhase++;
         }
-        state.banditCombatPhase++;
       } else {
         return progress;
       }
@@ -129,7 +129,6 @@ export function playThirdEpisode(progress: EpisodeProgress, eventId: string, inp
     return progress;
   }
 
-  if (solved) state.feedback = 'none';
   const next = { ...progress, playerChoices: { ...progress.playerChoices, thirdEpisode: state } };
   return solved ? completeEvent(next, eventId) : next;
 }
