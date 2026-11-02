@@ -513,7 +513,7 @@ export const de = {
       description: "Banditen haben eine Laterne entwendet, die verfluchten Nebel sichtbar macht.",
       event_1: { title: "Händler befragen", description: "Händler befragen" },
       event_2: { title: "Vorratsspuren vergleichen", description: "Vorratsspuren vergleichen" },
-      event_3: { title: "Banditen durch Gespräch oder Übungskampf überzeugen", description: "Banditen durch Gespräch oder Übungskampf überzeugen" },
+      event_3: { title: "Das Geheimnis der Banditen", description: "Das Geheimnis der Banditen" },
       event_4: { title: "Laterne entzünden", description: "Laterne entzünden." },
       storyProgress: "Die Nebellaterne enthüllt verborgene Kartenlinien.",
     },

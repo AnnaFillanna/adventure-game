@@ -95,13 +95,19 @@ it('plays episode 3 completely with all four events', async () => {
   // Event 2: Trace puzzle
   expect(container.textContent).toContain('Vorratsspuren vergleichen');
   await click('Morgenquellen folgen'); await click('Morgenquellen folgen');
-  // Event 3: Bandit encounter - verify combat UI renders
-  expect(container.textContent).toContain('Banditen durch Gespräch');
-  await click('Kämpfen');
-  // Verify combat system works and Episode 3 UI is accessible
+  // Event 3: Bandit encounter - Discovery-based dialogue
+  expect(container.textContent).toContain('Das Geheimnis der Banditen');
+  await click('👂 Zuhören');
+  await click('🔍 Fragen stellen');
+  await click('🤝 Ich kann euch helfen');
+  // Event 4: Light lantern
+  expect(container.textContent).toContain('Laterne entzünden');
+  await click('Laterne entzünden');
   const saved = loadCampaignProgress(campaign.id, 'aeran')!;
   expect(saved.episodeProgress[campaign.episodes[0].id].status).toBe('completed');
   expect(saved.episodeProgress[campaign.episodes[1].id].status).toBe('completed');
-  expect(saved.totalXpEarned).toBe(200); // Episodes 1 & 2 completed
-  expect(saved.totalGoldEarned).toBe(40);
+  expect(saved.episodeProgress[campaign.episodes[2].id].status).toBe('completed');
+  expect(saved.totalXpEarned).toBe(300); // Episodes 1, 2 & 3 completed
+  expect(saved.totalGoldEarned).toBe(60);
+  expect(saved.episodeProgress[campaign.episodes[3].id].status).toBe('unlocked');
 });

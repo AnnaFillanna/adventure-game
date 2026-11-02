@@ -4,8 +4,8 @@ import { completeEpisode } from '../episodeManager';
 import type { EpisodeProgress } from '../../../types/campaign';
 import { EPISODE_STATUS } from '../episodeManager';
 
-describe('Episode 3 Direct Combat Fix', () => {
-  it('should complete combat without save errors', () => {
+describe('Episode 3 Discovery-Based Encounter', () => {
+  it('should complete discovery encounter without save errors', () => {
     let progress: EpisodeProgress = {
       episodeId: THIRD_EPISODE_ID,
       status: EPISODE_STATUS.IN_PROGRESS,
@@ -28,40 +28,34 @@ describe('Episode 3 Direct Combat Fix', () => {
     progress = playThirdEpisode(progress, `${THIRD_EPISODE_ID}_event_2`, 'trace_morning');
     expect(progress.completedEvents).toContain(`${THIRD_EPISODE_ID}_event_2`);
 
-    // Event 3: Combat (start + 3 attacks to defeat bandit with 3 HP)
-    let combatProgress = progress;
+    // Event 3: Discovery encounter (listen → investigate → help)
+    let encounterProgress = progress;
     
-    // Attack 1: Start combat
-    combatProgress = playThirdEpisode(combatProgress, `${THIRD_EPISODE_ID}_event_3`, 'combat_attack');
-    let state = combatProgress.playerChoices.thirdEpisode;
-    expect(state.banditCombatPhase).toBe(1);
+    // Listen to bandits
+    encounterProgress = playThirdEpisode(encounterProgress, `${THIRD_EPISODE_ID}_event_3`, 'bandit_listen');
+    let state = encounterProgress.playerChoices.thirdEpisode;
+    expect(state.banditEncounterPhase).toBe('listening');
+    expect(state.dialogueProgress).toBe('greeted');
     
-    // Attack 2: Deal damage (bandit 3→2 HP)
-    combatProgress = playThirdEpisode(combatProgress, `${THIRD_EPISODE_ID}_event_3`, 'combat_attack');
-    state = combatProgress.playerChoices.thirdEpisode;
-    expect(state.banditHealth).toBe(2);
-    expect(state.banditCombatPhase).toBe(2);
+    // Investigate the curse
+    encounterProgress = playThirdEpisode(encounterProgress, `${THIRD_EPISODE_ID}_event_3`, 'bandit_investigate');
+    state = encounterProgress.playerChoices.thirdEpisode;
+    expect(state.curseRevealed).toBe(true);
+    expect(state.banditEncounterPhase).toBe('deciding');
+    expect(state.dialogueProgress).toBe('understood_curse');
     
-    // Attack 3: Deal damage (bandit 2→1 HP)
-    combatProgress = playThirdEpisode(combatProgress, `${THIRD_EPISODE_ID}_event_3`, 'combat_attack');
-    state = combatProgress.playerChoices.thirdEpisode;
-    expect(state.banditHealth).toBe(1);
-    expect(state.banditCombatPhase).toBe(3);
-    
-    // Attack 4: Deal final damage (bandit 1→0 HP, defeated!)
-    combatProgress = playThirdEpisode(combatProgress, `${THIRD_EPISODE_ID}_event_3`, 'combat_attack');
-    state = combatProgress.playerChoices.thirdEpisode;
-    expect(state.banditHealth).toBe(0);
-    expect(state.banditCombatPhase).toBe(4);
-    expect(state.feedback).toBe('banditDefeated');
-    expect(combatProgress.completedEvents).toContain(`${THIRD_EPISODE_ID}_event_3`);
+    // Offer help to resolve
+    encounterProgress = playThirdEpisode(encounterProgress, `${THIRD_EPISODE_ID}_event_3`, 'bandit_offer_help');
+    state = encounterProgress.playerChoices.thirdEpisode;
+    expect(state.banditEncounterPhase).toBe('resolved');
+    expect(state.dialogueProgress).toBe('chose_solution');
+    expect(encounterProgress.completedEvents).toContain(`${THIRD_EPISODE_ID}_event_3`);
     
     // Verify state is valid
-    expect(state.banditCombatPhase).toBeLessThanOrEqual(4);
-    expect(state.banditCombatPhase).toBeGreaterThanOrEqual(0);
+    expect(state.banditEncounterPhase).toMatch(/initial|listening|deciding|resolved/);
 
     // Event 4: Lantern
-    let finalProgress = playThirdEpisode(combatProgress, `${THIRD_EPISODE_ID}_event_4`, 'lantern_light');
+    let finalProgress = playThirdEpisode(encounterProgress, `${THIRD_EPISODE_ID}_event_4`, 'lantern_light');
     expect(finalProgress.completedEvents).toContain(`${THIRD_EPISODE_ID}_event_4`);
     
     // Complete episode

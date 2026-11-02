@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { playThirdEpisode, THIRD_EPISODE_ID } from '../thirdEpisode';
-import { initialThirdEpisode, validThirdEpisodeState } from '../thirdEpisodeState';
+import { initialThirdEpisode, validThirdEpisodeState, type ThirdEpisodeState } from '../thirdEpisodeState';
 import type { EpisodeProgress } from '../../../types/campaign';
 
 const createProgress = (eventIndex = 0, state = initialThirdEpisode()): EpisodeProgress => ({
@@ -51,18 +51,54 @@ describe('Episode 3: Die gestohlene Laterne', () => {
     expect(result.completedEvents).toHaveLength(2);
   });
 
-  it('event 3 combat attack damages bandit', () => {
+  // Event 3: Discovery-based bandit encounter
+  it('event 3 listen starts dialogue', () => {
     const p = createProgress(2);
-    const result = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'combat_attack');
-    expect(result.playerChoices.thirdEpisode?.banditCombatPhase).toBeGreaterThan(0);
+    const result = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_listen');
+    expect(result.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('listening');
+    expect(result.playerChoices.thirdEpisode?.dialogueProgress).toBe('greeted');
   });
 
-  it('event 3 defeat resets on retry', () => {
-    const state = { ...initialThirdEpisode(), playerHealth: 0, banditCombatPhase: 2 };
+  it('event 3 investigate reveals curse', () => {
+    const state: ThirdEpisodeState = { ...initialThirdEpisode(), banditEncounterPhase: 'listening', dialogueProgress: 'greeted' };
     const p = createProgress(2, state);
-    const result = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'combat_retry');
-    expect(result.playerChoices.thirdEpisode?.playerHealth).toBe(3);
-    expect(result.playerChoices.thirdEpisode?.banditHealth).toBe(3);
+    const result = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_investigate');
+    expect(result.playerChoices.thirdEpisode?.curseRevealed).toBe(true);
+    expect(result.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('deciding');
+    expect(result.playerChoices.thirdEpisode?.dialogueProgress).toBe('understood_curse');
+  });
+
+  it('event 3 offer help after understanding curse resolves encounter', () => {
+    const state: ThirdEpisodeState = { ...initialThirdEpisode(), banditEncounterPhase: 'deciding', curseRevealed: true, dialogueProgress: 'understood_curse' };
+    const p = createProgress(2, state);
+    const result = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_offer_help');
+    expect(result.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('resolved');
+    expect(result.completedEvents).toHaveLength(3);
+  });
+
+  it('event 3 escape from initial completes without investigation', () => {
+    const p = createProgress(2);
+    const result = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_escape');
+    expect(result.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('resolved');
+    expect(result.completedEvents).toHaveLength(3);
+  });
+
+  it('event 3 full dialogue path (listen → investigate → help)', () => {
+    let p = createProgress(2);
+    
+    // Listen
+    p = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_listen');
+    expect(p.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('listening');
+    
+    // Investigate
+    p = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_investigate');
+    expect(p.playerChoices.thirdEpisode?.curseRevealed).toBe(true);
+    expect(p.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('deciding');
+    
+    // Help
+    p = playThirdEpisode(p, `${THIRD_EPISODE_ID}_event_3`, 'bandit_offer_help');
+    expect(p.playerChoices.thirdEpisode?.banditEncounterPhase).toBe('resolved');
+    expect(p.completedEvents).toHaveLength(3);
   });
 
   it('event 4 lantern_light completes episode', () => {
@@ -76,7 +112,7 @@ describe('Episode 3: Die gestohlene Laterne', () => {
     const valid = initialThirdEpisode();
     expect(validThirdEpisodeState(valid)).toBe(true);
     
-    const invalid = { ...valid, playerHealth: -1 };
+    const invalid = { ...valid, curseRevealed: 'yes' as any };
     expect(validThirdEpisodeState(invalid)).toBe(false);
   });
 

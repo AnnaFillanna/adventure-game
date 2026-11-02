@@ -38,33 +38,35 @@ export const thirdEpisode = {
     }
   },
 
-  // Event 3: Convince bandits
+  // Event 3: Encounter with cursed bandits (Discovery-based)
   event3: {
-    title: 'Banditen überzeugen',
-    scene: 'Drei nervöse Banditen sitzen um ein kleines Feuer. Der Anführer sieht dich an – verwirrt, dann unversöhnt.',
+    title: 'Das Geheimnis der Banditen',
+    scene: 'Drei nervöse Banditen sitzen um ein kleines Feuer. Der Anführer sieht dich an – verwirrt, angespannt, gequält.',
     banditLeader: {
-      intro: 'Wer da? Eine der Hirten des Magiers?',
-      challenged: 'Komm dann näher, wenn du Mut hast!',
-      defeated: 'Genug, genug! Wir geben euch die Laterne zurück. Sie flüstert, sie flüstert nachts – wir können nicht schlafen!'
+      intro: 'Wer... wer bist du? Bist du gekommen, um sie zu holen?',
+      problem: 'Diese Laterne... sie flüstert nachts. Der Geist darin schreit. Wir konnten nicht schlafen.',
+      revelation: 'Wir haben sie nur genommen, um sie zum Schweigen zu bringen. Aber es wurde nur schlimmer...',
+      hopeful: 'Vielleicht... vielleicht kannst du das Flüstern beenden. Du siehst nicht wie ein Soldat aus.'
     },
     buttons: {
-      attack: 'Kämpfen',
-      defend: 'Abwehren',
-      help: 'Hinweis',
-      retry: 'Nochmal versuchen'
+      listen: '👂 Zuhören',
+      investigate: '🔍 Fragen stellen',
+      help: '🤝 Ich kann euch helfen',
+      escape: '🏃 Gehen'
     },
-    combat: {
-      playerAttack: 'Du schlägst zu.',
-      playerDefend: 'Du schützt dich.',
-      combatHelp: 'Ein unsichtbarer Helfer unterstützt dich!',
-      banditAttack: 'Der Bandit schlägt zurück!',
-      playerDefeated: 'Du wirst überwältigt. Versuch es nochmal.',
-      banditDefeated: 'Der Anführer sinkt zu Boden. Die anderen Banditen geben auf.',
-      combatRetry: 'Du atmest tief durch und versuchst es erneut.'
+    dialogue: {
+      listening: 'Der Anführer atmet tief durch. Seine Angst wird sichtbar.',
+      investigating: 'Je mehr du fragst, desto klarer wird das Bild: Sie sind Opfer, nicht Bösewichte.',
+      curseProblem: 'Die Laterne ist nicht nur gestohlen – sie ist verflucht. Der Geist schreit nach Erlösung.',
+      offering: 'Der Anführer sieht dir in die Augen. Hoffnung flackert auf.',
+      thankful: 'Die Banditen entspannen sich. \"Danke. Danke, dass du verstanden hast.\"'
     },
     feedback: {
-      combatStart: 'Der Bandit greift an!',
-      combatHelp: 'Der Wind hilft dir – es ist, als ob der Magier selbst dich führt.'
+      banditGreeted: 'Du nähert dich langsam. Der Anführer beobachtet dich wachsam.',
+      banditListening: 'Der Anführer beginnt zu sprechen. Seine Geschichte ist komplexer als erwartet.',
+      curseRevealed: 'Die Wahrheit offenbart sich: Sie haben die Laterne gestohlen, weil der Geist sie quälte.',
+      solutionChosen: 'Du findest eine Lösung. Die Banditen geben dir die Laterne.',
+      banditThankful: 'Der Anführer reicht dir die Laterne mit dankbarem Blick.'
     }
   },
 
@@ -73,8 +75,8 @@ export const thirdEpisode = {
     title: 'Laterne entzünden',
     scene: 'Die Laterne liegt vor dir, dunkel und kühl. Der Anführer reicht dir einen glimmenden Holzspan.',
     lantern: {
-      intro: 'Zünde sie an. Vielleicht rettet sie dich vor dem, was kommt.',
-      after: 'Die Laterne erwacht mit violettem Licht. Nebelpfade werden sichtbar – hundert neue Wege zeichnen sich in der Luft ab.'
+      intro: 'Zünde sie an. Vielleicht bringt sie dem Geist Frieden.',
+      after: 'Die Laterne erwacht mit violettem Licht. Der Geist-Schrei wird zu einem sanften Singen. Nebelpfade werden sichtbar – hundert neue Wege zeichnen sich in der Luft ab.'
     },
     button: 'Laterne entzünden',
     completion: 'Die Episode ist abgeschlossen.'

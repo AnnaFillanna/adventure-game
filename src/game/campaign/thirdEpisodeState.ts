@@ -1,15 +1,25 @@
+/**
+ * Episode 3 State: Discovery-based story
+ * Event 3 is now a dialogue encounter with bandits, not combat-based
+ */
 export interface ThirdEpisodeState {
   version: 1;
   merchantDialogStep: number; // 0-2: dialog progression with merchant
   traceSelected: string | null; // which trace was selected: 'morning' | 'evening' | null
   traceStep: number; // 0-2: steps to find the correct trace
-  banditCombatPhase: number; // 0: not started, 1-3: combat rounds, 4: defeated
-  banditHealth: number; // 0-3 HP
-  playerHealth: number; // 0-3 HP (separate from campaign XP)
+  
+  // Event 3: Bandit Encounter (Discovery-based, not combat)
+  // Progression states: 'initial' → 'listening' → 'deciding' → 'resolved'
+  banditEncounterPhase: 'initial' | 'listening' | 'deciding' | 'resolved';
+  // Player's chosen path: 'listen' → 'understand' → solve or fail
+  dialogueProgress: 'none' | 'greeted' | 'understood_curse' | 'chose_solution';
+  // Did player discover the bandit's curse/problem?
+  curseRevealed: boolean;
+  
   lanternLit: boolean;
   feedback: 'none' | 'merchantGreet' | 'traceWrong' | 'traceCorrect' | 'traceHelp' | 
-            'combatStart' | 'playerAttack' | 'playerDefend' | 'banditAttack' | 'combatHelp' |
-            'banditDefeated' | 'playerDefeated' | 'combatRetry' | 'lanternLit' | 'dialogEnd';
+            'banditGreeted' | 'banditListening' | 'curseProblem' | 'curseRevealed' | 
+            'solutionChosen' | 'banditThankful' | 'lanternLit' | 'dialogEnd';
 }
 
 export const initialThirdEpisode = (): ThirdEpisodeState => ({
@@ -17,9 +27,9 @@ export const initialThirdEpisode = (): ThirdEpisodeState => ({
   merchantDialogStep: 0,
   traceSelected: null,
   traceStep: 0,
-  banditCombatPhase: 0,
-  banditHealth: 3,
-  playerHealth: 3,
+  banditEncounterPhase: 'initial',
+  dialogueProgress: 'none',
+  curseRevealed: false,
   lanternLit: false,
   feedback: 'none'
 });
@@ -32,13 +42,13 @@ export function validThirdEpisodeState(value: unknown): value is ThirdEpisodeSta
     Number.isSafeInteger(s.merchantDialogStep) && s.merchantDialogStep >= 0 && s.merchantDialogStep <= 2 &&
     (s.traceSelected === null || s.traceSelected === 'morning' || s.traceSelected === 'evening') &&
     Number.isSafeInteger(s.traceStep) && s.traceStep >= 0 && s.traceStep <= 2 &&
-    Number.isSafeInteger(s.banditCombatPhase) && s.banditCombatPhase >= 0 && s.banditCombatPhase <= 4 &&
-    Number.isSafeInteger(s.banditHealth) && s.banditHealth >= 0 && s.banditHealth <= 3 &&
-    Number.isSafeInteger(s.playerHealth) && s.playerHealth >= 0 && s.playerHealth <= 3 &&
+    ['initial', 'listening', 'deciding', 'resolved'].includes(s.banditEncounterPhase) &&
+    ['none', 'greeted', 'understood_curse', 'chose_solution'].includes(s.dialogueProgress) &&
+    typeof s.curseRevealed === 'boolean' &&
     typeof s.lanternLit === 'boolean' &&
     ['none', 'merchantGreet', 'traceWrong', 'traceCorrect', 'traceHelp',
-     'combatStart', 'playerAttack', 'playerDefend', 'banditAttack', 'combatHelp',
-     'banditDefeated', 'playerDefeated', 'combatRetry', 'lanternLit', 'dialogEnd'
+     'banditGreeted', 'banditListening', 'curseProblem', 'curseRevealed',
+     'solutionChosen', 'banditThankful', 'lanternLit', 'dialogEnd'
     ].includes(s.feedback)
   );
 }

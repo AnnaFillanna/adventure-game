@@ -29,32 +29,38 @@ export function ThirdEpisodeEvent({ progress, eventNumber, onInput }: {
     
     {eventNumber === 3 && <>
       <p>{text.event3.scene}</p>
-      {state.banditCombatPhase === 0 && (
+      {state.banditEncounterPhase === 'initial' && (
         <>
           <p>{text.event3.banditLeader.intro}</p>
           <div className="event-actions">
-            <button onClick={() => onInput('combat_attack')}>{text.event3.buttons.attack}</button>
-            <button onClick={() => onInput('combat_help')}>{text.event3.buttons.help}</button>
+            <button onClick={() => onInput('bandit_listen')}>{text.event3.buttons.listen}</button>
+            <button onClick={() => onInput('bandit_escape')}>{text.event3.buttons.escape}</button>
           </div>
         </>
       )}
-      {state.banditCombatPhase > 0 && state.playerHealth > 0 && (
+      {state.banditEncounterPhase === 'listening' && (
         <>
-          <div className="combat-meters">
-            <label>Deine Kraft: {state.playerHealth} / 3<progress max={3} value={state.playerHealth} /></label>
-            <label>Bandit-Anführer: {state.banditHealth} / 3<progress max={3} value={state.banditHealth} /></label>
-          </div>
+          <p>{text.event3.dialogue.listening}</p>
+          <p>{text.event3.banditLeader.problem}</p>
           <div className="event-actions">
-            <button onClick={() => onInput('combat_attack')}>{text.event3.buttons.attack}</button>
-            <button onClick={() => onInput('combat_defend')}>{text.event3.buttons.defend}</button>
-            <button onClick={() => onInput('combat_help')}>{text.event3.buttons.help}</button>
+            <button onClick={() => onInput('bandit_investigate')}>{text.event3.buttons.investigate}</button>
+            <button onClick={() => onInput('bandit_listen')}>{text.event3.buttons.listen}</button>
           </div>
         </>
       )}
-      {state.playerHealth === 0 && (
+      {state.banditEncounterPhase === 'deciding' && (
         <>
-          <p className="telegraph">{text.event3.combat.playerDefeated}</p>
-          <button onClick={() => onInput('combat_retry')}>{text.event3.buttons.retry}</button>
+          <p>{state.curseRevealed ? text.event3.dialogue.curseProblem : text.event3.dialogue.listening}</p>
+          <p>{text.event3.banditLeader.hopeful}</p>
+          <div className="event-actions">
+            <button onClick={() => onInput('bandit_offer_help')}>{text.event3.buttons.help}</button>
+            <button onClick={() => onInput('bandit_investigate')}>{text.event3.buttons.investigate}</button>
+          </div>
+        </>
+      )}
+      {state.banditEncounterPhase === 'resolved' && (
+        <>
+          <p>{text.event3.dialogue.thankful}</p>
         </>
       )}
     </>}

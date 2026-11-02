@@ -6,7 +6,7 @@ export const THIRD_EPISODE_ID = 'episode_03_stolen_lantern';
 export type ThirdEpisodeInput = 
   | 'merchantGreet' 
   | 'trace_morning' | 'trace_evening' | 'trace_help'
-  | 'combat_attack' | 'combat_defend' | 'combat_help' | 'combat_retry'
+  | 'bandit_listen' | 'bandit_investigate' | 'bandit_offer_help' | 'bandit_escape'
   | 'lantern_light';
 
 export { initialThirdEpisode, validThirdEpisodeState };
@@ -60,55 +60,52 @@ export function playThirdEpisode(progress: EpisodeProgress, eventId: string, inp
       return progress;
     }
   }
-  // Event 3: Convince bandits (combat or dialogue)
+  // Event 3: Bandit Encounter (Discovery-based, not combat)
+  // Story: Bandits are cursed by the lantern they stole, not evil
+  // Progression: Listen → Understand curse → Help → Resolution
   else if (number === 3) {
-    if (state.banditCombatPhase === 0 && input === 'combat_attack') {
-      // Start combat
-      state.banditCombatPhase = 1;
-      state.feedback = 'combatStart';
-    } else if (state.banditCombatPhase > 0) {
-      if (state.playerHealth === 0 && input !== 'combat_retry') {
-        return progress; // Defeat state, must retry
+    if (state.banditEncounterPhase === 'initial') {
+      if (input === 'bandit_listen') {
+        state.banditEncounterPhase = 'listening';
+        state.dialogueProgress = 'greeted';
+        state.feedback = 'banditGreeted';
+      } else if (input === 'bandit_escape') {
+        // Escape without helping - immediate resolution
+        state.banditEncounterPhase = 'resolved';
+        state.dialogueProgress = 'chose_solution';
+        state.feedback = 'solutionChosen';
+        solved = true;
+      } else {
+        return progress;
       }
-      if (input === 'combat_retry') {
-        state = { ...initialThirdEpisode() };
-        state.feedback = 'combatRetry';
-      } else if (input === 'combat_attack') {
-        const damage = 1;
-        state.banditHealth = Math.max(0, state.banditHealth - damage);
-        state.feedback = 'playerAttack';
-        if (state.banditHealth > 0) {
-          // Enemy attacks back
-          state.playerHealth = Math.max(0, state.playerHealth - 1);
-          state.feedback = state.playerHealth === 0 ? 'playerDefeated' : 'banditAttack';
-          state.banditCombatPhase++;
-        } else {
-          state.banditCombatPhase = 4;
-          state.feedback = 'banditDefeated';
-          solved = true;
-        }
-      } else if (input === 'combat_defend') {
-        state.feedback = 'playerDefend';
-        if (state.banditHealth > 0) {
-          state.playerHealth = Math.max(0, state.playerHealth - 1);
-          if (state.playerHealth > 0) {
-            state.feedback = 'banditAttack'; // Only show bandit attack if player survives
-          } else {
-            state.feedback = 'playerDefeated';
-          }
-          state.banditCombatPhase++;
-        }
-      } else if (input === 'combat_help') {
-        state.feedback = 'combatHelp';
-        if (state.banditHealth > 0) {
-          state.playerHealth = Math.max(0, state.playerHealth - 1);
-          if (state.playerHealth > 0) {
-            state.feedback = 'banditAttack'; // Only show bandit attack if player survives
-          } else {
-            state.feedback = 'playerDefeated';
-          }
-          state.banditCombatPhase++;
-        }
+    } else if (state.banditEncounterPhase === 'listening') {
+      if (input === 'bandit_investigate') {
+        // Player investigates deeper - curse becomes clear
+        state.curseRevealed = true;
+        state.banditEncounterPhase = 'deciding';
+        state.dialogueProgress = 'understood_curse';
+        state.feedback = 'curseRevealed';
+      } else if (input === 'bandit_listen') {
+        // Continue listening - curse hints but not fully revealed
+        state.feedback = 'banditListening';
+      } else {
+        return progress;
+      }
+    } else if (state.banditEncounterPhase === 'deciding') {
+      if (input === 'bandit_offer_help') {
+        // Player offers help - situation resolved
+        state.banditEncounterPhase = 'resolved';
+        state.dialogueProgress = 'chose_solution';
+        state.feedback = 'banditThankful';
+        solved = true;
+      } else if (input === 'bandit_escape') {
+        // Escape even after understanding - still resolves
+        state.banditEncounterPhase = 'resolved';
+        state.feedback = 'solutionChosen';
+        solved = true;
+      } else if (input === 'bandit_investigate') {
+        // Continue investigating curse details
+        state.feedback = 'curseProblem';
       } else {
         return progress;
       }
