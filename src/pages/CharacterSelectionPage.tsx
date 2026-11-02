@@ -23,8 +23,8 @@ export const CharacterSelectionPage: React.FC = () => {
     selectHero(selectedHero);
     preferencesManager.setPreference('campaignHero', selectedHero);
     
-    // Navigate to game
-    navigate('/game');
+    // Navigate to hub (new main menu) instead of directly to game
+    navigate('/hub');
   };
 
   return (
