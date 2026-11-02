@@ -71,6 +71,38 @@
       }
     }
 
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      .gps-button,
+      .pause-button {
+        background: transparent;
+        border: 1px solid #8a916f;
+        color: #f7f1df;
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d7be7d;
+          background: rgba(215, 190, 125, 0.1);
+          transform: scale(1.05);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+
     .pause-button {
       background: transparent;
       border: 1px solid #8a916f;

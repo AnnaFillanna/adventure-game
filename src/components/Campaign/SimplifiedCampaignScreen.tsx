@@ -2,6 +2,7 @@
  * Adventure Game - Simplified Campaign Screen
  * Minimalist, atmospheric gameplay - no technical UI clutter
  * Shows only the current story event and essential actions
+ * GPS/Outdoor discovery integrated with simple header button
  */
 
 import { useState } from 'react';
@@ -59,6 +60,11 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
     navigate('/character-select');
   }
 
+  function handleGPS() {
+    // Navigate to outdoor adventure with callback to return to campaign
+    navigate('/outdoor', { state: { from: 'campaign' } });
+  }
+
   function handleDebugMode() {
     navigate('/debug/campaign');
   }
@@ -77,12 +83,21 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
 
   return (
     <main className="simplified-campaign-screen">
-      {/* Minimalist header - just hero name and pause */}
+      {/* Minimalist header - hero name, GPS button, and pause */}
       <header className="minimalist-header">
         <div className="hero-info">
           <p className="hero-name">{getHeroDefinition(heroId).name}</p>
         </div>
-        <button className="pause-button" onClick={handlePause} title="Pausieren und Heldenauswahl">⏸</button>
+        <div className="header-actions">
+          <button 
+            className="gps-button" 
+            onClick={handleGPS} 
+            title="Erkunde die Welt mit GPS"
+          >
+            🗺️
+          </button>
+          <button className="pause-button" onClick={handlePause} title="Pausieren und Heldenauswahl">⏸</button>
+        </div>
       </header>
 
       {/* Error message if needed */}
