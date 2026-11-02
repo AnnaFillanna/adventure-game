@@ -45,13 +45,22 @@ export function CampaignScreen({ heroId }: { heroId: HeroId }) {
     navigate('/character-select');
   }
 
+  function openOutdoorAdventure() {
+    navigate('/game/outdoor');
+  }
+
   if (!progress || !ep) return <main className="campaign-screen"><h1>Spielstand nicht verfügbar</h1>
     <p role="alert">Dein Spielstand konnte nicht sicher geladen werden. Die gespeicherten Daten wurden nicht verändert.</p>
     <button onClick={() => navigate('/character-select')}>Zur Heldenauswahl</button></main>;
   const completed = Object.values(progress.episodeProgress).filter(p => p.status === 'completed').length;
   return <main className="campaign-screen">
     <header><div><p className="eyebrow">{getHeroDefinition(heroId).name} · Das erste Abenteuer</p>
-      <h1>{getTextDynamic(campaign.titleKey)}</h1></div><button onClick={leave}>Pause & Heldenauswahl</button></header>
+      <h1>{getTextDynamic(campaign.titleKey)}</h1></div>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <button onClick={openOutdoorAdventure} title="GPS-basiertes Outdoor-Adventure">🗺️ Erkunden</button>
+        <button onClick={leave}>Pause & Heldenauswahl</button>
+      </div>
+    </header>
     <aside className="demo-notice"><strong>Abenteuer · ohne GPS</strong><p>Episoden 1, 2 und 3 sind vollständig spielbar. Episoden 4–30 bleiben eine Story-Demo mit simulierten Ereignissen. Du musst dich nicht bewegen. Jeder Zug wird gespeichert.</p></aside>
     <div className="campaign-stats" aria-live="polite"><span>{completed} / 30 Episoden</span><span>{progress.totalXpEarned} XP</span><span>{progress.totalGoldEarned} Gold · Kampagne</span></div>
     {error && <p role="alert" className="save-error">{error}</p>}
