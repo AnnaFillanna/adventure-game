@@ -3,7 +3,8 @@
  * GPS-based discovery with automatic language detection
  */
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, lazy, Suspense } from 'react';
+import type { GeoPoint as LocationPoint } from '../game/geo/types';
 import { geolocationService } from '../game/geo/geolocation';
 import { demoMode } from '../game/geo/demo';
 import {
@@ -17,6 +18,8 @@ import {
 import type { OutdoorQuestState, GeoPoint, LocationError } from '../game/outdoor/types';
 import { outdoorAdventure as text } from '../locales/outdoorAdventure';
 import styles from './OutdoorAdventure.module.scss';
+
+const LocationMap = lazy(() => import('../components/Map/LocationMap').then(module => ({ default: module.LocationMap })));
 
 interface OutdoorAdventureProps {
   onReturn?: () => void;
@@ -375,14 +378,83 @@ export function OutdoorAdventureDemo({ onReturn, allowDemoMode = false }: Outdoo
 export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [position, setPosition] = useState<LocationPoint | null>(null);
+  const [showMap, setShowMap] = useState(false);
+  const [tracking, setTracking] = useState(false);
+  const watchGeneration = useRef(0);
+  const watchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const mounted = useRef(true);
   const requestId = useRef(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; requestId.current++; clearTimeout(timeoutRef.current); };
+    const pauseWhenHidden = () => {
+      if (document.visibilityState !== 'hidden') return;
+      watchGeneration.current++;
+      requestId.current++;
+      clearTimeout(timeoutRef.current);
+      clearTimeout(watchTimer.current);
+      geolocationService.stopTracking();
+      setTracking(false);
+      setStatus('idle');
+      setMessage('GPS pausiert, weil das Spiel im Hintergrund war. Starte die Standortsuche erneut, wenn du weitermachen möchtest.');
+    };
+    document.addEventListener('visibilitychange', pauseWhenHidden);
+    return () => {
+      mounted.current = false;
+      requestId.current++;
+      watchGeneration.current++;
+      clearTimeout(timeoutRef.current);
+      clearTimeout(watchTimer.current);
+      geolocationService.stopTracking();
+      document.removeEventListener('visibilitychange', pauseWhenHidden);
+    };
   }, []);
+  function stopLive() {
+    watchGeneration.current++;
+    clearTimeout(watchTimer.current);
+    geolocationService.stopTracking();
+    setTracking(false);
+  }
+  function startLive() {
+    stopLive();
+    const generation = watchGeneration.current;
+    setTracking(true);
+    setStatus('ready');
+    setMessage('GPS wird laufend aktualisiert, solange dieser Bildschirm geöffnet ist.');
+    const armTimeout = () => {
+      clearTimeout(watchTimer.current);
+      watchTimer.current = setTimeout(() => {
+        if (!mounted.current || generation !== watchGeneration.current) return;
+        stopLive();
+        setStatus('error');
+        setMessage('Seit 20 Sekunden kein aktueller Standort. GPS wurde pausiert. Du kannst die Suche erneut starten.');
+      }, 20000);
+    };
+    armTimeout();
+    geolocationService.startTracking(next => {
+      if (!mounted.current || generation !== watchGeneration.current) return;
+      if (!validPosition(next)) return;
+      if (next.timestamp && Date.now() - next.timestamp > 30000) return;
+      armTimeout();
+      setPosition(next);
+      setStatus('ready');
+      setMessage((next.accuracy ?? Infinity) > 100 ? 'GPS verbunden, aber noch zu ungenau. Die Karte zeigt nur einen ungefähren Standort.' : 'GPS aktiv. Dein Standort auf der Karte wird aktualisiert.');
+    }, error => {
+      if (!mounted.current || generation !== watchGeneration.current) return;
+      stopLive();
+      setStatus('error');
+      setMessage(error.code === 'PERMISSION_DENIED'
+        ? 'Die Standortfreigabe wurde entzogen. GPS ist pausiert. Erlaube den Zugriff in deinen Browsereinstellungen und versuche es erneut.'
+        : 'Das GPS-Signal ist gerade nicht verfügbar. Die letzte Position bleibt sichtbar; starte die Suche erneut.');
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 1000 });
+  }
+  function validPosition(point: LocationPoint) {
+    return Number.isFinite(point.lat) && Math.abs(point.lat) <= 90 && Number.isFinite(point.lng) && Math.abs(point.lng) <= 180 &&
+      (point.accuracy === undefined || (Number.isFinite(point.accuracy) && point.accuracy >= 0));
+  }
   function checkLocation() {
+    stopLive();
     const id = ++requestId.current;
     clearTimeout(timeoutRef.current);
     const finish = () => {
@@ -400,10 +472,16 @@ export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
     }, 15000);
     geolocationService.getCurrentPosition(position => {
       if (!finish()) return;
+      if (!validPosition(position)) {
+        setStatus('error');
+        setMessage('Dein Browser hat keinen gültigen Standort geliefert. Bitte versuche es erneut.');
+        return;
+      }
+      setPosition(position);
       setStatus('ready');
       setMessage((position.accuracy ?? Infinity) > 100
         ? 'Dein Standort ist noch zu ungenau. Versuche es später unter freiem Himmel erneut.'
-        : 'Standort empfangen. Für diesen Ort ist noch kein geprüfter Spazierweg verfügbar. Spiele die Geschichte ohne GPS weiter.');
+        : 'Standort empfangen. GPS funktioniert. Du kannst jetzt die Karte öffnen und deinen Standort live aktualisieren.');
     }, error => {
       if (!finish()) return;
       setStatus('error');
@@ -416,16 +494,25 @@ export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   }
   return <main className={styles.container}>
-    <header className={styles.header}><h1>Draußen entdecken</h1><p>Standort prüfen</p></header>
+    <header className={styles.header}><h1>Dein GPS-Standort</h1><p>Standort empfangen → Karte öffnen → GPS live starten</p></header>
     <section className={styles.status}>
-      <h2>Ein kurzer Spaziergang in deiner Nähe</h2>
-      <p>Das Abenteuer soll dich künftig auf geprüften Fußwegen im Umkreis von ungefähr 1 km begleiten. Diese Wege sind noch nicht verfügbar. Es gibt hier noch keine Ziele, zu denen du gehen sollst.</p>
-      <p>Erst wenn du „Standort freigeben“ antippst, fragt dein Browser nach deiner Erlaubnis. Dein Standort wird für diese Prüfung einmal abgerufen und nicht als Wegstrecke gespeichert.</p>
-      <p>Du brauchst GPS nicht, um die Geschichte zu spielen. Es gibt kein Zeitlimit und keine Strafe für eine Pause.</p>
+      <h2>{tracking ? 'GPS ist eingeschaltet' : position ? 'Standort empfangen' : 'GPS einschalten'}</h2>
+      <p>Erst wenn du „Standort freigeben“ antippst, fragt dein Browser nach deiner Erlaubnis. Zunächst wird dein Standort einmal abgerufen. Mit „GPS live starten“ aktualisierst du ihn laufend. Beim Verlassen oder Ausblenden dieser Seite stoppt die Aktualisierung. Eine Wegstrecke wird nicht gespeichert.</p>
+      <p>Die GPS-Karte ist verfügbar. Aufgaben entlang geprüfter Spazierwege sind noch nicht eingerichtet.</p>
       <p role={status === 'error' ? 'alert' : 'status'}>{message}</p>
     </section>
+    {position && <section className={styles.status} aria-label="Empfangener Standort">
+      <h2>{tracking ? 'GPS live' : 'Letzter empfangener Standort'}</h2>
+      <p>Genauigkeit: {position.accuracy === undefined ? 'unbekannt' : `${Math.round(position.accuracy)} m`}</p>
+      <p>Breite: {position.lat.toLocaleString('de-DE', { maximumFractionDigits: 5 })} · Länge: {position.lng.toLocaleString('de-DE', { maximumFractionDigits: 5 })}</p>
+      {position.timestamp && <p>Empfangen um {new Date(position.timestamp).toLocaleTimeString('de-DE')}</p>}
+      <p>Es ist noch kein geprüfter Spazierweg verfügbar. Die Karte zeigt deinen Standort, keine freigegebene Spielroute.</p>
+      {!showMap ? <><p>Beim Öffnen lädt OpenStreetMap Kartenbilder für diesen Bereich und erhält dabei deine IP-Adresse und den angezeigten Kartenausschnitt.</p><button className={styles.secondaryButton} onClick={() => setShowMap(true)}>Karte anzeigen</button></> : <Suspense fallback={<p>Karte wird geladen …</p>}><LocationMap position={position} /></Suspense>}
+      {tracking ? <button className={styles.secondaryButton} onClick={() => { stopLive(); setMessage('GPS pausiert. Die letzte Position bleibt sichtbar.'); }}>GPS pausieren</button>
+        : <button className={styles.primaryButton} disabled={status === 'loading'} onClick={startLive}>GPS live starten</button>}
+    </section>}
     <section className={styles.actions}>
-      {status === 'ready' && <button className={styles.primaryButton} onClick={onReturn}>Weiter zur Geschichte ohne GPS</button>}
+      {status === 'ready' && <button className={styles.secondaryButton} onClick={onReturn}>Geschichte öffnen</button>}
       <button className={status === 'ready' ? styles.secondaryButton : styles.primaryButton} disabled={status === 'loading'} onClick={checkLocation}>
         {status === 'loading' ? 'Standort wird gesucht …' : status === 'idle' ? 'Standort freigeben' : 'Standort erneut prüfen'}
       </button>

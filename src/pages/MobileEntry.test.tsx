@@ -111,8 +111,66 @@ it('recovers if the browser never answers and ignores an expired location respon
     expect(container.textContent).toContain('Standort wird gesucht');
     const success = getCurrentPosition.mock.calls[1][0];
     await act(async () => success({coords:{latitude:48,longitude:11,accuracy:10},timestamp:Date.now()}));
-    await click('Weiter zur Geschichte ohne GPS');
+    await click('Geschichte öffnen');
     expect(window.location.pathname).toBe('/hub');
     expect(container.textContent).toContain('Erste Aufgabe öffnen');
+  } finally { vi.useRealTimers(); }
+});
+async function locate() {
+  preferencesManager.setPreference('campaignHero', 'aeran');
+  window.history.replaceState({}, '', '/hub/outdoor');
+  getCurrentPosition.mockImplementation(success => success({coords: {latitude:48,longitude:11,accuracy:10}, timestamp:Date.now()}));
+  watchPosition.mockReturnValue(42);
+  await render(); await click('Standort freigeben');
+}
+it('shows coordinates and accuracy, watches only on request, pauses and rejects late updates', async () => {
+  await locate();
+  expect(container.textContent).toContain('Genauigkeit: 10 m');
+  expect(container.textContent).toContain('Breite: 48');
+  expect(container.querySelector('.leaflet-container')).toBeNull();
+  expect(watchPosition).not.toHaveBeenCalled();
+  const stored = JSON.stringify({...localStorage});
+  await click('GPS live starten');
+  expect(watchPosition).toHaveBeenCalledTimes(1);
+  const update = watchPosition.mock.calls[0][0];
+  await act(async () => update({coords:{latitude:48.001,longitude:11.002,accuracy:8},timestamp:Date.now()}));
+  expect(container.textContent).toContain('GPS aktiv');
+  expect(container.textContent).toContain('Breite: 48,001');
+  await click('GPS pausieren');
+  expect(navigator.geolocation.clearWatch).toHaveBeenCalledWith(42);
+  await act(async () => update({coords:{latitude:49,longitude:12,accuracy:5},timestamp:Date.now()}));
+  expect(container.textContent).toContain('Breite: 48,001');
+  expect(JSON.stringify({...localStorage})).toBe(stored);
+  await click('GPS live starten');
+  await click('Zur Abenteuerübersicht');
+  expect(navigator.geolocation.clearWatch).toHaveBeenCalledTimes(2);
+});
+it('pauses tracking when permission is revoked, with a recoverable German error', async () => {
+  await locate(); await click('GPS live starten');
+  await act(async () => watchPosition.mock.calls[0][1]({code:1,PERMISSION_DENIED:1,POSITION_UNAVAILABLE:2,TIMEOUT:3}));
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain('entzogen');
+  expect(navigator.geolocation.clearWatch).toHaveBeenCalledWith(42);
+  await click('GPS live starten');
+  expect(watchPosition).toHaveBeenCalledTimes(2);
+});
+it('stops live GPS when the page becomes hidden and does not auto-restart', async () => {
+  await locate(); await click('GPS live starten');
+  const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+  await act(async () => document.dispatchEvent(new Event('visibilitychange')));
+  expect(navigator.geolocation.clearWatch).toHaveBeenCalledWith(42);
+  expect(container.textContent).toContain('im Hintergrund');
+  visibility.mockReturnValue('visible');
+  await act(async () => document.dispatchEvent(new Event('visibilitychange')));
+  expect(watchPosition).toHaveBeenCalledTimes(1);
+});
+it('stops silent tracking, ignores invalid samples, and preserves the last valid position', async () => {
+  vi.useFakeTimers();
+  try {
+    await locate(); await click('GPS live starten');
+    await act(async () => watchPosition.mock.calls[0][0]({coords:{latitude:NaN,longitude:11,accuracy:4},timestamp:Date.now()}));
+    expect(container.textContent).toContain('Breite: 48');
+    await act(async () => vi.advanceTimersByTime(20000));
+    expect(container.querySelector('[role="alert"]')?.textContent).toContain('kein aktueller Standort');
+    expect(navigator.geolocation.clearWatch).toHaveBeenCalledWith(42);
   } finally { vi.useRealTimers(); }
 });
