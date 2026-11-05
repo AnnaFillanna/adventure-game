@@ -97,3 +97,22 @@ it('does not unlock targets from inaccurate GPS or a stored demo preference', as
   expect(watchPosition).not.toHaveBeenCalled();
   expect(container.textContent).not.toContain('Gold');
 });
+it('recovers if the browser never answers and ignores an expired location response', async () => {
+  vi.useFakeTimers();
+  try {
+    preferencesManager.setPreference('campaignHero', 'aeran');
+    window.history.replaceState({}, '', '/hub/outdoor');
+    await render(); await click('Standort freigeben');
+    const staleSuccess = getCurrentPosition.mock.calls[0][0];
+    await act(async () => { vi.advanceTimersByTime(15000); });
+    expect(container.querySelector('[role="alert"]')?.textContent).toContain('noch keinen Standort');
+    await click('Standort erneut prüfen');
+    await act(async () => staleSuccess({coords:{latitude:48,longitude:11,accuracy:10},timestamp:Date.now()}));
+    expect(container.textContent).toContain('Standort wird gesucht');
+    const success = getCurrentPosition.mock.calls[1][0];
+    await act(async () => success({coords:{latitude:48,longitude:11,accuracy:10},timestamp:Date.now()}));
+    await click('Weiter zur Geschichte ohne GPS');
+    expect(window.location.pathname).toBe('/hub');
+    expect(container.textContent).toContain('Erste Aufgabe öffnen');
+  } finally { vi.useRealTimers(); }
+});

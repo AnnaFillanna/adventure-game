@@ -376,21 +376,36 @@ export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const mounted = useRef(true);
+  const requestId = useRef(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => { mounted.current = false; requestId.current++; clearTimeout(timeoutRef.current); };
   }, []);
   function checkLocation() {
+    const id = ++requestId.current;
+    clearTimeout(timeoutRef.current);
+    const finish = () => {
+      if (!mounted.current || requestId.current !== id) return false;
+      clearTimeout(timeoutRef.current);
+      requestId.current++;
+      return true;
+    };
     setStatus('loading');
-    setMessage('Dein Standort wird ermittelt …');
+    setMessage('Dein Standort wird ermittelt … Du kannst auch ohne Standort weiterspielen.');
+    timeoutRef.current = setTimeout(() => {
+      if (!finish()) return;
+      setStatus('error');
+      setMessage('Dein Browser hat noch keinen Standort geliefert. Auch nach der Erlaubnis kann die Suche scheitern. Versuche es erneut oder spiele ohne GPS weiter.');
+    }, 15000);
     geolocationService.getCurrentPosition(position => {
-      if (!mounted.current) return;
+      if (!finish()) return;
       setStatus('ready');
       setMessage((position.accuracy ?? Infinity) > 100
         ? 'Dein Standort ist noch zu ungenau. Versuche es später unter freiem Himmel erneut.'
         : 'Standort empfangen. Für diesen Ort ist noch kein geprüfter Spazierweg verfügbar. Spiele die Geschichte ohne GPS weiter.');
     }, error => {
-      if (!mounted.current) return;
+      if (!finish()) return;
       setStatus('error');
       const messages: Record<string, string> = {
         PERMISSION_DENIED: 'Du hast den Standort nicht freigegeben. Du kannst die Geschichte ohne GPS spielen oder den Zugriff in deinen Browsereinstellungen erlauben.',
@@ -410,10 +425,12 @@ export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
       <p role={status === 'error' ? 'alert' : 'status'}>{message}</p>
     </section>
     <section className={styles.actions}>
-      <button className={styles.primaryButton} disabled={status === 'loading'} onClick={checkLocation}>
+      {status === 'ready' && <button className={styles.primaryButton} onClick={onReturn}>Weiter zur Geschichte ohne GPS</button>}
+      <button className={status === 'ready' ? styles.secondaryButton : styles.primaryButton} disabled={status === 'loading'} onClick={checkLocation}>
         {status === 'loading' ? 'Standort wird gesucht …' : status === 'idle' ? 'Standort freigeben' : 'Standort erneut prüfen'}
       </button>
       <button className={styles.secondaryButton} onClick={onReturn}>Zur Abenteuerübersicht</button>
+      {status !== 'ready' && <button className={styles.secondaryButton} onClick={onReturn}>Ohne Standort weiterspielen</button>}
     </section>
   </main>;
 }
