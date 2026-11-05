@@ -57,16 +57,12 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
         return;
       }
     }
-    navigate('/character-select');
+    navigate('/hub');
   }
 
   function handleGPS() {
     // Navigate to outdoor adventure with callback to return to campaign
-    navigate('/outdoor', { state: { from: 'campaign' } });
-  }
-
-  function handleDebugMode() {
-    navigate('/debug/campaign');
+    navigate('/hub/outdoor', { state: { from: 'campaign' } });
   }
 
   if (!progress || !ep) {
@@ -92,11 +88,11 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
           <button 
             className="gps-button" 
             onClick={handleGPS} 
-            title="Erkunde die Welt mit GPS"
+            title="Standort prüfen"
           >
-            🗺️
+            Standort prüfen
           </button>
-          <button className="pause-button" onClick={handlePause} title="Pausieren und Heldenauswahl">⏸</button>
+          <button className="pause-button" onClick={handlePause} title="Pausieren und zur Übersicht">Pause & Übersicht</button>
         </div>
       </header>
 
@@ -114,6 +110,11 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
           <h2 className="episode-title">{getTextDynamic(currentEpisode.titleKey)}</h2>
         </div>
 
+        <p>Dein Ziel: {currentEpisode.number === 1 ? 'Sichere die erste Spur zum Schwert des Ersten Lichts.' : getTextDynamic(currentEpisode.descriptionKey)}</p>
+        <p role="status">{ep.completedEvents.length} von {currentEpisode.events.length} Aufgaben erledigt.</p>
+        <p>Jede bestätigte Aktion wird auf diesem Gerät gespeichert. Du kannst jederzeit pausieren und später fortsetzen.</p>
+        <p>Diese Geschichte spielst du im Sitzen, ohne GPS und ohne Zeitlimit. Geprüfte Spazierwege sind noch nicht verfügbar.</p>
+        {currentEpisode.number > 3 && <p>Dieser Teil ist bisher nur eine Vorschau mit simulierten Aufgaben.</p>}
         {/* Campaign completion */}
         {progress.status === 'completed' && (
           <section className="campaign-finale">
@@ -129,7 +130,7 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
             <p className="story-intro">{getTextDynamic(currentEpisode.descriptionKey)}</p>
             <button 
               className="big-action-button" 
-              onClick={() => dispatch({ type: 'start', episodeId: currentEpisode.id, mode: 'normal' })}
+              onClick={() => dispatch({ type: 'start', episodeId: currentEpisode.id, mode: 'short' })}
             >
               Abenteuer beginnen
             </button>
@@ -223,11 +224,6 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
           </section>
         )}
       </article>
-
-      {/* Debug footer - subtle, optional */}
-      <footer className="debug-footer">
-        <button className="debug-button" onClick={handleDebugMode} title="Vollständige Kampagnenübersicht">DebugCampaign</button>
-      </footer>
     </main>
   );
 }

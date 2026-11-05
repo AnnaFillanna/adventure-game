@@ -3,7 +3,7 @@
  * GPS-based discovery with automatic language detection
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { geolocationService } from '../game/geo/geolocation';
 import { demoMode } from '../game/geo/demo';
 import {
@@ -34,13 +34,18 @@ function toOutdoorGeoPoint(geoPoint: any): GeoPoint {
   };
 }
 
-export function OutdoorAdventure({ onReturn, allowDemoMode = false }: OutdoorAdventureProps) {
+export function OutdoorAdventureDemo({ onReturn, allowDemoMode = false }: OutdoorAdventureProps) {
   const [questState, setQuestState] = useState<OutdoorQuestState | null>(null);
   const [currentPosition, setCurrentPosition] = useState<GeoPoint | null>(null);
   const [error, setError] = useState<LocationError | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
   const [demoModeEnabled, setDemoModeEnabled] = useState(false);
+
+  useEffect(() => () => {
+    geolocationService.stopTracking();
+    demoMode.disable();
+  }, []);
 
   // Initialize quest on mount
   useEffect(() => {
@@ -364,4 +369,51 @@ export function OutdoorAdventure({ onReturn, allowDemoMode = false }: OutdoorAdv
       )}
     </div>
   );
+}
+
+/** Real entry: location capability only, until eligible walking routes exist. */
+export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+  function checkLocation() {
+    setStatus('loading');
+    setMessage('Dein Standort wird ermittelt …');
+    geolocationService.getCurrentPosition(position => {
+      if (!mounted.current) return;
+      setStatus('ready');
+      setMessage((position.accuracy ?? Infinity) > 100
+        ? 'Dein Standort ist noch zu ungenau. Versuche es später unter freiem Himmel erneut.'
+        : 'Standort empfangen. Für diesen Ort ist noch kein geprüfter Spazierweg verfügbar. Spiele die Geschichte ohne GPS weiter.');
+    }, error => {
+      if (!mounted.current) return;
+      setStatus('error');
+      const messages: Record<string, string> = {
+        PERMISSION_DENIED: 'Du hast den Standort nicht freigegeben. Du kannst die Geschichte ohne GPS spielen oder den Zugriff in deinen Browsereinstellungen erlauben.',
+        TIMEOUT: 'Die Standortsuche hat zu lange gedauert. Versuche es erneut oder spiele ohne GPS weiter.',
+        HTTPS_REQUIRED: 'Die Standortsuche benötigt eine sichere Verbindung. Öffne das Spiel über seine HTTPS-Adresse.',
+      };
+      setMessage(messages[error.code] ?? 'Dein Standort ist gerade nicht verfügbar. Versuche es später erneut oder spiele ohne GPS weiter.');
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+  }
+  return <main className={styles.container}>
+    <header className={styles.header}><h1>Draußen entdecken</h1><p>Standort prüfen</p></header>
+    <section className={styles.status}>
+      <h2>Ein kurzer Spaziergang in deiner Nähe</h2>
+      <p>Das Abenteuer soll dich künftig auf geprüften Fußwegen im Umkreis von ungefähr 1 km begleiten. Diese Wege sind noch nicht verfügbar. Es gibt hier noch keine Ziele, zu denen du gehen sollst.</p>
+      <p>Erst wenn du „Standort freigeben“ antippst, fragt dein Browser nach deiner Erlaubnis. Dein Standort wird für diese Prüfung einmal abgerufen und nicht als Wegstrecke gespeichert.</p>
+      <p>Du brauchst GPS nicht, um die Geschichte zu spielen. Es gibt kein Zeitlimit und keine Strafe für eine Pause.</p>
+      <p role={status === 'error' ? 'alert' : 'status'}>{message}</p>
+    </section>
+    <section className={styles.actions}>
+      <button className={styles.primaryButton} disabled={status === 'loading'} onClick={checkLocation}>
+        {status === 'loading' ? 'Standort wird gesucht …' : status === 'idle' ? 'Standort freigeben' : 'Standort erneut prüfen'}
+      </button>
+      <button className={styles.secondaryButton} onClick={onReturn}>Zur Abenteuerübersicht</button>
+    </section>
+  </main>;
 }

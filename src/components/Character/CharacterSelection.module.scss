@@ -653,3 +653,12 @@
     margin: 0.75rem 0;
   }
 }
+
+/* A single page scroll keeps large text and all abilities reachable on iPhone. */
+.container { max-width: 48rem; margin: 0 auto; overflow: visible; }
+.compactCardsGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 36rem; }
+.compactCard { min-width: 0; }
+.detailsContainer { max-height: none; overflow: visible; }
+.descriptionBox p, .abilityDescription { font-size: 1rem; line-height: 1.5; }
+.actions { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+.startButton { width: 100%; max-width: 36rem; }

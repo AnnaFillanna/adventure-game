@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { useGameStore } from '../../game/state/gameStore';
 import { HEROES, ALL_HERO_IDS } from '../../game/characters/heroDefinitions';
 import type { HeroId } from '../../game/characters/types';
-import { getText } from '../../locales';
+import { getText, getTextDynamic } from '../../locales';
 import styles from './CharacterSelection.module.scss';
 
 // ============================================================================
@@ -62,7 +62,7 @@ const DetailPanel: React.FC<DetailPanelProps> = ({ heroId }) => {
   if (!heroId) {
     return (
       <div className={styles.detailsContainer}>
-        <p className={styles.noSelectionMessage}>Select a hero to view details</p>
+        <p className={styles.noSelectionMessage}>Tippe auf einen Helden, um seine Fähigkeiten zu vergleichen.</p>
       </div>
     );
   }
@@ -77,7 +77,7 @@ const DetailPanel: React.FC<DetailPanelProps> = ({ heroId }) => {
           <div className={styles.heroIconDetail}>{hero.icon}</div>
           <div className={styles.nameAndClass}>
             <h2 className={styles.heroNameDetail}>{hero.name}</h2>
-            <p className={styles.heroClassDetail}>{hero.class}</p>
+            <p className={styles.heroClassDetail}>{getTextDynamic(`heroes.${heroId}.class`)}</p>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
   onStartGame,
 }) => {
   const [selectedHeroId, setSelectedHeroId] = useState<HeroId | null>(
-    externalSelectedHero || null
+    externalSelectedHero ?? null
   );
   const [isStarting, setIsStarting] = useState(false);
   const selectHero = useGameStore(state => state.selectHero);
@@ -139,18 +139,14 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
     if (!selectedHeroId) return;
 
     setIsStarting(true);
-    selectHero(selectedHeroId);
+    if (!onStartGame) selectHero(selectedHeroId);
 
     // Call external handler if provided
     if (onStartGame) {
-      setTimeout(() => {
-        onStartGame();
-      }, 500);
+      onStartGame();
     } else if (onCharacterSelected) {
       // Fallback to old API
-      setTimeout(() => {
-        onCharacterSelected(selectedHeroId);
-      }, 500);
+      onCharacterSelected(selectedHeroId);
     }
   };
 
@@ -202,7 +198,7 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({
         {/* Help Text */}
         {!isReady && (
           <p className={styles.helpText}>
-            Select a hero to continue →
+            Wähle oben einen Helden und bestätige deine Wahl.
           </p>
         )}
       </div>

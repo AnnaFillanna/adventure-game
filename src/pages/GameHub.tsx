@@ -1,89 +1,53 @@
-/**
- * Adventure Game - Game Hub (Main Menu)
- * Mobile-first 2×2 Grid Navigation
- * Displays: Campaign, GPS Adventure, Hero Info, Inventory
- */
-
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../game/state/gameStore';
 import { preferencesManager } from '../game/utils/storage';
 import type { HeroId } from '../game/characters/types';
 import { getHeroDefinition } from '../game/characters/heroDefinitions';
+import { loadCampaignProgress, hasCampaignSave } from '../game/campaign/campaignStorage';
+import { CAMPAIGN_FIRST_LIGHT as campaign } from '../game/campaign/campaignData';
+import { getTextDynamic } from '../locales';
 import styles from './GameHub.module.scss';
 
 export default function GameHub() {
   const navigate = useNavigate();
   const selectedHeroId = useGameStore(state => state.selectedHeroId);
   const heroId = selectedHeroId ?? preferencesManager.getPreference<unknown>('campaignHero', null);
-  const validHero = typeof heroId === 'string' && ['aeran', 'velar', 'varg', 'ravena', 'saira'].includes(heroId);
-
-  if (!validHero) {
-    return <div className={styles.error}>Held nicht selektiert. <button onClick={() => navigate('/character-select')}>Zurück</button></div>;
+  if (typeof heroId !== 'string' || !['aeran', 'velar', 'varg', 'ravena', 'saira'].includes(heroId)) {
+    return <Navigate to="/character-select" replace />;
   }
-
   const hero = getHeroDefinition(heroId as HeroId);
-
-  return (
-    <main className={styles.gameHub}>
-      {/* Minimalist header with hero name */}
-      <header className={styles.header}>
-        <h1 className={styles.heroTitle}>{hero.name}</h1>
-        <p className={styles.subtitle}>Wähle dein Abenteuer</p>
-      </header>
-
-      {/* 2×2 Grid Navigation */}
-      <nav className={styles.navGrid}>
-        {/* Campaign */}
-        <button
-          className={`${styles.navButton} ${styles.campaign}`}
-          onClick={() => navigate('/game')}
-          title="Starte die Hauptkampagne"
-        >
-          <span className={styles.icon}>⚔️</span>
-          <span className={styles.label}>Kampagne</span>
-        </button>
-
-        {/* GPS Adventure */}
-        <button
-          className={`${styles.navButton} ${styles.gps}`}
-          onClick={() => navigate('/hub/outdoor')}
-          title="Erkunde die Welt mit GPS"
-        >
-          <span className={styles.icon}>🗺️</span>
-          <span className={styles.label}>GPS-Abenteuer</span>
-        </button>
-
-        {/* Hero Info */}
-        <button
-          className={`${styles.navButton} ${styles.hero}`}
-          onClick={() => navigate('/hub/hero-info')}
-          title="Schaue deine Heldenstatistiken"
-        >
-          <span className={styles.icon}>👤</span>
-          <span className={styles.label}>Held</span>
-        </button>
-
-        {/* Inventory */}
-        <button
-          className={`${styles.navButton} ${styles.inventory}`}
-          onClick={() => navigate('/hub/inventory')}
-          title="Verwalte dein Inventar"
-        >
-          <span className={styles.icon}>🎒</span>
-          <span className={styles.label}>Inventar</span>
-        </button>
-      </nav>
-
-      {/* Footer with character swap option */}
-      <footer className={styles.footer}>
-        <button
-          className={styles.changeHeroButton}
-          onClick={() => navigate('/character-select')}
-          title="Wechsle zu einem anderen Helden"
-        >
-          Helden wechseln
-        </button>
-      </footer>
-    </main>
-  );
+  const progress = loadCampaignProgress(campaign.id, heroId);
+  const unreadable = !progress && hasCampaignSave(campaign.id, heroId);
+  const episode = campaign.episodes.find(ep => {
+    const status = progress?.episodeProgress[ep.id]?.status;
+    return status !== 'completed' && status !== 'locked';
+  }) ?? campaign.episodes[0];
+  const completed = progress?.episodeProgress[episode.id]?.completedEvents.length ?? 0;
+  return <main className={styles.gameHub}>
+    <header className={styles.header}>
+      <p>Dein Held: {hero.name}</p>
+      <h1>{progress?.status === 'completed' ? 'Dein Erinnerungsbuch' : getTextDynamic(episode.titleKey)}</h1>
+      <p>{episode.number === 1 ? 'Sichere die erste Spur zum Schwert des Ersten Lichts.' : getTextDynamic(episode.descriptionKey)}</p>
+    </header>
+    <section className={styles.introduction} aria-label="Dein nächster Schritt">
+      <h2>{progress ? 'Hier geht es weiter' : 'Dein erstes Abenteuer'}</h2>
+      <p>{completed} von {episode.events.length} Aufgaben erledigt.</p>
+      <p>Öffne die Geschichte und lies die Botschaft. Spiele an einem ruhigen Ort im Sitzen – ohne Zeitlimit.</p>
+      <button className={styles.primaryAction} onClick={() => navigate('/game')}>
+        {progress ? 'Geschichte fortsetzen' : 'Erste Aufgabe öffnen'}
+      </button>
+      {unreadable && <p role="alert">Dein Spielstand konnte nicht geladen werden. Er bleibt erhalten; öffne die Geschichte für weitere Informationen.</p>}
+      <p>Bestätigte Aktionen werden auf diesem Gerät gespeichert. Mit „Pause & Übersicht“ kannst du aufhören und später hier fortsetzen.</p>
+    </section>
+    <section className={styles.introduction}>
+      <h2>Draußen entdecken</h2>
+      <p>Geplant sind kurze Spaziergänge in deiner Nähe, ungefähr 1 km, ohne Zeitdruck und ohne Kampfpflicht. Geprüfte Spazierwege sind noch nicht verfügbar. Du kannst deinen Standort prüfen und die Geschichte ohne GPS spielen.</p>
+      <button onClick={() => navigate('/hub/outdoor')}>Standort prüfen</button>
+    </section>
+    <nav className={styles.secondaryNav} aria-label="Dein Held">
+      <button onClick={() => navigate('/hub/hero-info')}>Held ansehen</button>
+      <button onClick={() => navigate('/hub/inventory')}>Inventar</button>
+      <button onClick={() => navigate('/character-select')}>Helden wechseln</button>
+    </nav>
+  </main>;
 }

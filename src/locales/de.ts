@@ -57,7 +57,7 @@ export const de = {
     description: 'Beschreibung',
     personality: 'Persönlichkeit',
     moreAbilities: '+{count} weitere',
-    startAdventure: 'Kampagne öffnen',
+    startAdventure: 'Held auswählen',
     startingAdventure: 'Starte Abenteuer...',
     background: 'Hintergrund',
   },

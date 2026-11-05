@@ -3,7 +3,7 @@
  * Routing und Layout
  */
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import StartScreen from './pages/StartScreen';
 import CharacterSelectionPage from './pages/CharacterSelectionPage';
 import GameHub from './pages/GameHub';
@@ -15,6 +15,11 @@ import InventoryPage from './pages/InventoryPage';
 import DebugCampaignPage from './pages/DebugCampaignPage';
 import './App.scss';
 
+function OutdoorPage() {
+  const navigate = useNavigate();
+  return <OutdoorAdventure onReturn={() => navigate('/hub')} />;
+}
+
 function App() {
   return (
     <Router>
@@ -24,7 +29,9 @@ function App() {
           <Route path="/character-select" element={<CharacterSelectionPage />} />
           <Route path="/hub" element={<GameHub />} />
           <Route path="/game" element={<GameWorld />} />
-          <Route path="/hub/outdoor" element={<OutdoorAdventure onReturn={() => window.history.back()} allowDemoMode={true} />} />
+          <Route path="/hub/outdoor" element={<OutdoorPage />} />
+          <Route path="/outdoor" element={<Navigate to="/hub/outdoor" replace />} />
+          <Route path="/game/outdoor" element={<Navigate to="/hub/outdoor" replace />} />
           <Route path="/hub/hero-info" element={<HeroInfoPage />} />
           <Route path="/hub/inventory" element={<InventoryPage />} />
           <Route path="/free-world" element={<LegacyGameWorld />} />

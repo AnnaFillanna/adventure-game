@@ -444,3 +444,18 @@
     }
   }
 }
+
+/* Text actions stay readable with large fonts and narrow mobile screens. */
+.simplified-campaign-screen header.minimalist-header {
+  flex-wrap: wrap;
+  gap: .75rem;
+  .header-actions { flex-wrap: wrap; }
+  .header-actions .gps-button, .header-actions .pause-button {
+    width: auto;
+    height: auto;
+    min-height: 44px;
+    padding: .6rem .8rem;
+    font-size: 1rem;
+  }
+}
+.simplified-campaign-screen .story-section > p { margin: .75rem 0; line-height: 1.5; }

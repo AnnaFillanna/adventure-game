@@ -6,7 +6,8 @@
 .gameHub {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 0;
+  height: 100%;
   background: linear-gradient(135deg, #1a3a2a 0%, #0d1f1a 100%);
   color: #e8d4b8;
   padding: 1rem;
@@ -233,7 +234,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 0;
+  height: 100%;
   background: linear-gradient(135deg, #1a3a2a 0%, #0d1f1a 100%);
   color: #e8d4b8;
   padding: 2rem;
@@ -290,3 +292,11 @@
     font-size: 1.5rem;
   }
 }
+
+.introduction { width: 100%; max-width: 38rem; padding: 1.25rem; margin: 0 auto 1rem; background: #173b2b; border: 1px solid #8e7848; border-radius: 1rem; }
+.introduction p { margin: .8rem 0; line-height: 1.6; }
+.introduction h2 { font-size: 1.2rem; color: #efcf89; }
+.introduction button, .secondaryNav button { min-height: 44px; padding: .75rem 1rem; border-radius: .5rem; border: 1px solid #d4af37; background: #173b2b; color: #fff; font-size: 1rem; }
+.introduction .primaryAction { width: 100%; background: #efcf89; color: #142a20; font-weight: 700; }
+.secondaryNav { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+.gameHub { overflow-y: auto; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); }

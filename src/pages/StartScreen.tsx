@@ -7,7 +7,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../game/state/gameStore';
-import { saveManager } from '../game/utils/storage';
+import { saveManager, preferencesManager } from '../game/utils/storage';
 import { getText } from '../locales';
 import styles from './StartScreen.module.scss';
 
@@ -17,13 +17,18 @@ export const StartScreen: React.FC = () => {
 
   // Auto-continue if save exists
   useEffect(() => {
+    const hero = preferencesManager.getPreference('campaignHero', '');
+    if (['aeran', 'velar', 'varg', 'ravena', 'saira'].includes(hero)) {
+      navigate('/hub', { replace: true });
+      return;
+    }
     const hasSave = saveManager.hasSave();
     if (hasSave) {
       const save = saveManager.load();
       if (save) {
         // Auto-load game and navigate to campaign (skip character select)
         loadGame(JSON.stringify(save));
-        navigate('/game', { replace: true });
+        navigate('/hub', { replace: true });
       }
     }
   }, [navigate, loadGame]);
@@ -65,8 +70,8 @@ export const StartScreen: React.FC = () => {
 
         {/* Footer info */}
         <div className={styles.footer}>
-          <p className={styles.version}>v0.1.0 - Early Access</p>
-          <p className={styles.copyright}>Made with ✨ for adventurers</p>
+          <p className={styles.version}>Adventure Game · In Entwicklung</p>
+          <p className={styles.copyright}>Dein Fortschritt bleibt auf diesem Gerät gespeichert.</p>
         </div>
       </div>
     </div>
