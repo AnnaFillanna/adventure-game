@@ -446,3 +446,10 @@
 
 .container { min-height: 0; height: 100%; padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 .status p { margin: .8rem 0; line-height: 1.6; }
+
+.walkConfirmation { display: flex; align-items: flex-start; gap: .75rem; margin: 1rem 0; line-height: 1.5; }
+.walkConfirmation input { min-width: 24px; min-height: 24px; }
+.walkTask { border-top: 1px solid #d4af37; margin-top: 1rem; padding-top: 1rem; }
+.walkTask button, .status > button { min-height: 44px; padding: .8rem; font-size: 1rem; border-radius: .5rem; margin: .5rem 0; }
+.walkLink { padding: 1rem; background: #d4af37; color: #10251e; border-radius: .5rem; text-align: center; font-weight: bold; }
+.actions button:disabled { opacity: .5; cursor: not-allowed; }

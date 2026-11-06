@@ -6,6 +6,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import StartScreen from './pages/StartScreen';
 import CharacterSelectionPage from './pages/CharacterSelectionPage';
+import NearbyWalk from './pages/NearbyWalk';
 import GameHub from './pages/GameHub';
 import GameWorld from './pages/GameWorld';
 import LegacyGameWorld from './pages/LegacyGameWorld';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/character-select" element={<CharacterSelectionPage />} />
           <Route path="/hub" element={<GameHub />} />
           <Route path="/game" element={<GameWorld />} />
+          <Route path="/hub/walk" element={<NearbyWalk />} />
           <Route path="/hub/outdoor" element={<OutdoorPage />} />
           <Route path="/outdoor" element={<Navigate to="/hub/outdoor" replace />} />
           <Route path="/game/outdoor" element={<Navigate to="/hub/outdoor" replace />} />

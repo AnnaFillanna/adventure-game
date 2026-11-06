@@ -5,6 +5,7 @@
 
 import { useEffect, useState, useRef, lazy, Suspense } from 'react';
 import type { GeoPoint as LocationPoint } from '../game/geo/types';
+import { Link } from 'react-router-dom';
 import { geolocationService } from '../game/geo/geolocation';
 import { demoMode } from '../game/geo/demo';
 import {
@@ -494,11 +495,12 @@ export function OutdoorAdventure({ onReturn }: OutdoorAdventureProps) {
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   }
   return <main className={styles.container}>
+    <Link className={styles.walkLink} to="/hub/walk">GPS-Abenteuer in meiner Nähe öffnen</Link>
     <header className={styles.header}><h1>Dein GPS-Standort</h1><p>Standort empfangen → Karte öffnen → GPS live starten</p></header>
     <section className={styles.status}>
       <h2>{tracking ? 'GPS ist eingeschaltet' : position ? 'Standort empfangen' : 'GPS einschalten'}</h2>
       <p>Erst wenn du „Standort freigeben“ antippst, fragt dein Browser nach deiner Erlaubnis. Zunächst wird dein Standort einmal abgerufen. Mit „GPS live starten“ aktualisierst du ihn laufend. Beim Verlassen oder Ausblenden dieser Seite stoppt die Aktualisierung. Eine Wegstrecke wird nicht gespeichert.</p>
-      <p>Die GPS-Karte ist verfügbar. Aufgaben entlang geprüfter Spazierwege sind noch nicht eingerichtet.</p>
+      <p>Die Standortkarte ist verfügbar. Für Aufgaben auf automatisch vorgeschlagenen Wegen öffne die Test-GPS-Wanderung.</p>
       <p role={status === 'error' ? 'alert' : 'status'}>{message}</p>
     </section>
     {position && <section className={styles.status} aria-label="Empfangener Standort">

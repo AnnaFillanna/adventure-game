@@ -1,3 +1,5 @@
+> Ergänzung vom 6. November 2026: Die Standortanzeige bleibt unter `/hub/outdoor`. Der neue, ausdrücklich freigegebene Testspaziergang unter `/hub/walk` ist in [GPS_TEST_WALK.md](GPS_TEST_WALK.md) beschrieben. Die nachfolgende Bestandsbeschreibung bezieht sich auf Commit `80b574e`.
+
 # GPS-Anzeige und Live-Standort
 
 Ergänzung zum mobilen Audit vom 05.11.2026. Der frühere reine Standorttest wurde um eine Standortanzeige und explizit startbare Live-Aktualisierung erweitert.

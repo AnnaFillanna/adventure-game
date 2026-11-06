@@ -484,3 +484,8 @@ Keine Erweiterung darf echtes Wasser, gefährliche Orte, Verfolgungsbewegung ode
 - Keine zufälligen echten GPS-Ziele, keine aktivierten ungeprüften Routen, keine Kämpfe während Bewegung.
 - Keine Strafen für Pausen oder ausgelassene Tage; kein realer Flucht-, Richtungswechsel- oder Gefahrenauftrag.
 - Die Geschichte endet nach Episode 30 vollständig. Der mögliche Magier-Twist bleibt bis zur ausdrücklichen Designentscheidung offen.
+
+
+## Vereinbarte Ergänzung: GPS-Testspaziergang (6. November 2026)
+
+Die Nutzerin hat ausdrücklich „Test-GPS-Spaziergang mit Bestätigung vor Ort“ für einen Start am aktuellen Standort gewählt. Nur dieser gekennzeichnete Testmodus darf technisch gefilterte OSM-Wegvorschläge mit Prüfstatus `unreviewed` nach Kartenansicht und Erwachsenenbestätigung starten. Die Bestätigung ändert den Prüfstatus nicht und ist keine Sicherheitsfreigabe. Der reguläre Anspruch an örtlich geprüfte Spielrouten bleibt bestehen. Kein fester Wohnort und keine zufälligen Koordinaten werden eingebaut. Details, Grenzen und Prüfnachweise: [GPS_TEST_WALK.md](GPS_TEST_WALK.md).

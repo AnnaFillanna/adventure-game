@@ -41,7 +41,8 @@ export default function GameHub() {
     </section>
     <section className={styles.introduction}>
       <h2>Draußen entdecken</h2>
-      <p>Geplant sind kurze Spaziergänge in deiner Nähe, ungefähr 1 km, ohne Zeitdruck und ohne Kampfpflicht. Geprüfte Spazierwege sind noch nicht verfügbar. Du kannst deinen Standort prüfen und die Geschichte ohne GPS spielen.</p>
+      <p>Starte eine kurze Test-GPS-Wanderung von deinem aktuellen Standort. Die App sucht zusammenhängende Fußwege und drei Aufgaben. Prüfe den Vorschlag vor Ort; Karten allein bestätigen keinen sicheren Weg.</p>
+      <button className={styles.primaryAction} onClick={() => navigate('/hub/walk')}>GPS-Abenteuer in meiner Nähe</button>
       <button onClick={() => navigate('/hub/outdoor')}>Standort prüfen</button>
     </section>
     <nav className={styles.secondaryNav} aria-label="Dein Held">

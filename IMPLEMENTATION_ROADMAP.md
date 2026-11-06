@@ -288,3 +288,8 @@ Zuerst Zugriff auf die tatsächliche Codebasis herstellen, beide lokalen Entwür
 - Keine kostenpflichtigen APIs integrieren und keine ungeprüften GPS-Routen aktivieren.
 - Keine automatische Veröffentlichung und kein Git Push ohne ausdrückliche Freigabe.
 - Erst vorhandene Infrastruktur verstehen, dann Änderungen klein, konkret und überprüfbar umsetzen.
+
+
+## Vereinbarte Ergänzung: GPS-Testspaziergang (6. November 2026)
+
+Die Nutzerin hat ausdrücklich „Test-GPS-Spaziergang mit Bestätigung vor Ort“ für einen Start am aktuellen Standort gewählt. Nur dieser gekennzeichnete Testmodus darf technisch gefilterte OSM-Wegvorschläge mit Prüfstatus `unreviewed` nach Kartenansicht und Erwachsenenbestätigung starten. Die Bestätigung ändert den Prüfstatus nicht und ist keine Sicherheitsfreigabe. Der reguläre Anspruch an örtlich geprüfte Spielrouten bleibt bestehen. Kein fester Wohnort und keine zufälligen Koordinaten werden eingebaut. Details, Grenzen und Prüfnachweise: [GPS_TEST_WALK.md](GPS_TEST_WALK.md).
