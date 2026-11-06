@@ -28,3 +28,10 @@ it('accepts water relation geometry and rejects malformed members',async()=>{
  vi.resetModules();vi.stubGlobal('fetch',vi.fn().mockResolvedValue(new Response(JSON.stringify({...data,elements:[{...relation,members:[{type:'way',ref:4,role:'outer',geometry:[null]}]}]}))));
  const again=await import('./mapProvider');await expect(again.loadWalkMap(fix,new AbortController().signal)).rejects.toThrow('ungültig');
 });
+
+it('preserves the first network error on a rapid retry and exposes its actual retry deadline',async()=>{
+ const fetcher=vi.fn().mockRejectedValue(new TypeError('Failed to fetch'));vi.stubGlobal('fetch',fetcher);
+ const {loadWalkMap,WalkMapError}=await import('./mapProvider');const signal=new AbortController().signal;const start=Date.now();
+ const first=await loadWalkMap(fix,signal).catch(e=>e);const second=await loadWalkMap(fix,signal).catch(e=>e);
+ expect(first).toBeInstanceOf(WalkMapError);expect(second.message).toBe(first.message);expect(second.retryAt).toBeGreaterThanOrEqual(start+60000);expect(fetcher).toHaveBeenCalledTimes(1);
+});

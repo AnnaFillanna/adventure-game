@@ -4,15 +4,15 @@ import { beforeEach, afterEach, it, expect, vi } from 'vitest';
 import App from '../App';
 import { preferencesManager } from '../game/utils/storage';
 import { useGameStore } from '../game/state/gameStore';
-import { loadWalkMap } from '../game/walk/mapProvider';
+import { loadWalkMap, WalkMapError } from '../game/walk/mapProvider';
 import { loadWalk } from '../game/walk/progress';
-vi.mock('../game/walk/mapProvider', () => ({loadWalkMap:vi.fn()}));
+vi.mock('../game/walk/mapProvider', async importOriginal => ({...await importOriginal<typeof import('../game/walk/mapProvider')>(),loadWalkMap:vi.fn()}));
 vi.mock('../components/Map/LocationMap', () => ({LocationMap: ({onMapReady,onMapUnavailable}: {onMapReady:()=>void;onMapUnavailable:()=>void}) => <div><button onClick={onMapReady}>Test: Karte geladen</button><button onClick={onMapUnavailable}>Test: Kartenfehler</button></div>}));
 let container: HTMLDivElement, root: Root;
 let getCurrentPosition: ReturnType<typeof vi.fn>, watchPosition: ReturnType<typeof vi.fn>, clearWatch: ReturnType<typeof vi.fn>;
 const browserFix=(i=0,accuracy=5)=>({coords:{latitude:50+i*.00045,longitude:7,accuracy},timestamp:Date.now()});
 beforeEach(()=>{
- (globalThis as any).IS_REACT_ACT_ENVIRONMENT=true; vi.useFakeTimers(); localStorage.clear();useGameStore.getState().resetGame();
+ (globalThis as any).IS_REACT_ACT_ENVIRONMENT=true; vi.useFakeTimers(); vi.clearAllMocks(); localStorage.clear();useGameStore.getState().resetGame();
  preferencesManager.setPreference('campaignHero','saira'); window.history.replaceState({},'', '/hub/walk');
  getCurrentPosition=vi.fn(success=>success(browserFix()));watchPosition=vi.fn(()=>19);clearWatch=vi.fn();
  Object.defineProperty(navigator,'geolocation',{configurable:true,value:{getCurrentPosition,watchPosition,clearWatch}});
@@ -66,4 +66,29 @@ it('recovers from a browser that never answers and ignores a late GPS callback',
  getCurrentPosition.mockImplementation(()=>{});await act(async()=>root.render(<App/>));await click('Standort und Wege suchen');
  const late=getCurrentPosition.mock.calls[0][0];await act(async()=>vi.advanceTimersByTime(16000));expect(container.textContent).toContain('noch keinen Standort geliefert');
  await act(async()=>late(browserFix()));expect(container.textContent).not.toContain('Dein Wegvorschlag');
+});
+
+it('keeps the original map failure visible throughout cooldown and permits retry afterwards',async()=>{
+ vi.mocked(loadWalkMap).mockRejectedValueOnce(new WalkMapError('Der Kartendienst ist nicht erreichbar.',Date.now()+60000));
+ await act(async()=>root.render(<App/>));await click('Standort und Wege suchen');
+ expect(container.textContent).toContain('Standort: gefunden');expect(container.textContent).toContain('Kartendaten: nicht geladen');
+ expect(container.querySelector('[role="alert"]')?.textContent).toBe('Der Kartendienst ist nicht erreichbar.');
+ expect(document.activeElement?.getAttribute('aria-label')).toBe('Ergebnis der Wegsuche');
+ await click('Erneut versuchen in 60 s');expect(loadWalkMap).toHaveBeenCalledTimes(1);
+ await act(async()=>vi.advanceTimersByTime(61000));
+ expect(container.querySelector('[role="alert"]')?.textContent).toBe('Der Kartendienst ist nicht erreichbar.');
+ await click('Standort und Wege suchen');expect(container.textContent).toContain('Dein Wegvorschlag');
+});
+it('finishes loading on deadline even if the network never responds to abort',async()=>{
+ let resolve: (value: any)=>void=()=>{};
+ vi.mocked(loadWalkMap).mockImplementationOnce(()=>new Promise(r=>{resolve=r;}));
+ await act(async()=>root.render(<App/>));await click('Standort und Wege suchen');
+ await act(async()=>vi.advanceTimersByTime(31000));expect(container.textContent).toContain('nicht innerhalb von 30 Sekunden');
+ expect(container.textContent).not.toContain('Bitte kurz warten');
+ await act(async()=>resolve({elements:[]}));expect(container.textContent).not.toContain('Dein Wegvorschlag');
+});
+it('distinguishes a route rejection from failed GPS or map retrieval',async()=>{
+ vi.mocked(loadWalkMap).mockResolvedValueOnce({osm3s:{timestamp_osm_base:new Date().toISOString()},elements:[]});
+ await act(async()=>root.render(<App/>));await click('Standort und Wege suchen');
+ expect(container.textContent).toContain('Standort: gefunden');expect(container.textContent).toContain('Kartendaten: geladen');expect(container.textContent).toContain('kein geeigneter Vorschlag');
 });

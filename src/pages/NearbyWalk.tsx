@@ -6,7 +6,7 @@ import { geolocationService } from '../game/geo/geolocation';
 import type { GeoPoint } from '../game/geo/types';
 import { getHeroDefinition } from '../game/characters/heroDefinitions';
 import type { HeroId } from '../game/characters/types';
-import { loadWalkMap } from '../game/walk/mapProvider';
+import { loadWalkMap, WalkMapError } from '../game/walk/mapProvider';
 import { planWalk, validFix, type WalkPlan } from '../game/walk/planner';
 import { acceptWalkFix, stationReady, type WalkSample } from '../game/walk/locationGate';
 import { loadWalk, saveWalk, solveTask, WALK_TASKS } from '../game/walk/progress';
@@ -33,6 +33,10 @@ export function WalkSession({ hero }: { hero: HeroId }) {
   const latestFixValid = useRef(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [retryAt, setRetryAt] = useState(0);
+  const [searchStep, setSearchStep] = useState<'gps' | 'map' | 'route' | 'done' | null>(null);
+  const [gpsAccuracy, setGpsAccuracy] = useState<number | null>(null);
+  const resultRef = useRef<HTMLElement | null>(null);
   const [conditions, setConditions] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [mapReady, setMapReady] = useState(false);
@@ -43,6 +47,16 @@ export function WalkSession({ hero }: { hero: HeroId }) {
   const request = useRef<AbortController | null>(null);
   const deadline = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const heartbeat = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+
+  const retrySeconds = Math.max(0, Math.ceil((retryAt - now) / 1000));
+  useEffect(() => {
+    if (!retryAt) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [retryAt]);
+  useEffect(() => {
+    if (error) resultRef.current?.focus();
+  }, [error]);
 
   function cancel() {
     generation.current++;
@@ -61,9 +75,9 @@ export function WalkSession({ hero }: { hero: HeroId }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   async function search() {
-    if (!progressRef.current || progressRef.current.rewarded) return;
+    if (!progressRef.current || progressRef.current.rewarded || Date.now() < retryAt) return;
     cancel(); const id = generation.current;
-    setPhase('locating'); setError(''); setMessage('Dein aktueller Standort wird gesucht …');
+    setPhase('locating'); setError(''); setRetryAt(0); setSearchStep('gps'); setGpsAccuracy(null); setMessage('Dein aktueller Standort wird gesucht …');
     setPlan(null); setSample(null); sampleRef.current = null; latestFixValid.current = false; setStopped(false); setConditions(false); setShowMap(false); setMapReady(false); setMapFailed(false);
     deadline.current = setTimeout(() => {
       if (id !== generation.current) return;
@@ -74,18 +88,27 @@ export function WalkSession({ hero }: { hero: HeroId }) {
       clearTimeout(deadline.current);
       setPosition(fix);
       if (!validFix(fix)) { setPhase('idle'); setMessage(''); setError('Dein Standort ist noch zu ungenau. Für die Wegsuche brauchen wir eine Genauigkeit von höchstens 25 m. Versuche es unter freiem Himmel erneut.'); return; }
-      setPhase('loading'); setMessage('Pfade in deiner Nähe werden gesucht …');
+      setGpsAccuracy(Math.round(fix.accuracy!)); setSearchStep('map');
+      setPhase('loading'); setMessage('Dein Standort wurde gefunden. Die Wegkarte wird geladen …');
       const controller = new AbortController(); request.current = controller;
-      deadline.current = setTimeout(() => controller.abort(), 30000);
+      const requestedAt = Date.now();
+      deadline.current = setTimeout(() => {
+        if (id !== generation.current) return;
+        // Settle the UI even if a browser/network stream ignores AbortSignal.
+        cancel(); setPhase('idle'); setMessage(''); setNow(Date.now()); setRetryAt(requestedAt + 60000);
+        setError('Die Wegkarte hat nicht innerhalb von 30 Sekunden geantwortet. Dein Standort wurde gefunden, aber die Kartendaten fehlen.');
+      }, 30000);
       try {
         const data = await loadWalkMap(fix, controller.signal);
         if (id !== generation.current) return;
         if (controller.signal.aborted) throw new Error('Zeitüberschreitung');
+        setSearchStep('route');
         const count = progressRef.current!.completed.length;
         const next = planWalk(data, fix, WALK_TASKS.length - count, fix.timestamp!);
-        setStartCompleted(count); setPlan(next); setPhase('preview'); setMessage('Ein Wegvorschlag wurde gefunden. Prüfe den Verlauf und die Bedingungen vor Ort.');
+        setSearchStep('done'); setStartCompleted(count); setPlan(next); setPhase('preview'); setMessage('Ein Wegvorschlag wurde gefunden. Prüfe den Verlauf und die Bedingungen vor Ort.');
       } catch (e) {
         if (id !== generation.current) return;
+        if (e instanceof WalkMapError) { setRetryAt(e.retryAt); setNow(Date.now()); }
         setPhase('idle'); setMessage(''); setError(controller.signal.aborted ? 'Die Wegsuche hat zu lange gedauert. Bitte versuche es später erneut.' : e instanceof Error ? e.message : 'Die Wegsuche ist gerade nicht verfügbar.');
       } finally { if (id === generation.current) clearTimeout(deadline.current); }
     }, failure => {
@@ -137,10 +160,21 @@ export function WalkSession({ hero }: { hero: HeroId }) {
       <p>Gib deinen Standort frei. Wir suchen einen kurzen Fußweg mit drei Aufgaben in deiner Nähe. Du kannst jederzeit pausieren.</p>
       <details><summary>Wie dein Standort verwendet wird</summary><p>Die Wegsuche übermittelt einen auf ungefähr 100 m gerundeten Startbereich an den OpenStreetMap-Dienst Overpass. Die Karte lädt Bilder von OpenStreetMap. GPS-Spuren werden nicht gespeichert.</p></details>
       {progress && <p>{progress.completed.length} von 3 Aufgaben gespeichert · {progress.gold} Gold aus diesem Spaziergang</p>}
-      <p role="status">{message}</p>{error && <p role="alert">{error}</p>}
+      <p role="status">{message}</p>
     </section>
+    {searchStep && <section ref={resultRef} tabIndex={-1} className={styles.status} aria-label="Ergebnis der Wegsuche">
+      <h2>{error ? 'Wegsuche unterbrochen' : searchStep === 'done' ? 'Weg gefunden' : 'Deine Wegsuche'}</h2>
+      <ol>
+        <li>Standort: {gpsAccuracy !== null ? `gefunden (Genauigkeit etwa ${gpsAccuracy} m)` : error ? 'noch nicht verfügbar' : 'wird gesucht …'}</li>
+        <li>Kartendaten: {searchStep === 'route' || searchStep === 'done' ? 'geladen' : searchStep === 'map' ? error ? 'nicht geladen' : 'werden geladen …' : 'noch nicht angefragt'}</li>
+        <li>Fußweg: {searchStep === 'done' ? 'gefunden' : searchStep === 'route' && error ? 'kein geeigneter Vorschlag' : 'noch nicht gefunden'}</li>
+      </ol>
+      {error && <p role="alert">{error}</p>}
+      {retrySeconds > 0 && <p>Neue Kartenanfrage in {retrySeconds} Sekunden möglich. Die Ursache oben bleibt sichtbar. Es wird nicht automatisch neu gestartet.</p>}
+    </section>}
+    {!searchStep && error && <p role="alert">{error}</p>}
     {!progress ? <p role="alert">Dein Spaziergang-Spielstand kann nicht sicher gelesen werden. Die gespeicherten Daten bleiben unverändert.</p> : progress.rewarded ? <section className={styles.completionMessage}><h2>Alle drei Zeichen gefunden!</h2><p>20 Gold wurden einmalig für diesen Spaziergang gespeichert. Diese Belohnung ist getrennt vom Kampagneninventar. Du kannst jetzt in Ruhe auf demselben Weg zurückgehen oder die Geschichte öffnen. Die Karte bleibt bis zum Verlassen dieser Seite sichtbar.</p>{plan && position && <Suspense fallback={<p>Karte wird geladen …</p>}><LocationMap position={position} walkPlan={plan} /></Suspense>}</section> : <>
-      {['idle', 'paused'].includes(phase) && <section className={styles.actions}><button className={styles.primaryButton} onClick={search}>{progress.completed.length ? 'Verbleibende Aufgaben hier suchen' : 'Standort und Wege suchen'}</button></section>}
+      {['idle', 'paused'].includes(phase) && <section className={styles.actions}><button className={styles.primaryButton} disabled={retrySeconds > 0} onClick={search}>{retrySeconds > 0 ? `Erneut versuchen in ${retrySeconds} s` : progress.completed.length ? 'Verbleibende Aufgaben hier suchen' : 'Standort und Wege suchen'}</button></section>}
       {['locating','loading'].includes(phase) && <section className={styles.actions}><p>Bitte kurz warten …</p><button onClick={() => pause()}>Suche abbrechen</button></section>}
       {plan && position && ['preview','walking'].includes(phase) && <section className={styles.status}>
         <h2>{phase === 'preview' ? 'Dein Wegvorschlag' : 'Dein Spaziergang'}</h2>

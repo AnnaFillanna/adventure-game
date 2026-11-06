@@ -31,3 +31,11 @@ Technische Quellen: [Overpass-Flächen und pivot](https://dev.overpass-api.de/ov
 - `npm run build`: TypeScript und Vite erfolgreich. `npm run lint`: keine Fehler, neun bestehende Warnungen. Bestehende Sass-Deprecations bleiben. `git diff --check` sauber.
 - Aktualisierter Overpass-Aufruf: HTTP 200 mit CORS, 910.022 Bytes, 1.348 Elemente, Datenstand `2026-11-06T10:09:51Z`; enthaltene Wasser-Multipolygon-Relation mit acht Mitgliedern und 961 Geometriepunkten. Optionaler Planungstest auf diesem Datensatz erfolgreich (viele Weganfänge werden einzeln geprüft; Laufzeit rund 27 Sekunden insgesamt).
 - Kein neuer iPhone-Feldtest und keine Freigabe als geprüfte reale Route. Die normale App-Routenfolge, GPS-Fehler, Speichern und Wiederaufnahme sind durch die bestehenden Integrationstests abgedeckt.
+
+## iPhone-Rückmeldung: erneute Suche verdeckt die erste Ursache
+
+Die Fotos zeigen die Suchschaltfläche und anschließend die lokale 60-Sekunden-Sperre. Diese Sperre wird erst nach einem ausreichend genauen GPS-Fix und einer begonnenen Kartenanfrage erreicht. Ob die erste Anfrage am Netzwerk, an den Daten oder an der Wegplanung scheiterte, lässt sich aus diesen Bildern nicht nachweisen.
+
+Korrektur: ursprünglichen Kartenfehler samt Freigabezeit erhalten; währenddessen Countdown und deaktivierte Wiederholung statt weiterer erfolgloser Anfragen. Der Bildschirm trennt GPS, Kartenabruf und Wegplanung und fokussiert die Ergebnisanzeige bei einem Fehler. Eine 30-Sekunden-Grenze beendet die Ladeanzeige auch dann, wenn ein Browser den Fetch-Abbruch nicht beantwortet; verspätete Ergebnisse bleiben wirkungslos. Kein automatischer Retry, keine Lockerung der Weg- oder GPS-Prüfungen.
+
+Nachweis: 353 Tests erfolgreich, TypeScript/Build erfolgreich, Lint ohne Fehler mit neun bestehenden Warnungen. Vier neue Regressionen prüfen Fehlererhalt, Countdown/Retry, hängende Netzantwort einschließlich später Rückmeldung und getrennte Anzeige einer abgelehnten Route. Der konkrete ursprüngliche iPhone-Kartenfehler ist weiterhin unbekannt; die neue Ergebnisanzeige soll ihn sichtbar machen.

@@ -3,13 +3,26 @@ import type { WalkMapData } from './planner';
 const endpoint = import.meta.env.VITE_OVERPASS_URL || 'https://overpass-api.de/api/interpreter';
 let cached: { key: string; at: number; data: WalkMapData } | null = null;
 let lastRequest = 0;
+let lastFailure = '';
+export class WalkMapError extends Error {
+  readonly retryAt: number;
+  constructor(message: string, retryAt: number) { super(message); this.retryAt = retryAt; }
+}
 /** One explicit bounded request; no background fetch, retries or GPS history. */
 export async function loadWalkMap(position: LatLng, signal: AbortSignal): Promise<WalkMapData> {
+  try { return await requestWalkMap(position, signal); }
+  catch (e) {
+    if (e instanceof WalkMapError) throw e;
+    lastFailure = e instanceof Error && e.message ? e.message : 'Die Wegdaten konnten nicht geladen werden.';
+    throw new WalkMapError(lastFailure, lastRequest + 60000);
+  }
+}
+async function requestWalkMap(position: LatLng, signal: AbortSignal): Promise<WalkMapData> {
   if (!Number.isFinite(position.lat) || !Number.isFinite(position.lng) || position.lat < 47.2 || position.lat > 55.2 || position.lng < 5.8 || position.lng > 15.1) throw new Error('Die Wegsuche ist zunächst auf die Region Deutschland begrenzt.');
   const lat = position.lat.toFixed(3), lng = position.lng.toFixed(3), key = `${lat},${lng}`;
   if (cached?.key === key && Date.now() - cached.at < 5 * 60000) return cached.data;
-  if (Date.now() - lastRequest < 60000) throw new Error('Bitte warte eine Minute vor einer neuen Wegsuche. Dein Fortschritt bleibt erhalten.');
-  lastRequest = Date.now();
+  if (Date.now() - lastRequest < 60000) throw new WalkMapError(lastFailure || 'Die letzte Kartenanfrage liegt weniger als eine Minute zurück.', lastRequest + 60000);
+  lastRequest = Date.now(); lastFailure = '';
   const area = `(around:1100,${lat},${lng})`;
   const waterTags = ['["natural"="water"]','["waterway"="riverbank"]','["landuse"="reservoir"]'];
   const waterQuery = waterTags.map(tags => `wr${area}${tags};way(pivot.containing)${tags};rel(pivot.containing)${tags};`).join('');
