@@ -34,9 +34,7 @@ it('plays, pauses, reloads and completes an episode through the actual game scre
   expect(container.textContent).toContain('Abenteuer pausiert');
   await click('Fortsetzen');
   await click('Zur aufgehenden Sonne');
-  await click('Lichtstoß (2 Schaden)');
-  await click('Schützen');
-  await click('Lichtstoß (2 Schaden)');
+  await click('Weiter');
   await click('Sonne'); await click('Pfad'); await click('Turm');
   const saved = loadCampaignProgress(campaign.id, 'aeran')!;
   expect(saved.episodeProgress[campaign.episodes[0].id].status).toBe('completed');
@@ -84,7 +82,7 @@ it('plays episode 3 completely with all four events', async () => {
   await click('Abenteuer beginnen');
   // Episode 1
   await click('Botschaft gelesen – weiter'); await click('Zur aufgehenden Sonne');
-  await click('Lichtstoß (2 Schaden)'); await click('Schützen'); await click('Lichtstoß (2 Schaden)');
+  await click('Weiter');
   await click('Sonne'); await click('Pfad'); await click('Turm');
   // Episode 2
   await act(async () => root.unmount());

@@ -1,4 +1,6 @@
 export const firstEpisodeText = {
+  passage: 'Zwischen den Nebelschwaden erkennst du einen freien Pfad. Er führt dich zu den Splittern des Botensteins.',
+  continueStory: 'Weiter',
   message: '„Das Erste Licht ist verschwunden. Sucht den Botenstein und folgt seiner Spur. Achtet aufeinander: Kein Weg ist wichtiger als eure Sicherheit.“ — Der Magier',
   read: 'Botschaft gelesen – weiter',
   trail: 'Zwei Spuren teilen sich im Sand. Auf dem Botenstein steht: „Folge dem Licht des neuen Tages.“ Welche Spur passt dazu? Dies ist ein Rätsel in der Geschichte, keine echte Wegbeschreibung.',

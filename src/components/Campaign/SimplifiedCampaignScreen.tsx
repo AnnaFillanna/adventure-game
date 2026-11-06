@@ -60,10 +60,6 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
     navigate('/hub');
   }
 
-  function handleGPS() {
-    // Navigate to outdoor adventure with callback to return to campaign
-    navigate('/hub/outdoor', { state: { from: 'campaign' } });
-  }
 
   if (!progress || !ep) {
     return (
@@ -85,13 +81,6 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
           <p className="hero-name">{getHeroDefinition(heroId).name}</p>
         </div>
         <div className="header-actions">
-          <button 
-            className="gps-button" 
-            onClick={handleGPS} 
-            title="Standort prüfen"
-          >
-            Standort prüfen
-          </button>
           <button className="pause-button" onClick={handlePause} title="Pausieren und zur Übersicht">Pause & Übersicht</button>
         </div>
       </header>
@@ -113,7 +102,6 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
         <p>Dein Ziel: {currentEpisode.number === 1 ? 'Sichere die erste Spur zum Schwert des Ersten Lichts.' : getTextDynamic(currentEpisode.descriptionKey)}</p>
         <p role="status">{ep.completedEvents.length} von {currentEpisode.events.length} Aufgaben erledigt.</p>
         <p>Jede bestätigte Aktion wird auf diesem Gerät gespeichert. Du kannst jederzeit pausieren und später fortsetzen.</p>
-        <p>Diese Geschichte spielst du im Sitzen, ohne GPS und ohne Zeitlimit. Geprüfte Spazierwege sind noch nicht verfügbar.</p>
         {currentEpisode.number > 3 && <p>Dieser Teil ist bisher nur eine Vorschau mit simulierten Aufgaben.</p>}
         {/* Campaign completion */}
         {progress.status === 'completed' && (

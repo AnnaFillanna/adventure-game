@@ -495,7 +495,7 @@ export const de = {
       description: "Nach dem Auftrag weist ein verwehter Botenstein den Weg in die verfluchten Lande.",
       event_1: { title: "Botschaft des Magiers lesen", description: "Botschaft des Magiers lesen" },
       event_2: { title: "Fußspuren virtuell untersuchen", description: "Fußspuren virtuell untersuchen" },
-      event_3: { title: "Einen Nebelschatten im Lernkampf bannen", description: "Einen Nebelschatten im Lernkampf bannen" },
+      event_3: { title: "Den Pfad zu den Splittern finden", description: "Den Pfad zu den Splittern finden" },
       event_4: { title: "Den Botenstein zusammensetzen", description: "Den Botenstein zusammensetzen." },
       storyProgress: "Das erste Kartenfragment markiert das Dorf Dämmerhain.",
     },

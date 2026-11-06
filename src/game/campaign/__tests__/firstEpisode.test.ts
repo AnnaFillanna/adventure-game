@@ -61,3 +61,12 @@ it.each(['aeran', 'velar', 'varg', 'ravena', 'saira'])('is completable by %s wit
   play(4, 'stone_sun'); play(4, 'stone_path'); play(4, 'stone_tower');
   expect(ep().status).toBe('completed'); expect(saveCampaignProgress(p)).toBe(true);
 });
+it('continues past the old tutorial even after defeat, without skipping the next puzzle or duplicating rewards',()=>{
+ const initial=p;play(1,'continue_story');expect(p).toBe(initial);
+ play(1,'read');play(2,'trail_dawn');play(3,'attack');play(3,'attack');
+ expect(ep().playerChoices.firstEpisode.health).toBe(0);
+ saveCampaignProgress(p);p=loadCampaignProgress(campaign.id,'aeran')!;
+ play(3,'continue_story');expect(ep().completedEvents).toHaveLength(3);expect(p.totalGoldEarned).toBe(0);
+ const after=p;play(3,'continue_story');expect(p).toBe(after);
+ play(4,'stone_sun');play(4,'stone_path');play(4,'stone_tower');expect(p.totalGoldEarned).toBe(20);
+});

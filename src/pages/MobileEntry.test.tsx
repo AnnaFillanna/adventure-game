@@ -55,8 +55,7 @@ it('guides a first visit through selection, GPS, task, pause and persisted resum
   expect(container.textContent).toContain('kein geprüfter Spazierweg');
   expect(container.textContent).not.toContain('Der alte Baum');
   await click('Zur Abenteuerübersicht');
-  await click('Erste Aufgabe öffnen');
-  await click('Abenteuer beginnen');
+  await click('Fortsetzen');
   await click('Botschaft gelesen – weiter');
   await click('Pause & Übersicht');
   expect(window.location.pathname).toBe('/hub');
@@ -65,7 +64,6 @@ it('guides a first visit through selection, GPS, task, pause and persisted resum
   expect(saved.episodeProgress[campaign.episodes[0].id].status).toBe('paused');
   await reloadAtStart();
   expect(window.location.pathname).toBe('/hub');
-  await click('Geschichte fortsetzen');
   await click('Fortsetzen');
   expect(container.textContent).toContain('Fußspuren virtuell untersuchen');
   expect(container.textContent).not.toContain('DebugCampaign');
@@ -113,7 +111,7 @@ it('recovers if the browser never answers and ignores an expired location respon
     await act(async () => success({coords:{latitude:48,longitude:11,accuracy:10},timestamp:Date.now()}));
     await click('Geschichte öffnen');
     expect(window.location.pathname).toBe('/hub');
-    expect(container.textContent).toContain('Erste Aufgabe öffnen');
+    expect(container.textContent).toContain('Fortsetzen');
   } finally { vi.useRealTimers(); }
 });
 async function locate() {
@@ -173,4 +171,20 @@ it('stops silent tracking, ignores invalid samples, and preserves the last valid
     expect(container.querySelector('[role="alert"]')?.textContent).toContain('kein aktueller Standort');
     expect(navigator.geolocation.clearWatch).toHaveBeenCalledWith(42);
   } finally { vi.useRealTimers(); }
+});
+it('opens the story in one continue action without GPS and replaces the tutorial controls',async()=>{
+ preferencesManager.setPreference('campaignHero','saira');window.history.replaceState({},'', '/hub');await render();
+ await click('Fortsetzen');expect(window.location.pathname).toBe('/game');
+ expect(container.textContent).not.toContain('Abenteuer beginnen');expect(container.textContent).not.toContain('Standort prüfen');
+ await click('Botschaft gelesen – weiter');await click('Zur aufgehenden Sonne');
+ for(const label of ['Lichtstoß','Schützen','Magierhilfe','Kostenlos erneut versuchen'])expect(container.textContent).not.toContain(label);
+ await click('Weiter');expect(container.textContent).toContain('Eingesetzte Splitter');
+ expect(getCurrentPosition).not.toHaveBeenCalled();expect(watchPosition).not.toHaveBeenCalled();
+});
+it('stays on the hub if starting the story cannot be saved',async()=>{
+ preferencesManager.setPreference('campaignHero','saira');window.history.replaceState({},'', '/hub');await render();
+ vi.spyOn(console,'error').mockImplementation(()=>{});
+ vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw new Error('full');});
+ await click('Fortsetzen');expect(window.location.pathname).toBe('/hub');expect(container.querySelector('[role="alert"]')?.textContent).toContain('Speichern fehlgeschlagen');
+ expect(getCurrentPosition).not.toHaveBeenCalled();
 });

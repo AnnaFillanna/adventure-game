@@ -2,7 +2,7 @@ import type { EpisodeProgress } from '../../types/campaign';
 import { completeEvent } from './episodeManager';
 
 export const FIRST_EPISODE_ID = 'episode_01_whisper_sand';
-export type FirstEpisodeInput = 'read' | 'trail_dawn' | 'trail_dusk' | 'trail_help' | 'attack' | 'guard' | 'combat_help' | 'retry' | 'stone_sun' | 'stone_path' | 'stone_tower' | 'stone_help';
+export type FirstEpisodeInput = 'continue_story' | 'read' | 'trail_dawn' | 'trail_dusk' | 'trail_help' | 'attack' | 'guard' | 'combat_help' | 'retry' | 'stone_sun' | 'stone_path' | 'stone_tower' | 'stone_help';
 export { initialFirstEpisode, validFirstEpisodeState } from './firstEpisodeState';
 import { initialFirstEpisode, validFirstEpisodeState, type FirstEpisodeState } from './firstEpisodeState';
 export function getFirstEpisodeState(progress: EpisodeProgress): FirstEpisodeState {
@@ -25,7 +25,8 @@ export function playFirstEpisode(progress: EpisodeProgress, eventId: string, inp
     else if (input === 'trail_help') state.feedback = 'trailHelp';
     else return progress;
   } else if (number === 3) {
-    if (state.health === 0) {
+    if (input === 'continue_story') { solved = true; }
+    else if (state.health === 0) {
       if (input !== 'retry') return progress;
       state = { ...initialFirstEpisode(), feedback: 'retry' };
     } else if (input === 'attack' || input === 'guard' || input === 'combat_help') {

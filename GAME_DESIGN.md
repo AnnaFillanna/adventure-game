@@ -489,3 +489,7 @@ Keine Erweiterung darf echtes Wasser, gefährliche Orte, Verfolgungsbewegung ode
 ## Vereinbarte Ergänzung: GPS-Testspaziergang (6. November 2026)
 
 Die Nutzerin hat ausdrücklich „Test-GPS-Spaziergang mit Bestätigung vor Ort“ für einen Start am aktuellen Standort gewählt. Nur dieser gekennzeichnete Testmodus darf technisch gefilterte OSM-Wegvorschläge mit Prüfstatus `unreviewed` nach Kartenansicht und Erwachsenenbestätigung starten. Die Bestätigung ändert den Prüfstatus nicht und ist keine Sicherheitsfreigabe. Der reguläre Anspruch an örtlich geprüfte Spielrouten bleibt bestehen. Kein fester Wohnort und keine zufälligen Koordinaten werden eingebaut. Details, Grenzen und Prüfnachweise: [GPS_TEST_WALK.md](GPS_TEST_WALK.md).
+
+## Vereinbarte Vereinfachung des Einstiegs (6. November 2026)
+
+Die Nutzerin bestätigt einen direkten Einstieg mit „Fortsetzen“ ohne vorgeschaltete GPS-Fragen und ohne obligatorischen Lernkampf. Der erste Nebelschatten-Schritt wird in der aktiven Oberfläche durch eine kurze Passage mit „Weiter“ ersetzt. Bestehende Ereignis-IDs, abgeschlossene Aufgaben, Belohnungen und alte Spielstände bleiben erhalten; die Kampfzustände bleiben lesbar. Auch ein dort gespeichertes verlorenes Gefecht blockiert die Fortsetzung nicht. GPS-Spaziergänge werden weiterhin separat und ausdrücklich gestartet.
