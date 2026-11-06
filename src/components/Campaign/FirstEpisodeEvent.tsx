@@ -1,3 +1,4 @@
+import './FirstEpisodeEvent.scss';
 import type { EpisodeProgress } from '../../types/campaign';
 import type { FirstEpisodeInput } from '../../game/campaign/firstEpisode';
 import { getFirstEpisodeState } from '../../game/campaign/firstEpisode';
@@ -7,7 +8,7 @@ export function FirstEpisodeEvent({ progress, eventNumber, onInput }: {
   progress: EpisodeProgress; eventNumber: number; onInput: (input: FirstEpisodeInput) => void;
 }) {
   const state = getFirstEpisodeState(progress);
-  return <div className="playable-event">
+  return <div className="playable-event first-episode-event">
     {eventNumber === 1 && <><blockquote>{text.message}</blockquote><button className="primary" onClick={() => onInput('read')}>{text.read}</button></>}
     {eventNumber === 2 && <><p>{text.trail}</p><div className="event-actions"><button onClick={() => onInput('trail_dawn')}>{text.dawn}</button><button onClick={() => onInput('trail_dusk')}>{text.dusk}</button><button onClick={() => onInput('trail_help')}>{text.help}</button></div></>}
     {eventNumber === 3 && <><p>{text.passage}</p><button className="big-action-button" onClick={() => onInput('continue_story')}>{text.continueStory}</button></>}

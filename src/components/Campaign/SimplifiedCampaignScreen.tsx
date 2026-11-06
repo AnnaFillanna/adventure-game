@@ -99,9 +99,7 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
           <h2 className="episode-title">{getTextDynamic(currentEpisode.titleKey)}</h2>
         </div>
 
-        <p>Dein Ziel: {currentEpisode.number === 1 ? 'Sichere die erste Spur zum Schwert des Ersten Lichts.' : getTextDynamic(currentEpisode.descriptionKey)}</p>
         <p role="status">{ep.completedEvents.length} von {currentEpisode.events.length} Aufgaben erledigt.</p>
-        <p>Jede bestätigte Aktion wird auf diesem Gerät gespeichert. Du kannst jederzeit pausieren und später fortsetzen.</p>
         {currentEpisode.number > 3 && <p>Dieser Teil ist bisher nur eine Vorschau mit simulierten Aufgaben.</p>}
         {/* Campaign completion */}
         {progress.status === 'completed' && (
@@ -162,15 +160,6 @@ export function SimplifiedCampaignScreen({ heroId }: { heroId: HeroId }) {
               </div>
             )}
 
-            {/* Minimal pause button at bottom */}
-            <div className="action-footer">
-              <button 
-                className="secondary-button" 
-                onClick={() => dispatch({ type: 'pause', episodeId: currentEpisode.id })}
-              >
-                Pausieren
-              </button>
-            </div>
           </section>
         )}
 

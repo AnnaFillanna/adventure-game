@@ -25,8 +25,8 @@ async function click(label: string) {
 it('plays, pauses, reloads and completes an episode through the actual game screen', async () => {
   await click('Abenteuer beginnen');
   await click('Botschaft gelesen – weiter');
-  await click('Pausieren');
-  expect(container.textContent).toContain('Abenteuer pausiert');
+  await click('Pause & Übersicht');
+  expect(loadCampaignProgress(campaign.id, 'aeran')!.episodeProgress[campaign.episodes[0].id].status).toBe('paused');
   await act(async () => root.unmount());
   useGameStore.getState().resetGame(); // A page reload loses the in-memory hero selection.
   root = createRoot(container);
