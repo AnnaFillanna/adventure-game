@@ -50,3 +50,18 @@ it('persists only ordered task progress and awards once, without coordinates', (
  localStorage.setItem('adventure_game_gps_walk_v1_aeran','{"version":2}');
  expect(saveWalk('aeran',emptyWalk())).toBe(false);
 });
+it('rejects ambiguous fixes on the chosen line too, but accepts a well distinguished path', () => {
+ const map=data();map.elements.push({...map.elements[0],id:2,nodes:[11,12,13,14,15,16,17],geometry:map.elements[0].geometry!.map(p=>({...p,lon:7.0001}))});
+ const plan=planWalk(map,fix(),3,now);
+ expect(acceptWalkFix(plan,null,fix(),now)).toBeNull();
+ expect(acceptWalkFix(plan,null,fix(0,now,1),now)).not.toBeNull();
+});
+it('treats unknown access and conditional restrictions as unavailable',()=>{
+ for (const value of ['license','use_sidepath','unknown','yes;private','']) expect(walkable({highway:'footway',surface:'paved',access:value})).toBe(false);
+ for (const value of ['yes','designated','permissive']) expect(walkable({highway:'footway',surface:'paved',access:value,foot:'yes'})).toBe(true);
+});
+it('accepts a shared junction itself but not travel down its unselected branch',()=>{
+ const map=data(); map.elements.push({type:'way',id:2,nodes:[1,90,91],geometry:[{lat:50,lon:7},{lat:50,lon:7.00045},{lat:50,lon:7.0009}],tags:{highway:'footway',surface:'paved'}});
+ const plan=planWalk(map,fix(),3,now); expect(acceptWalkFix(plan,null,fix(),now)).not.toBeNull();
+ expect(acceptWalkFix(plan,null,{...fix(),lng:7.0001},now)).toBeNull();
+});

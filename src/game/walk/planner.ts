@@ -1,13 +1,18 @@
+import { waterRings, segmentInWater, nearWater } from './water';
+import { project, segmentsMeet } from './geometry';
+export { project } from './geometry';
 import { calculateDistance } from '../geo/distance';
 import type { GeoPoint, LatLng } from '../geo/types';
 
 export interface MapElement {
-  type: 'node' | 'way'; id: number; lat?: number; lon?: number;
+  type: 'node' | 'way' | 'relation'; id: number; lat?: number; lon?: number;
+  members?: { type: 'node' | 'way' | 'relation'; ref: number; role: string; geometry?: {lat:number;lon:number}[] }[];
   nodes?: number[]; geometry?: { lat: number; lon: number }[]; tags?: Record<string, string>;
 }
 export interface WalkMapData { elements: MapElement[]; osm3s: { timestamp_osm_base: string } }
 export interface WalkStation extends LatLng { along: number; name: string }
 export interface WalkPlan {
+  alternativeEdges: { a: LatLng; b: LatLng; shared: LatLng[] }[];
   path: LatLng[]; stations: WalkStation[]; oneWayMeters: number;
   sourceTime: string; checkedAt: number; expiresAt: number; wayIds: number[];
   review: 'unreviewed'; checks: string[];
@@ -15,9 +20,10 @@ export interface WalkPlan {
 export class WalkPlanningError extends Error {}
 const paved = new Set(['asphalt', 'paved', 'concrete', 'paving_stones', 'sett', 'compacted', 'fine_gravel']);
 const footHighways = new Set(['footway', 'pedestrian', 'path']);
-const denied = new Set(['no', 'private', 'customers', 'destination', 'permit', 'delivery', 'agricultural', 'forestry']);
+const publicAccess = new Set(['yes', 'designated', 'permissive']);
+const allowsAccess = (value: string | undefined) => value === undefined || publicAccess.has(value);
 export function walkable(tags: Record<string, string>): boolean {
-  return footHighways.has(tags.highway) && paved.has(tags.surface) && !denied.has(tags.access) && !denied.has(tags.foot)
+  return footHighways.has(tags.highway) && paved.has(tags.surface) && allowsAccess(tags.access) && allowsAccess(tags.foot)
     && tags.area !== 'yes' && tags.footway !== 'crossing' && tags.crossing === undefined
     && !['bridge', 'tunnel', 'ford', 'construction', 'proposed', 'sac_scale', 'opening_hours', 'access:conditional', 'foot:conditional', 'seasonal'].some(key => tags[key] && tags[key] !== 'no')
     && (!tags.layer || tags.layer === '0') && (!tags.incline || tags.incline === '0' || tags.incline === '0%');
@@ -26,13 +32,6 @@ export function validFix(point: GeoPoint, now = Date.now()): boolean {
   return Number.isFinite(point.lat) && Math.abs(point.lat) <= 90 && Number.isFinite(point.lng) && Math.abs(point.lng) <= 180
     && typeof point.accuracy === 'number' && Number.isFinite(point.accuracy) && point.accuracy >= 0 && point.accuracy <= 25
     && typeof point.timestamp === 'number' && point.timestamp <= now + 5000 && now - point.timestamp <= 15000;
-}
-export function project(point: LatLng, a: LatLng, b: LatLng) {
-  const scale = Math.cos(a.lat * Math.PI / 180);
-  const dx = (b.lng - a.lng) * scale, dy = b.lat - a.lat;
-  const t = Math.max(0, Math.min(1, (((point.lng - a.lng) * scale) * dx + (point.lat - a.lat) * dy) / (dx * dx + dy * dy || 1)));
-  const position = { lat: a.lat + t * (b.lat - a.lat), lng: a.lng + t * (b.lng - a.lng) };
-  return { position, fraction: t, distance: calculateDistance(point, position) };
 }
 export function locateOnPath(point: LatLng, path: LatLng[]) {
   let walked = 0, best = { distance: Infinity, along: 0 };
@@ -44,11 +43,6 @@ export function locateOnPath(point: LatLng, path: LatLng[]) {
   }
   return best;
 }
-function crosses(a: LatLng, b: LatLng, c: LatLng, d: LatLng): boolean {
-  const side = (p: LatLng, q: LatLng, r: LatLng) => (q.lng - p.lng) * (r.lat - p.lat) - (q.lat - p.lat) * (r.lng - p.lng);
-  const ab1 = side(a, b, c), ab2 = side(a, b, d), cd1 = side(c, d, a), cd2 = side(c, d, b);
-  return ab1 * ab2 < 0 && cd1 * cd2 < 0;
-}
 /** Routes are graph-derived candidates. Passing these checks is NOT operational approval. */
 export function planWalk(data: WalkMapData, origin: GeoPoint, remaining = 3, now = Date.now()): WalkPlan {
   if (!validFix(origin, now)) throw new WalkPlanningError('Dein Standort ist noch zu ungenau oder veraltet. Warte auf ein genaueres GPS-Signal.');
@@ -57,6 +51,7 @@ export function planWalk(data: WalkMapData, origin: GeoPoint, remaining = 3, now
   const sourceTime = Date.parse(data?.osm3s?.timestamp_osm_base);
   if (!Array.isArray(data?.elements) || data.elements.length > 18000 || !Number.isFinite(sourceTime)
       || now - sourceTime > 48 * 3600000 || sourceTime > now + 300000) throw new WalkPlanningError('Die Wegdaten sind unvollständig oder nicht aktuell genug. Bitte versuche es später erneut.');
+  const water = waterRings(data.elements);
   const points = new Map<number, LatLng>();
   const graph = new Map<number, { to: number; distance: number; way: number }[]>();
   const forbiddenNodes = new Set<number>();
@@ -94,7 +89,7 @@ export function planWalk(data: WalkMapData, origin: GeoPoint, remaining = 3, now
       const aa = w.geometry![i - 1], bb = w.geometry![i];
       const a = { lat: aa.lat, lng: aa.lon }, b = { lat: bb.lat, lng: bb.lon };
       if (![a.lat, a.lng, b.lat, b.lng].every(Number.isFinite) || calculateDistance(origin, a) > 1050 || calculateDistance(origin, b) > 1050) continue;
-      if (hazardPoints.some(p => project(p, a, b).distance < 10) || hazardSegments.some(([c, d]) => crosses(a, b, c, d))) continue;
+      if (segmentInWater(a,b,water) || hazardPoints.some(p => project(p, a, b).distance < 10) || hazardSegments.some(([c, d]) => segmentsMeet(a, b, c, d))) continue;
       points.set(aId, a); points.set(bId, b); add(aId, bId, w.id); add(bId, aId, w.id);
     }
   }
@@ -121,13 +116,28 @@ export function planWalk(data: WalkMapData, origin: GeoPoint, remaining = 3, now
       distances.set(edge.to, next); previous.set(edge.to, { node: current, way: edge.way }); queue.add(edge.to);
     }
   }
-  const safeStop = (point: LatLng) => !hazardPoints.some(p => calculateDistance(p, point) < 30)
+  const safeStop = (point: LatLng) => !nearWater(point,water) && !hazardPoints.some(p => calculateDistance(p, point) < 30)
     && !hazardSegments.some(([a, b]) => project(point, a, b).distance < 20);
   const endpoints = [...distances].filter(([id, d]) => d >= remaining * 45 && safeStop(points.get(id)!)).sort((a, b) => b[1] - a[1]);
   for (const [end, length] of endpoints) {
     const ids = [end]; const used = new Set<number>();
     while (ids[0] !== start) { const prev = previous.get(ids[0])!; used.add(prev.way); ids.unshift(prev.node); }
     const path = ids.map(id => points.get(id)!);
+    const edgeKey = (a: number, b: number) => a < b ? `${a}:${b}` : `${b}:${a}`;
+    const chosen = new Set(ids.slice(1).map((id,i) => edgeKey(ids[i],id)));
+    if (ids.includes(-1)) chosen.add(edgeKey(snap.a,snap.b));
+    // Include non-walkable ways too: GPS must not match a nearby private path or road.
+    const alternativeEdges: WalkPlan['alternativeEdges'] = [];
+    const chosenNodes = new Set(ids);
+    for (const way of ways) {
+      if (!way.tags?.highway) continue;
+      for (let i = 1; i < way.nodes!.length; i++) {
+        if (chosen.has(edgeKey(way.nodes![i-1],way.nodes![i]))) continue;
+        const a=way.geometry![i-1], b=way.geometry![i];
+        const shared = [way.nodes![i-1],way.nodes![i]].filter(id => chosenNodes.has(id)).map(id => points.get(id)!);
+        alternativeEdges.push({ a:{lat:a.lat,lng:a.lon}, b:{lat:b.lat,lng:b.lon}, shared });
+      }
+    }
     const stations: WalkStation[] = []; let along = 0;
     for (let i = 1; i < path.length; i++) {
       along += calculateDistance(path[i - 1], path[i]);
@@ -137,9 +147,9 @@ export function planWalk(data: WalkMapData, origin: GeoPoint, remaining = 3, now
       if (stations.length === remaining) break;
     }
     if (stations.length !== remaining) continue;
-    return { path, stations, oneWayMeters: length, wayIds: [...used], sourceTime: data.osm3s.timestamp_osm_base,
+    return { path, alternativeEdges, stations, oneWayMeters: length, wayIds: [...used], sourceTime: data.osm3s.timestamp_osm_base,
       checkedAt: now, expiresAt: now + 24 * 3600000, review: 'unreviewed',
-      checks: ['Verbundene Fußwege', 'Bekannter Wegbelag', 'Keine kartierten Privatwege, Treppen oder Brücken', 'Keine erkannten Straßen- oder Bahnquerungen', 'Haltekandidaten mit Abstand zu kartierten Verkehrswegen'] };
+      checks: ['Verbundene Fußwege', 'Bekannter Wegbelag', 'Unbekannte Zugangswerte ausgeschlossen; fehlende Zugangstags bleiben unsicher', 'Keine kartierten Privatwege, Treppen oder Brücken', 'Keine erkannten Straßen- oder Bahnquerungen', 'Kartierte Wasserpolygone ausgeschlossen (einschließlich Inseln)', 'Haltekandidaten mit Abstand zu kartierten Verkehrswegen'] };
   }
   throw new WalkPlanningError('Es wurden keine ausreichend verbundenen Fußwege mit passenden Haltekandidaten gefunden. Dein Fortschritt bleibt erhalten.');
 }

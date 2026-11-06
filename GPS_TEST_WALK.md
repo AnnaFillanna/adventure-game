@@ -1,3 +1,5 @@
+> Aktueller Nachtrag: [Korrekturen des unabhängigen Reviews](GPS_REVIEW_FIXES.md). Die folgenden ursprünglichen Messzahlen beziehen sich auf e382ac9; die Änderungen und ihre Grenzen stehen im Nachtrag.
+
 # GPS-Testspaziergang – 6. November 2026
 
 ## Vereinbarter Umfang

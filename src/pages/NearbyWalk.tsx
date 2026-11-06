@@ -109,7 +109,7 @@ export function WalkSession({ hero }: { hero: HeroId }) {
       if (id !== generation.current) return;
       const accepted = acceptWalkFix(plan, sampleRef.current, fix);
       latestFixValid.current = !!accepted;
-      if (!accepted) { setSample(null); setStopped(false); setMessage('Dieser Standort ist zu ungenau, außerhalb des Wegs oder zu weit gesprungen. Es wird keine Aufgabe freigeschaltet.'); return; }
+      if (!accepted) { setSample(null); setStopped(false); setMessage('Dieser Standort ist zu ungenau, zwischen mehreren Wegen nicht eindeutig, außerhalb des Wegs oder zu weit gesprungen. Es wird keine Aufgabe freigeschaltet.'); return; }
       if (!sampleRef.current || accepted.stationarySince !== sampleRef.current.stationarySince) setStopped(false);
       sampleRef.current = accepted; setSample(accepted); setPosition(fix); setNow(Date.now());
       setMessage('GPS verbunden. Folge nur dem angezeigten Fußweg. Wenn er gesperrt oder ungeeignet ist, pausiere.');

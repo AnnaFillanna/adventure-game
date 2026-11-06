@@ -11,3 +11,8 @@ Bitte den aktuellen Commit unabhängig prüfen, konkrete Fehler mit Datei/Zeile 
 - `npm test -- --run`, `npm run build`, `npm run lint`; bestehende Tests nicht abschwächen. Vercel-Preview muss wirklich diesen Branch/Commit ausliefern.
 
 Main nicht verändern, kein Force-Push, keine Änderung der Vercel-Zugriffseinstellungen und kein Production-Deployment. Kein paralleles Überschreiben dieses Arbeitsverzeichnisses. Der Auftrag ist vorbereitet, nicht automatisch an Copilot übermittelt.
+
+
+## Zweite Prüfrunde
+
+Die Fehler aus dem Review von `e382ac9` wurden in `fix/gps-walk-review-e382ac9` bearbeitet. Bitte zuerst [GPS_REVIEW_FIXES.md](GPS_REVIEW_FIXES.md) und die übernommenen unveränderten Regressionsfälle in `src/game/walk/reviewRegression.test.ts` prüfen. Besonders die gemeinsame-Knoten-Ausnahme bei der GPS-Zuordnung und die konservative Wasser-Inselbehandlung unabhängig überprüfen. Danach Feldtest separat dokumentieren.

@@ -7,7 +7,7 @@ export interface WalkProgress { version: 1; completed: string[]; rewarded: boole
 export const emptyWalk = (): WalkProgress => ({ version: 1, completed: [], rewarded: false, gold: 0 });
 const keyFor = (hero: string) => `adventure_game_gps_walk_v1_${hero}`;
 export function validProgress(p: unknown): p is WalkProgress {
-  if (!p || typeof p !== 'object') return false;
+  if (!p || typeof p !== 'object' || Object.keys(p).sort().join(',') !== 'completed,gold,rewarded,version') return false;
   const value = p as WalkProgress;
   return value.version === 1 && Array.isArray(value.completed) && value.completed.length <= WALK_TASKS.length
     && value.completed.every((id, i) => id === WALK_TASKS[i].id)
@@ -18,12 +18,14 @@ export function loadWalk(hero: string): WalkProgress | null {
   catch { return null; }
 }
 export function saveWalk(hero: string, p: WalkProgress): boolean {
-  if (!validProgress(p)) return false;
+  // Serialize a fresh allowlisted object: caller extras and toJSON cannot leak data.
+  const clean: WalkProgress = { version: p.version, completed: Array.from(p.completed ?? []), rewarded: p.rewarded, gold: p.gold };
+  if (!validProgress(clean)) return false;
   try {
     // Corrupt/future data must never be silently replaced.
     const saved = loadWalk(hero);
     if (saved === null || saved.completed.length > p.completed.length) return false;
-    localStorage.setItem(keyFor(hero), JSON.stringify(p)); return true;
+    localStorage.setItem(keyFor(hero), JSON.stringify(clean)); return true;
   } catch { return false; }
 }
 export function solveTask(progress: WalkProgress, id: string, answer: number): WalkProgress {
